@@ -22,6 +22,9 @@ export class EQRAccess implements IQRAccess {
     @Column("varchar", {length:100, array: true })
     locks!: string[];
 
+    @Column("text")
+    link!: string;
+
     @ManyToOne(() => Euser)
     @JoinColumn({ name: 'author' })
     user!: Euser;

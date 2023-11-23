@@ -8,8 +8,8 @@ export class userDTO implements IUser {
     @Expose()
     id!: string;
 
-    @IsNotEmpty({ message: 'Track name required' })
-    @IsString({ message: 'Track name should be string' })
+    @IsNotEmpty({ message: 'User name required' })
+    @IsString({ message: 'User name should be string' })
     @Expose()
     username!: string;
 
@@ -26,7 +26,7 @@ export class userDTO implements IUser {
     @Expose()
     role!: ERole;
 
-    @IsNotEmpty({ message: 'Role required' })
+    @IsNotEmpty({ message: 'Rights to create QR access should be set' })
     @IsBoolean({ message: 'Right to create guest QRs should be set as boolean value' })
     @Expose()
     canCreateQR!: Boolean;

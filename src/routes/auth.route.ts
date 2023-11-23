@@ -13,7 +13,5 @@ export class AuthRoute {
 
     private init() {
         this.router.post('/users', this.controller.createUserEntry);
-        this.router.post('/users/sessions', this.controller.authorizeUser);
-        this.router.delete('/users/sessions', this.controller.logOut);
     }
 }

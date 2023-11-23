@@ -1,25 +1,61 @@
 import { AuthService } from '../services/auth.service';
 import { RequestHandler } from 'express';
 import { QRAccessService } from '@/services/QRAccess.service';
-import { QRAccessDTO } from '@/DTO/QRAccess.DTO';
-import { plainToInstance } from 'class-transformer';
+import { QRAccessDTO, QRAccessReqDTO } from '@/DTO/QRAccess.DTO';
+import { instanceToPlain, plainToInstance } from 'class-transformer';
+import { validate } from 'class-validator';
+import { DTOerrExtractor } from '@/utils/DTOErrorExtractor';
+import { getCredentialsFromHeader } from '@/utils/getCredentialsFromHeader';
+import { userDTO } from '@/DTO/user.DTO';
+import { UserRepository } from '@/repositories/user.repository';
 
 export class QRController {
     private authService: AuthService
     private qrService: QRAccessService
+    private userRepo = new UserRepository()
     constructor() {
         this.authService = new AuthService();
         this.qrService = new QRAccessService()
     }
 
     createQREntry: RequestHandler = async (req, res): Promise<void> => {
-        await this.authService.validateToken('someToken') //TODO JUST A PLACEHOLDER
-        const newAccessDTO = plainToInstance(QRAccessDTO, req.body);
-        newAccessDTO.author='74d75a40-dbb1-44fd-8e71-e2e11473835c'
-        const result = await this.qrService.createQRAccessEntry(newAccessDTO)
-        res.send(result)
-        // TEST CODE. TO RUN CORRECTLY CREATE A USER THROUGH ENDPOINT
-        // AND PASTE VALID UID AS newAccessDTO.author
+        const token = getCredentialsFromHeader(req.headers.authorization)
+        const newAccessDTOReq = plainToInstance(QRAccessReqDTO, req.body);
+        const DTOerr = await validate(newAccessDTOReq)
+        if (DTOerr && DTOerr.length > 0) {
+            res.status(400).send({
+                success: false,
+                error: DTOerrExtractor(DTOerr)
+            })
+        }
+        else {
+            if (newAccessDTOReq.valid_to > newAccessDTOReq.valid_from) {
+                const newAccessDTO = plainToInstance(QRAccessDTO, instanceToPlain(newAccessDTOReq))
+                // ~~~~~~~~~ PLACEHOLDER CODE TO WORK WITHOUT AUTHORIZATION ~~~~~~~~
+                // ~~~~~~~~~ ADDS RANDOM USER AS AUTHOR IF NO TOKEN PROVIDED ~~~~~~~~~
+                let user: userDTO | undefined = undefined
+                if (token){
+                    user = await this.authService.validateToken(token)
+                }
+                if (user){
+                    newAccessDTO.author = user.id
+                }
+                else{
+                    const availableUserIds = (await this.userRepo.getAllUsers()).map((e) => { return e.id })
+                    newAccessDTO.author = availableUserIds[Math.floor(Math.random() * availableUserIds.length)];
+                }
+                //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                const result = await this.qrService.createQRAccessEntry(newAccessDTO);
+                res.send({
+                    success: true,
+                    link: result.link
+                })
+            }
+            else res.status(400).send({
+                success: false,
+                error: 'Access ending time should be larger than acess starting time'
+            })
+        }
     }
 
     getQREntries: RequestHandler = async (req, res): Promise<void> => {

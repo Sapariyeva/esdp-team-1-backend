@@ -1,21 +1,17 @@
-// import { IArtist } from "@/interfaces/IArtist";
 import { IQRAccess, IQRAccessReq } from "@/interfaces/IQRAccess.interface";
 import { Expose } from "class-transformer"
-import { IsNotEmpty, IsString, IsPositive } from 'class-validator'
-// import { IsUserExist } from "./customValidators";
+import { IsNotEmpty, IsString, IsPositive, IsPhoneNumber, Min } from 'class-validator'
+import { IsLockExist, IsUserExist } from "./customValidators";
 
-
-// phone: string;
-//     locks: string[];
-//     valid_from: number;
-//     valid_to: number;
 export class QRAccessReqDTO implements IQRAccessReq{
 
     @IsString({ message: "Phone number should be string" })
+    @IsPhoneNumber(undefined, { message: "Invalid phone number format" })
     @Expose()
-    phone!: string; //TODO validate as a phone number
+    phone!: string; 
 
     @IsPositive({ message: "valid_from field should be a positive number" })
+    @Min(1672506000000, { message: "minimum valid_from datetime is 2023-01-01T00:00:00" })
     @Expose()
     valid_from!: number;
 
@@ -23,19 +19,25 @@ export class QRAccessReqDTO implements IQRAccessReq{
     @Expose()
     valid_to!: number;
 
-    //TODO do locks exist, is string array, is not empty
     @Expose()
+    @IsString({each: true, message: "Locks must have string type id"})
+    @IsLockExist({each: true, message: "Some of the specidied locks are not registered"})
     locks!: string[];
 }
 
 export class QRAccessDTO extends QRAccessReqDTO implements IQRAccess{
     @Expose()
-    @IsNotEmpty({ message: "Artist's name required" })
+    @IsNotEmpty({ message: "Access ID required!" })
     id!: string;
 
-    @IsNotEmpty({ message: "Artist's name required" })
-    @IsString({ message: "Artist's name should be string" })
+    @IsNotEmpty({ message: "Id of the authorizing user is required!" })
+    @IsUserExist({message: "The user authorizing the acces is not registered!"})
     @Expose()
-    author!: string; //TODO is author exist   
+    author!: string; 
+
+    @IsNotEmpty({ message: "QR link required!" })
+    @IsString({message: "QR link must be string!"})
+    @Expose()
+    link!: string; 
 }
 

@@ -7,12 +7,14 @@ interface IEnv {
   port: number;
   dbUri: string;
   secretHTTP: string;
-  secretPrivate: string
+  secretPrivate: string;
+  qrBaseUrl: string
 };
 
 export const envConfig: IEnv = {
   port: parseInt(process.env.PORT!),
   dbUri: process.env.DB_STRING!,
   secretHTTP: process.env.SECRET_HTTP!,
-  secretPrivate: process.env.SECRET_PRIVATE!
+  secretPrivate: process.env.SECRET_PRIVATE!,
+  qrBaseUrl: process.env.QR_URL!
 };

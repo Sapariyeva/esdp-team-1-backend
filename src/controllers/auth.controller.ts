@@ -1,5 +1,5 @@
 import { plainToInstance } from 'class-transformer';
-import { AuthService } from '../services/auth.service';
+import { AuthService } from '@/services/auth.service';
 import { RequestHandler } from 'express';
 import { userDTO } from '@/DTO/user.DTO';
 import { validate } from 'class-validator';
@@ -13,11 +13,11 @@ export class AuthController {
 
     createUserEntry: RequestHandler = async (req, res): Promise<void> => {
         const newUser = plainToInstance(userDTO, req.body)
-        const DTOerr = await validate(newUser)
-        if (DTOerr && DTOerr.length > 0) {
+        const DTOErr = await validate(newUser)
+        if (DTOErr && DTOErr.length > 0) {
             res.status(400).send({
                 success: false,
-                error: DTOerrExtractor(DTOerr)
+                error: DTOerrExtractor(DTOErr)
             })
         }
         else {
@@ -30,19 +30,19 @@ export class AuthController {
             else {
                 res.status(500).send({
                     success: false,
-                    errror: 'unknown internal server error'
+                    error: 'unknown internal server error'
                 })
             }
         }
     }
 
-    setAllowedCreateQr: RequestHandler = async (req, res): Promise<void> => {
-    }
-
-    authorizeUser: RequestHandler = async (req, res): Promise<void> => {
-    }
-
-    logOut: RequestHandler = async (req, res): Promise<void> => {
-    }
+    // setAllowedCreateQr: RequestHandler = async (req, res): Promise<void> => {
+    // }
+    //
+    // authorizeUser: RequestHandler = async (req, res): Promise<void> => {
+    // }
+    //
+    // logOut: RequestHandler = async (req, res): Promise<void> => {
+    // }
 }
 

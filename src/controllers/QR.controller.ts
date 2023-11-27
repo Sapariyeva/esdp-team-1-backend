@@ -63,11 +63,13 @@ export class QRController {
             console.log(e);
             res.status(500).send({
                 success: false,
-                message: 'Internal server error'
+                error: 'Internal server error'
             });
         }
 
     }
+
+
 
     getQREntries: RequestHandler = async (req, res): Promise<void> => {
     // TODO Provide Entries by phone number or time period

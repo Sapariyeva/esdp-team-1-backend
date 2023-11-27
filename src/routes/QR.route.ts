@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { QRController } from '@/controllers/QR.controller';
 
 export class QRRoute {
-    public path = '/';
+    public path = '/qr';
     public router = Router();
     private controller: QRController;
 
@@ -12,7 +12,7 @@ export class QRRoute {
     }
 
     private init() {
-        this.router.post('/qr', this.controller.createQREntry);
-        this.router.get('/qr', this.controller.getQREntries);
+        this.router.post('/', this.controller.createQREntry);
+        this.router.get('/', this.controller.getQREntries);
     }
 }

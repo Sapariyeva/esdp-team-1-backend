@@ -14,8 +14,8 @@ export class QRAccessRepository extends Repository<EQRAccess> {
 
     async saveQRAccess(access: QRAccessDTO): Promise<IQRAccess> {
         const newRecord = this.create(access)
-        const dbAnswer = await this.save(newRecord)
-        if (dbAnswer) {
+         const dbAnswer = await this.save(newRecord)
+        if (newRecord.link) {
             await this.notificationRepo.saveNotification(
               await this.notificationRepo.makeExpirationNotification(dbAnswer, 60 * 60 * 1000))
             await this.notificationRepo.saveNotification(

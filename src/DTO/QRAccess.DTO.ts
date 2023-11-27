@@ -20,7 +20,7 @@ export class QRAccessReqDTO implements IQRAccessReq{
 
     @Expose()
     @IsString({each: true, message: "Locks must have string type id"})
-    @IsLockExist({each: true, message: "Some of the specidied locks are not registered"})
+    @IsLockExist({each: true, message: "Some of the specified locks are not registered"})
     locks!: string[];
 }
 
@@ -30,7 +30,7 @@ export class QRAccessDTO extends QRAccessReqDTO implements IQRAccess{
     id!: string;
 
     @IsNotEmpty({ message: "Id of the authorizing user is required!" })
-    @IsUserExist({message: "The user authorizing the acces is not registered!"})
+    @IsUserExist({message: "The user authorizing the access is not registered!"})
     @Expose()
     author!: string; 
 

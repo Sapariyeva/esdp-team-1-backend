@@ -1,5 +1,5 @@
 import { Repository } from 'typeorm';
-import { appDataSource } from '../dbConfig'
+import { appDataSource } from '@/dbConfig'
 import { ELock } from '@/entities/lock.entity';
 import { ILock } from '@/interfaces/Ilock.interface';
 import { lockDTO } from '@/DTO/lock.DTO';
@@ -11,8 +11,8 @@ export class LockRepository extends Repository<ELock> {
 
     async createLock(data: ILock): Promise<ILock> {
         const newRecord = this.create(data)
-        const dbAnswer = await this.save(newRecord)
-        return dbAnswer
+        return await this.save(newRecord)
+
     }
 
     async getLockById(id: string): Promise<ILock | null>{

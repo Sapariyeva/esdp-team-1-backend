@@ -1,5 +1,5 @@
 import { Repository } from 'typeorm';
-import { appDataSource } from '../dbConfig'
+import { appDataSource } from '@/dbConfig'
 import { ENotification } from '@/entities/Notification.entity';
 import { QRAccessDTO } from '@/DTO/QRAccess.DTO';
 import { INotification } from '@/interfaces/INotification.interface';
@@ -16,24 +16,20 @@ export class NotificationsRepository extends Repository<ENotification> {
     async saveNotification(notification: NotificationDTO): Promise<boolean> {
         const newRecord = this.create(notification)
         const dbAnswer = await this.save(newRecord)
-        if (dbAnswer) {
-            return true
-        }
-        return false
+        return !!dbAnswer
     }
 
-    makeExpirationNotification = (access: QRAccessDTO, triggerBeforeExperiation: number) => {
+    makeExpirationNotification = (access: QRAccessDTO, triggerBeforeExpiration: number) => {
         const newNotification: INotification = {
             author: access.author,
             accessEntry: access.id,
-            trigger_at: access.valid_to - triggerBeforeExperiation,
+            trigger_at: access.valid_to - triggerBeforeExpiration,
             sent: false,
             message: `Access UUID ${access.id} for guest with phone number ${access.phone} ` +
-                `expires in ${Math.floor(triggerBeforeExperiation / 1000 / 60)} minutes`,
+                `expires in ${Math.floor(triggerBeforeExpiration / 1000 / 60)} minutes`,
             type: ENotificationTypes.expiring
         }
-        const notificationDTO  = plainToInstance(NotificationDTO, newNotification)
-        return notificationDTO
+        return plainToInstance(NotificationDTO, newNotification)
     }
 }
 

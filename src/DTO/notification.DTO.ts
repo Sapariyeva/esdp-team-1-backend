@@ -23,8 +23,8 @@ export class NotificationDTO implements INotification{
     @Expose()
     accessEntry!: string;
 
-    @IsNotEmpty({ message: "Notifiaction message required!" })
-    @IsString({ message: "Notifiaction message should be string" })
+    @IsNotEmpty({ message: "Notification message required!" })
+    @IsString({ message: "Notification message should be string" })
     @Expose()
     message!: string;
 

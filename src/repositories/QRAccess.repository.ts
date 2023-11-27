@@ -1,9 +1,10 @@
 import { Repository } from 'typeorm';
-import { appDataSource } from '../dbConfig'
+import { appDataSource } from '@/dbConfig'
 import { EQRAccess } from '@/entities/QRAccess.entity';
 import { QRAccessDTO } from '@/DTO/QRAccess.DTO';
-import { IQRAccess } from '@/interfaces/IQRAccess.interface';
-import { NotificationsRepository } from './notifications.repository';
+import {IQRAccess} from '@/interfaces/IQRAccess.interface';
+import {NotificationsRepository} from './notifications.repository';
+
 
 export class QRAccessRepository extends Repository<EQRAccess> {
     notificationRepo: NotificationsRepository = new NotificationsRepository()
@@ -15,10 +16,10 @@ export class QRAccessRepository extends Repository<EQRAccess> {
         const newRecord = this.create(access)
         const dbAnswer = await this.save(newRecord)
         if (dbAnswer) {
-            this.notificationRepo.saveNotification(
-                this.notificationRepo.makeExpirationNotification(dbAnswer, 60 * 60 * 1000))
-            this.notificationRepo.saveNotification(
-                this.notificationRepo.makeExpirationNotification(dbAnswer, 15 * 60 * 1000))
+            await this.notificationRepo.saveNotification(
+              await this.notificationRepo.makeExpirationNotification(dbAnswer, 60 * 60 * 1000))
+            await this.notificationRepo.saveNotification(
+              await this.notificationRepo.makeExpirationNotification(dbAnswer, 15 * 60 * 1000))
         }
         return dbAnswer
     }
@@ -31,8 +32,7 @@ export class QRAccessRepository extends Repository<EQRAccess> {
         })
         if (extractedAccess) {
             return extractedAccess
-        }
-        else {
+        } else {
             return
         }
     }
@@ -41,11 +41,22 @@ export class QRAccessRepository extends Repository<EQRAccess> {
         return await this.find()
     }
 
+    async updateQRAccess(id: string, access: QRAccessDTO){
+      await this.update(id, access)
+    }
+
     async delQRAccessById(id: string): Promise<Boolean> {
+        const existingAccess = await this.findOne({where:{id}})
+
+        if(!existingAccess) {
+            return false
+        }
+        await this.delete(id)
         return true
     }
 
-    async delQRAccessByPeriod(from: number, to: number): Promise<Boolean> {
-        return true
-    }
+    // async delQRAccessByPeriod(from: number, to: number): Promise<Boolean> {
+    //
+    //     return true
+    // }
 }

@@ -19,13 +19,26 @@ export class LocksController {
                 success: false,
                 error: DTOerrExtractor(DTOerr)
             })
-        }
-        else {
+        } else {
             const result = await this.service.createLockEntry(newLock)
             res.send({
                 success: true,
                 lock: result
             })
         }
+    }
+
+    getAllLocks: RequestHandler = async (req, res) => {
+        try {
+            const locks = await this.service.getAllLocks()
+
+            res.status(200).send({
+                success: true,
+                payload: locks
+            })
+        } catch (e) {
+            console.log(e)
+        }
+
     }
 }

@@ -9,5 +9,5 @@ export interface IQRAccessReq {
 export interface IQRAccess extends IQRAccessReq{
     id: string;
     author: string;
-    link: string
+    link?: string
 }

@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { LocksController } from '@/controllers/lock.controller';
 
 export class LocksRoute {
-    public path = '/';
+    public path = '/locks';
     public router = Router();
     private controller: LocksController;
 
@@ -12,6 +12,7 @@ export class LocksRoute {
     }
 
     private init() {
-        this.router.post('/locks', this.controller.createLockEntry);
+        this.router.post('/', this.controller.createLockEntry);
+        this.router.get('/', this.controller.getAllLocks)
     }
 }

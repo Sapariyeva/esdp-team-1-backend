@@ -9,5 +9,9 @@ export class LockService {
   createLockEntry = async (data: lockDTO) => {
     return await this.lockRepo.createLock(data)
   };
+
+  getAllLocks = async () => {
+    return await this.lockRepo.getAllLocks()
+  }
 }
 

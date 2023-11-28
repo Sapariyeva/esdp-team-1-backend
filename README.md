@@ -67,7 +67,7 @@ Example Response on Failure:
 ```json
 {
     "success": false,
-    "error": string
+    "error": "string"
 }
 ```
 
@@ -120,54 +120,58 @@ Example Response on Failure:
 ```json
 {
     "success": false,
-    "error": string
+    "error": "string"
 }
 ```
 
 
-# Registering new lock
+# Get all locks
 
-Method: POST
+Method: get
 
-URL: /qr
+URL: /locks
 
-Endpoint accepts JSON in the body of a POST request  and responds with  success of the operation and info on registered lock.
-
-Example request:
-
-```json
-{
-    "name": "lock # 1",
-    "type": "door"
-}
-
-```
-
-Requested Fields:
-
-* **name?** (string): a name for the lock (optional).
-* **type** ("door" | "barrier"): specifies a type of the lock.
+Endpoint allows you to retrieve the list of locks
 
 Example Response on Success:
 
 ```json
 {
-    "success": true,
-	"lock":
-	{
-	    "name": "lock # 1",
-        "type": "door",
-		"id": "86ddf175-987c-4bbf-8b3e-fd0ebd998397"
-	}
+  "success": true,
+  "payload": [
+    "3371ed33-2bd6-48ce-8d11-5823f04130f6",
+    "51e15c7e-baa2-4cc3-9bab-f4094dbb3681"
+    //...
+  ]
 }
 ```
 
-Example Response on Failure:
+Response on Failure:
 
 ```json
 {
-    "success": false,
-    "error": string
+  "success": false,
+  "error": "Details on the request failure"
+}
+```
+
+# Registering new user
+
+
+Method: POST
+
+URL: /users
+
+Endpoint accepts JSON in the body of a POST request with specific fields and responds with information on operation success.
+
+Example request:
+
+```json
+{
+    "username":"testUser",
+    "pass":"testPass",
+    "role": "admin",  // or 'user'
+    "canCreateQR":true
 }
 ```
 

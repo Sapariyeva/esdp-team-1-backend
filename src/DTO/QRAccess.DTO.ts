@@ -4,7 +4,6 @@ import { IsNotEmpty, IsString, IsPositive, IsPhoneNumber, Min } from 'class-vali
 import { IsLockExist, IsUserExist } from "./customValidators";
 
 export class QRAccessReqDTO implements IQRAccessReq{
-
     @IsString({ message: "Phone number should be string" })
     @IsPhoneNumber(undefined, { message: "Invalid phone number format" })
     @Expose()
@@ -21,7 +20,7 @@ export class QRAccessReqDTO implements IQRAccessReq{
 
     @Expose()
     @IsString({each: true, message: "Locks must have string type id"})
-    @IsLockExist({each: true, message: "Some of the specidied locks are not registered"})
+    @IsLockExist({each: true, message: "Some of the specified locks are not registered"})
     locks!: string[];
 }
 
@@ -31,13 +30,13 @@ export class QRAccessDTO extends QRAccessReqDTO implements IQRAccess{
     id!: string;
 
     @IsNotEmpty({ message: "Id of the authorizing user is required!" })
-    @IsUserExist({message: "The user authorizing the acces is not registered!"})
+    @IsUserExist({message: "The user authorizing the access is not registered!"})
     @Expose()
     author!: string; 
 
     @IsNotEmpty({ message: "QR link required!" })
     @IsString({message: "QR link must be string!"})
     @Expose()
-    link!: string; 
+    link?: string;
 }
 

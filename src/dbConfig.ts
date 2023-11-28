@@ -14,7 +14,7 @@ import { ENotification } from './entities/Notification.entity';
 const dataSourceConfig: DataSourceOptions = {
   type: 'postgres',
   url: envConfig.dbUri,
-  synchronize: false,
+  synchronize: true,
   logging: false,
   entities: [Euser, EQRAccess, ELock, ENotification],
 }

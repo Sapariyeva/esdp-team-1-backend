@@ -7,7 +7,7 @@ export class EQRAccess implements IQRAccess {
     @PrimaryGeneratedColumn("uuid")
     id!: string;
 
-    @Column({ nullable: false })
+    @Column({ nullable: false})
     author!: string;
 
     @Column({ nullable: false})
@@ -19,10 +19,10 @@ export class EQRAccess implements IQRAccess {
     @Column({type:'bigint', nullable: false})
     valid_to!: number
 
-    @Column("varchar", {length:100, array: true })
+    @Column({type: "varchar", length:100, array: true})
     locks!: string[];
 
-    @Column("text")
+    @Column({type: "text", nullable: true} )
     link!: string;
 
     @ManyToOne(() => Euser)

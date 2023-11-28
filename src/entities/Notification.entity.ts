@@ -31,7 +31,7 @@ export class ENotification implements INotification {
     @JoinColumn({ name: 'author' })
     user!: Euser;
 
-    @ManyToOne(() => EQRAccess)
+    @ManyToOne(() => EQRAccess, {onDelete: 'CASCADE'})
     @JoinColumn({ name: 'accessEntry' })
     QRAccessEntry!: EQRAccess;
 }

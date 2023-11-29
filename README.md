@@ -50,8 +50,8 @@ Requested Fields:
 
 * **phone** (string): The phone number for which the QR code is generated.
 * **locks** (array of strings): An array of strings representing UMANU controllers identificators.
-* **valid_from** (integer): The starting time of QR code validity in Unix timestamp format (milliseconds). Minimum valid starting datetime is 1672506000000 (e.g.2023-01-01T00:00:00)
-* **valid_to** (integer): The expiration time of QR code validity in Unix timestamp format (milliseconds).
+* **valid_from** (integer): The starting time of QR code, valid in Unix timestamp format (milliseconds). Minimum starting datetime is not earlier than current moment - 60 seconds
+* **valid_to** (integer): The expiration time of QR code, valid in Unix timestamp format (milliseconds). Minimum expiration time is not earlier than starting time + 1 hr.
 
 Example Response on Success:
 

@@ -61,6 +61,32 @@ export class IsNotificationTypeValidConstraint implements ValidatorConstraintInt
     }
 }
 
+@ValidatorConstraint({ async: true })
+export class IsValidFromPassesConstaint implements ValidatorConstraintInterface {
+    async validate(valid_from: number, args: ValidationArguments) { 
+      const datetime = new Date(valid_from);
+      if (datetime instanceof Date) {
+        const now = new Date().getTime();
+        return valid_from >= now - 60 * 1000 ? true : false;
+      } else {
+        return false;
+      }
+    }
+}
+
+@ValidatorConstraint({ async: true })
+export class IsValidToPassesConstaint implements ValidatorConstraintInterface {
+  async validate(valid_to: number, args: ValidationArguments) {
+    const datetime = new Date(valid_to);
+    if (datetime instanceof Date) {
+      const [valid_from] = args.constraints;
+      const dateFromAsNumber = (args.object as any)[valid_from] as number;
+      return valid_to - dateFromAsNumber > 3600 * 1000 ? true : false;
+    } else {
+      return false;
+    }
+  }
+}
 
 
 
@@ -124,3 +150,27 @@ export function IsNotificationTypeValid(validationOptions?: ValidationOptions) {
         });
     };
 }
+
+export function IsValidFromPasses(validationOptions?: ValidationOptions) {
+    return function (object: Object, propertyName: string) {
+      registerDecorator({
+        target: object.constructor,
+        propertyName: propertyName,
+        options: validationOptions,
+        constraints: [],
+        validator: IsValidFromPassesConstaint
+      });
+    };
+  }
+
+  export function IsValidToPasses(property: string, validationOptions?: ValidationOptions) {
+    return function (object: Object, propertyName: string) {
+      registerDecorator({
+        target: object.constructor,
+        propertyName: propertyName,
+        options: validationOptions,
+        constraints: [property],
+        validator: IsValidToPassesConstaint,
+      });
+    };
+  }

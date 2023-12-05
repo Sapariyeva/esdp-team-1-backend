@@ -1,4 +1,4 @@
-import { Repository } from 'typeorm';
+import { In, LessThan, Repository } from 'typeorm';
 import { appDataSource } from '@/dbConfig'
 import { ENotification } from '@/entities/Notification.entity';
 import { QRAccessDTO } from '@/DTO/QRAccess.DTO';
@@ -17,6 +17,34 @@ export class NotificationsRepository extends Repository<ENotification> {
         const newRecord = this.create(notification)
         const dbAnswer = await this.save(newRecord)
         return !!dbAnswer
+    }
+
+    async getNewNotifications(user: string, time: number) {
+        return await this.find({
+            where: {
+                author: user,
+                sent: false,
+                trigger_at: LessThan(time)
+            },
+            order: {
+                trigger_at: 'ASC'
+            }
+        })
+    }
+
+    setSentStatus = async (idArr: string[], status: boolean) => {
+        try {
+            this.update(
+                { id: In(idArr) },
+                { sent: status },
+            )
+            return true
+        }
+        catch(e) {
+            console.log(e)
+            return false
+        }
+
     }
 
     makeExpirationNotification = (access: QRAccessDTO, triggerBeforeExpiration: number) => {

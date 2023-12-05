@@ -4,6 +4,7 @@ import { Euser } from '@/entities/user.entity';
 import { IUser } from '@/interfaces/IUser';
 import { userDTO } from '@/DTO/user.DTO';
 import { genSalt, hash, compare } from 'bcrypt'
+import { isUUID } from 'class-validator';
 
 export class UserRepository extends Repository<Euser> {
     constructor() {
@@ -37,6 +38,9 @@ export class UserRepository extends Repository<Euser> {
     }
 
     async getUserById(id: string): Promise<userDTO | undefined> {
+        if (!isUUID(id)){
+            return
+        }
         const extractedUser = await this.findOne({
             'where': {
                 id: id

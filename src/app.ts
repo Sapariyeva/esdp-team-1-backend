@@ -4,12 +4,19 @@ import { AppInit } from './interfaces/AppInit.interface';
 import { IRoute } from './interfaces/IRoute.interface';
 import { errorHandler } from "./middleware/errorHandler";
 import { appDataSource } from './dbConfig'
+import { Server } from 'socket.io';
+import { WSNotificationsService } from './ws/ws.services';
+import { ISession } from './interfaces/ISocketSession';
 
 
 class App {
   public app: Application;
   public port: number;
+  public sessions: ISession[] = []
+  public ioServer: Server | undefined
+  public notificationsService: WSNotificationsService
   constructor(appInit: AppInit) {
+    this.notificationsService = new WSNotificationsService()
     this.app = express();
     this.port = appInit.port;
     this.initMiddlewares(appInit.middlewares);
@@ -45,12 +52,23 @@ class App {
   };
   public async listen() {
     await appDataSource.initialize()
-    this.app.listen(this.port, () => {
+    const http = this.app.listen(this.port, () => {
       console.log(`App listening  on the http://localhost:${this.port}`);
     });
-    process.on("exit", () => {  
+    process.on("exit", () => {
       appDataSource.destroy();
     })
+    this.ioServer = require('socket.io')(http, 
+      {
+      cors: {
+        origin: "*",
+      }
+    });
+    if (this.ioServer) {
+      this.ioServer.on('connection', (io) => {
+        this.notificationsService.notificationsOnConnect(io)
+      })
+    }
   }
 }
 

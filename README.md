@@ -179,7 +179,6 @@ Example request:
 
 Server provides websocket connection (with socket.io) to transmit notifications and service messages. 
 
-!IMPORTANT
 To establish a connection client should provide a valid user UUID in
 handshake.auth.user field or in handshake.headers.user
 If no UUID or invalid UUID is provided, server will respond with an event 'message', containing payload of string "Unauthrized socket connection".

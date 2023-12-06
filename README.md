@@ -175,5 +175,29 @@ Example request:
 }
 ```
 
+# Websocket 
 
+Server provides websocket connection (with socket.io) to transmit notifications and service messages. 
 
+To establish a connection client should provide a valid user UUID in
+handshake.auth.user field or in handshake.headers.user
+If no UUID or invalid UUID is provided, server will respond with an event 'message', containing payload of string "Unauthrized socket connection".
+
+On connection server responds with event 'notifications', containing payload which is an array of notifications. 
+
+Example of payload
+
+```json
+[
+    {
+        "type": "expiring",
+        "triggeredAt": "1700747878023",
+        "message": "Access UUID aa3f0263-a2c6-4f27-9fa4-89a90ba8fff1 for guest with phone number +77077629949 expires in 60 minutes"
+    },
+    {
+        "type": "expiring",
+        "triggeredAt": "1700750578023",
+        "message": "Access UUID aa3f0263-a2c6-4f27-9fa4-89a90ba8fff1 for guest with phone number +77077629949 expires in 15 minutes"
+    },
+]
+```

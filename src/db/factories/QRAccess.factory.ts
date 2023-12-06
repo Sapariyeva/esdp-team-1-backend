@@ -10,7 +10,6 @@ const maxLocks = 5
 const qrAxios = axios.create({ baseURL: envConfig.qrBaseUrl })
 
 export const QRAccessFactory = setSeederFactory(EQRAccess, async (faker: Faker) => {
-  // const QRAccessRepo = new QRAccessRepository()
   const access = new EQRAccess();
   const userRepo = new UserRepository()
   const availableUserIds = (await userRepo.getAllUsers()).map((e) => { return e.id })

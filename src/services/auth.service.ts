@@ -14,6 +14,10 @@ export class AuthService {
     return await this.userRepo.authUser(data)
   }
 
+  getUserById = async (id:string) => {
+    return await this.userRepo.getUserById(id)
+  }
+
   validateToken = async (data:string) => {
     const result = await this.userRepo.validateRequest(data)
     return result

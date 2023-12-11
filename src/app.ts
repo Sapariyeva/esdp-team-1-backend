@@ -2,7 +2,7 @@ import express from 'express';
 import { Application, RequestHandler } from 'express';
 import { AppInit } from './interfaces/AppInit.interface';
 import { IRoute } from './interfaces/IRoute.interface';
-import { errorHandler } from "./middleware/errorHandler";
+import { errorHandler } from "./middleware/errorHandler.middleware";
 import { appDataSource } from './dbConfig'
 import { Server } from 'socket.io';
 import { WSNotificationsService } from './ws/ws.services';

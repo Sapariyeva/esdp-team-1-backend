@@ -1,48 +1,59 @@
-import { plainToInstance } from 'class-transformer';
+import { RegisterUserDTO, SignInUserDTO } from "@/DTO/user.DTO";
+import { RequestWithUser } from "@/interfaces/request.interface";
 import { AuthService } from '@/services/auth.service';
-import { RequestHandler } from 'express';
-import { userDTO } from '@/DTO/user.DTO';
-import { validate } from 'class-validator';
-import { DTOerrExtractor } from '@/utils/DTOErrorExtractor';
+import { plainToInstance } from 'class-transformer';
+import { validate } from "class-validator";
+import { RequestHandler } from "express";
 
 export class AuthController {
-    private service: AuthService
-    constructor() {
-        this.service = new AuthService();
-    }
+  private service: AuthService;
+  constructor() {
+    this.service = new AuthService();
+  }
 
-    createUserEntry: RequestHandler = async (req, res): Promise<void> => {
-        const newUser = plainToInstance(userDTO, req.body)
-        const DTOErr = await validate(newUser)
-        if (DTOErr && DTOErr.length > 0) {
-            res.status(400).send({
-                success: false,
-                error: DTOerrExtractor(DTOErr)
-            })
+  register: RequestHandler = async (req: RequestWithUser, res, next): Promise<void> => {
+    try {
+        const newUser = plainToInstance(RegisterUserDTO, req.body);
+        const DTOErr = await validate(newUser);
+        if (DTOErr.length > 0) throw DTOErr;
+        const result = await this.service.register(newUser);
+        if (result) {
+          res.status(201).send({
+            success: true,
+          });
+        } else {
+          res.status(500).send({
+            success: false,
+            error: "unknown internal server error",
+          });
         }
-        else {
-            const result = await this.service.createUserEntry(newUser)
-            if (result) {
-                res.send({
-                    success: true
-                })
-            }
-            else {
-                res.status(500).send({
-                    success: false,
-                    error: 'unknown internal server error'
-                })
-            }
-        }
+    } catch (err) {
+        next(err);
     }
+  };
 
-    // setAllowedCreateQr: RequestHandler = async (req, res): Promise<void> => {
-    // }
-    //
-    // authorizeUser: RequestHandler = async (req, res): Promise<void> => {
-    // }
-    //
-    // logOut: RequestHandler = async (req, res): Promise<void> => {
-    // }
+  signIn: RequestHandler = async (req, res, next): Promise<void> => {
+    try {
+        const credentials = plainToInstance(SignInUserDTO, req.body);
+        const DTOErr = await validate(credentials);
+        if (DTOErr.length > 0) throw DTOErr;
+        const result = await this.service.signIn(credentials);
+        res.status(200).send({
+            success: true,
+            ...result
+        })
+    } catch (err) {
+        next(err);
+    }
+  }
+
+  // setAllowedCreateQr: RequestHandler = async (req, res): Promise<void> => {
+  // }
+  //
+  // authorizeUser: RequestHandler = async (req, res): Promise<void> => {
+  // }
+  //
+  // logOut: RequestHandler = async (req, res): Promise<void> => {
+  // }
 }
 

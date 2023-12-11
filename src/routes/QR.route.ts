@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { QRController } from '@/controllers/QR.controller';
+import { checkAuth } from '@/middleware/auth.middleware';
 
 export class QRRoute {
     public path = '/qr';
@@ -12,7 +13,7 @@ export class QRRoute {
     }
 
     private init() {
-        this.router.post('/', this.controller.createQREntry);
+        this.router.post('/', checkAuth, this.controller.createQREntry);
         this.router.get('/', this.controller.getQREntries);
     }
 }

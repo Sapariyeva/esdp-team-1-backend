@@ -18,7 +18,7 @@ export const DTOerrExtractor = (DTOerr: ValidationError[]) => {
       }
       returnMessage.push(newElem)
     }
-    return JSON.stringify(returnMessage)
+    return returnMessage;
   }
   else {
     return 'Unknown error while validation'

@@ -8,7 +8,7 @@ interface IEnv {
   dbUri: string;
   secretHTTP: string;
   secretPrivate: string;
-  qrBaseUrl: string
+  qrBaseUrl: string;
 };
 
 export const envConfig: IEnv = {
@@ -16,5 +16,5 @@ export const envConfig: IEnv = {
   dbUri: process.env.DB_STRING!,
   secretHTTP: process.env.SECRET_HTTP!,
   secretPrivate: process.env.SECRET_PRIVATE!,
-  qrBaseUrl: process.env.QR_URL!
+  qrBaseUrl: process.env.QR_URL!,
 };

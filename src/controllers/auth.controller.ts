@@ -1,4 +1,5 @@
 import { RegisterUserDTO, SignInUserDTO } from "@/DTO/user.DTO";
+import { RequestWithUser } from "@/interfaces/request.interface";
 import { AuthService } from '@/services/auth.service';
 import { plainToInstance } from 'class-transformer';
 import { validate } from "class-validator";
@@ -10,7 +11,7 @@ export class AuthController {
     this.service = new AuthService();
   }
 
-  register: RequestHandler = async (req, res, next): Promise<void> => {
+  register: RequestHandler = async (req: RequestWithUser, res, next): Promise<void> => {
     try {
         const newUser = plainToInstance(RegisterUserDTO, req.body);
         const DTOErr = await validate(newUser);

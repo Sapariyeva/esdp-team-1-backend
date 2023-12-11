@@ -13,7 +13,7 @@ export class AuthService {
     newUser.pass = dto.pass;
     newUser.role = dto.role;
     newUser.canCreateQR = dto.canCreateQR;
-    newUser.hashPass();
+    await newUser.hashPass();
     return await this.userRepo.createUser(newUser);
   };
 
@@ -28,6 +28,7 @@ export class AuthService {
       }
       return {
         ...user,
+        pass: undefined,
         accessToken: user.signAccessToken(),
       } as ISignInRes;
     }

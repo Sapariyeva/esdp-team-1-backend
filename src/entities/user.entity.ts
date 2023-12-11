@@ -38,7 +38,7 @@ export class Euser implements IUser {
   }
 
   signAccessToken(): string {
-    return jwt.sign(this.id, envConfig.secretPrivate, { expiresIn: '3600s' })
+    return jwt.sign({ sub: this.id }, envConfig.secretPrivate, { expiresIn: '3600s' })
   }
 }
 

@@ -15,8 +15,8 @@ export class MainSeeder implements Seeder {
 
     await userFactory.saveMany(fixturesAmount.user);
     await locksFactory.saveMany(fixturesAmount.locks)
-    await QRAccessFactory.saveMany(fixturesAmount.QRAccess)
-    await this.addNotifications()
+    await QRAccessFactory.saveMany(fixturesAmount.QRAccess);
+    await this.addNotifications();
   }
 
   private addNotifications = async () => {

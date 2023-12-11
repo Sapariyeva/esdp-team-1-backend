@@ -14,7 +14,7 @@ export const QRAccessFactory = setSeederFactory(EQRAccess, async (faker: Faker) 
   const userRepo = new UserRepository()
   const availableUserIds = (await userRepo.getAllUsers()).map((e) => { return e.id })
   const now = Date.now()
-  const valid_from = (now - 3600 * 1000 * getRandomInt(5))
+  const valid_from = (now - 60 * (100 * getRandomInt(5)))
   const valid_to = (valid_from + 3600 * 1000 * (getRandomInt(5) + 5))
   access.valid_from = valid_from
   access.valid_to = valid_to
@@ -44,7 +44,7 @@ const getRandomInt = (max: number) => {
   return Math.floor(Math.random() * max);
 }
 
-const getPhoneNumber = () => {
+export const getPhoneNumber = () => {
   let phone = '+7707'
   while (phone.length < 12) {
     phone = phone + getRandomInt(10).toString()
@@ -54,6 +54,7 @@ const getPhoneNumber = () => {
 
 const getLink = async (access: EQRAccess) => {
   const response = await qrAxios.post('generate', {
+    id: access.author,
     phone: access.phone,
     locks: access.locks,
     valid_from: access.valid_from,

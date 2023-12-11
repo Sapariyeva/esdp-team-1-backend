@@ -15,6 +15,5 @@ export class AuthRoute {
     private init() {
         this.router.post('/register', checkAuth, this.controller.register);
         this.router.post('/signin', this.controller.signIn)
-        this.router.post('/signout')
     }
 }

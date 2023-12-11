@@ -36,24 +36,4 @@ export class UserRepository extends Repository<Euser> {
       return;
     }
   }
-
-//   async authUser(data: RegisterUserDTO): Promise<IUser> {
-//     const extractedUser = await this.findOne({
-//       where: {
-//         username: data.username,
-//       },
-//     });
-//     if (extractedUser) {
-//       if (await this.comparePass(data.pass, extractedUser)) {
-//         this.createToken(extractedUser);
-//         //TODO CREATE AND SAVE JWT
-
-//         return this.clearPass(extractedUser);
-//       } else {
-//         throw new Error("wrong password");
-//       }
-//     } else {
-//       throw new Error("user not found");
-//     }
-//   }
 }

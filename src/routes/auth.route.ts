@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { AuthController } from '@/controllers/auth.controller';
 
 export class AuthRoute {
-    public path = '/';
+    public path = '/auth';
     public router = Router();
     private controller: AuthController;
 
@@ -12,6 +12,8 @@ export class AuthRoute {
     }
 
     private init() {
-        this.router.post('/users', this.controller.createUserEntry);
+        this.router.post('/register', this.controller.register);
+        this.router.post('/signin', this.controller.signIn)
+        this.router.post('/signout')
     }
 }

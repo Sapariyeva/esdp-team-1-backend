@@ -1,31 +1,54 @@
-import { userDTO } from '@/DTO/user.DTO';
+import { RegisterUserDTO, SignInUserDTO } from '@/DTO/user.DTO';
+import { Euser } from '@/entities/user.entity';
+import { ISignInRes, IUser } from '@/interfaces/IUser';
 import { UserRepository } from '@/repositories/user.repository';
 
 export class AuthService {
-  private userRepo: UserRepository = new UserRepository()
+  private userRepo: UserRepository = new UserRepository();
 
-  constructor() { }
-
-  createUserEntry = async (data: userDTO) => {
-    return await this.userRepo.createUser(data)
+  register = async (dto: RegisterUserDTO): Promise<IUser> => {
+    const newUser = new Euser();
+    newUser.phone = dto.phone;
+    newUser.username = dto.username;
+    newUser.pass = dto.pass;
+    newUser.role = dto.role;
+    newUser.canCreateQR = dto.canCreateQR;
+    newUser.hashPass();
+    return await this.userRepo.createUser(newUser);
   };
 
-  authUser = async (data:userDTO) => {
-    return await this.userRepo.authUser(data)
-  }
+  signIn = async (dto: SignInUserDTO): Promise<IUser> => {
+    const user = await this.userRepo.getUserByPhone(dto.phone);
+    if (!user) {
+      throw new Error("User with such phone number not found");
+    } else {
+      const passCheck = await user.comparePassword(dto.pass);
+      if (!passCheck) {
+        throw new Error("Invalid password");
+      }
+      return {
+        ...user,
+        accessToken: user.signAccessToken(),
+      } as ISignInRes;
+    }
+  };
 
-  getUserById = async (id:string) => {
-    return await this.userRepo.getUserById(id)
-  }
+  getUserById = async (id: string) => {
+    return await this.userRepo.getUserById(id);
+  };
 
-  validateToken = async (data:string) => {
-    const result = await this.userRepo.validateRequest(data)
-    return result
-  }
+  // authUser = async (dto: SignInUserDTO) => {
+  //   return await this.userRepo.authUser(data)
+  // }
 
-  logoutUser = async (data:string) => {
-    const result = await this.userRepo.logoutUser(data)
-    return result
-  }
+  // validateToken = async (data:string) => {
+  //   const result = await this.userRepo.validateRequest(data)
+  //   return result
+  // }
+
+  // logoutUser = async (data:string) => {
+  //   const result = await this.userRepo.logoutUser(data)
+  //   return result
+  // }
 }
 

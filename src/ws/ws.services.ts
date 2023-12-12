@@ -2,6 +2,7 @@ import { AuthService } from "@/services/auth.service"
 import { NotificationService } from "@/services/notifications.service"
 import { Socket } from "socket.io"
 import { app as runningApp } from "@/index";
+import { INotificationToSendWS } from "@/interfaces/INotification.interface";
 
 export class WSNotificationsService {
     private authService: AuthService
@@ -33,11 +34,12 @@ export class WSNotificationsService {
                 extractedNotifications=extractedNotifications.slice(0, this.maxToSendOnConnect)
             }
             const notificationsToSend = extractedNotifications.map((e) => {
-                return {
+                const respNotification:INotificationToSendWS = {
                     type: e.type,
                     triggeredAt: e.trigger_at,
                     message: e.message
                 }
+                return respNotification
             })
             io.emit('notifications', notificationsToSend)
             await this.notificationService.setSentStatus(extractedNotifications.map((e) => {return e.id}), true)

@@ -10,6 +10,10 @@ export class NotificationService {
     return await this.notificationsRepo.getNewNotifications(user, time)
   }
 
+  getNotificationsToSchedule = async () => {
+    return await this.notificationsRepo.getNotificationsToSchedule()
+  }
+
   setSentStatus = async (idArr: string[], status: boolean = false) => {
     if (idArr.some((e) => { return !isUUID(e) }) || (typeof status !== 'boolean')) {
       return

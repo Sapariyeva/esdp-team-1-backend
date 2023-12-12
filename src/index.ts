@@ -4,6 +4,7 @@ import { AuthRoute } from './routes/auth.route';
 import cors from 'cors';
 import { envConfig } from './env';
 import { LocksRoute } from './routes/locks.route';
+import schedule from 'node-schedule';
 
 
 export const app = new App({
@@ -14,6 +15,15 @@ export const app = new App({
 
 
 app.listen();
+
+
+const date = new Date(Date.now()+10*1000);
+
+const myJob = schedule.scheduleJob('JOBNAME', date, function(){
+  console.log('The world is going to end today.');
+});
+
+console.log(myJob.name)
 
 
 

@@ -4,6 +4,7 @@ import { EQRAccess } from '@/entities/QRAccess.entity';
 import { QRAccessDTO } from '@/DTO/QRAccess.DTO';
 import {IQRAccess} from '@/interfaces/IQRAccess.interface';
 import {NotificationsRepository} from './notifications.repository';
+import { FIRST_NOTIFICATION_TIME, SECOND_NOTIFICATION_TIME } from '@/constants';
 
 
 export class QRAccessRepository extends Repository<EQRAccess> {
@@ -38,9 +39,9 @@ export class QRAccessRepository extends Repository<EQRAccess> {
     await this.update(id, access)
         const updateAccess = {...access, id}
             await this.notificationRepo.saveNotification(
-              await this.notificationRepo.makeExpirationNotification(updateAccess, 60 * 60 * 1000))
+              await this.notificationRepo.makeExpirationNotification(updateAccess, FIRST_NOTIFICATION_TIME * 60 * 1000))
             await this.notificationRepo.saveNotification(
-              await this.notificationRepo.makeExpirationNotification(updateAccess, 15 * 60 * 1000))
+              await this.notificationRepo.makeExpirationNotification(updateAccess, SECOND_NOTIFICATION_TIME * 60 * 1000))
     }
 
     async delQRAccessById(id: string): Promise<Boolean> {

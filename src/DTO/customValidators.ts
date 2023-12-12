@@ -1,3 +1,4 @@
+import { MIN_ACCESS_INTERVAL } from '@/constants';
 import { QRAccessRepository } from '@/repositories/QRAccess.repository';
 import { LockRepository } from '@/repositories/locks.repository';
 import { UserRepository } from '@/repositories/user.repository';
@@ -81,7 +82,7 @@ export class IsValidToPassesConstaint implements ValidatorConstraintInterface {
     if (datetime instanceof Date) {
       const [valid_from] = args.constraints;
       const dateFromAsNumber = (args.object as any)[valid_from] as number;
-      return valid_to - dateFromAsNumber > 3600 * 1000 ? true : false;
+      return valid_to - dateFromAsNumber > MIN_ACCESS_INTERVAL * 60 * 1000 ? true : false;
     } else {
       return false;
     }

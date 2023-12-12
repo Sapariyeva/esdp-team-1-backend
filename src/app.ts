@@ -76,10 +76,9 @@ class App {
         this.notificationsService.notificationsOnConnect(io)
       })
     }
-    this.notificationsScheduler.scheduleNotifications()
-    scheduleJob('regularNotificationsScheduler', `*/${NOTIFICATIONS_SCHEDULING_INTERVAL} * * * *`, ()=>{
-      this.notificationsScheduler.scheduleNotifications()
-      console.log('NOTIFICATIONS HAVE BEEN SCHEDULED! ', NOTIFICATIONS_SCHEDULING_INTERVAL)
+    await this.notificationsScheduler.scheduleNotifications()
+    scheduleJob('regularNotificationsScheduler', `*/${NOTIFICATIONS_SCHEDULING_INTERVAL} * * * *`, async ()=>{
+      await this.notificationsScheduler.scheduleNotifications()
     })
   }
 }

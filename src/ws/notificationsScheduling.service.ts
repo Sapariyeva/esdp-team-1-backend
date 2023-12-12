@@ -30,20 +30,25 @@ export class WSNotificationsScheduler {
         })
     }
 
-    private sendNotification = (notification: ENotification) => {
-        const userSessions = runningApp.sessions.filter((s) => { return s.user === notification.author })
-        if (userSessions && userSessions.length > 0) {
-            const session = userSessions[0]
-            const notificationToSend: INotificationToSendWS = {
-                type: notification.type,
-                triggeredAt: notification.trigger_at,
-                message: notification.message
+    private sendNotification = async (notification: ENotification) => {
+        try {
+            const userSessions = runningApp.sessions.filter((s) => { return s.user === notification.author })
+            if (userSessions && userSessions.length > 0) {
+                const session = userSessions[0]
+                const notificationToSend: INotificationToSendWS = {
+                    type: notification.type,
+                    triggeredAt: notification.trigger_at,
+                    message: notification.message
+                }
+                session.socket.emit('notifications', [notificationToSend])
+                await this.notificationService.setSentStatus([notification.id], true)
             }
-            session.socket.emit('notifications', [notificationToSend])
-            this.notificationService.setSentStatus([notification.id], true)
+            else {
+                this.cancelJob(notification)
+            }
         }
-        else {
-            this.cancelJob(notification)
+        catch (e) {
+            console.log(e)
         }
     }
 

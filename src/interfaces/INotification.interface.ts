@@ -10,3 +10,9 @@ export interface INotification {
     sent:boolean;
 }
 
+export interface INotificationToSendWS {
+    type: ENotificationTypes,
+    triggeredAt: number,
+    message: string,
+}
+

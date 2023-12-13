@@ -1,4 +1,4 @@
-import { In, LessThan, Repository } from 'typeorm';
+import { In, LessThan, MoreThan, Repository } from 'typeorm';
 import { appDataSource } from '@/dbConfig'
 import { ENotification } from '@/entities/Notification.entity';
 import { QRAccessDTO } from '@/DTO/QRAccess.DTO';
@@ -25,6 +25,18 @@ export class NotificationsRepository extends Repository<ENotification> {
                 author: user,
                 sent: false,
                 trigger_at: LessThan(time)
+            },
+            order: {
+                trigger_at: 'ASC'
+            }
+        })
+    }
+
+    async getNotificationsToSchedule() {
+        return await this.find({
+            where: {
+                sent: false,
+                trigger_at: MoreThan(Date.now())
             },
             order: {
                 trigger_at: 'ASC'

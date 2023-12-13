@@ -7,16 +7,23 @@ import { appDataSource } from './dbConfig'
 import { Server } from 'socket.io';
 import { WSNotificationsService } from './ws/ws.services';
 import { ISession } from './interfaces/ISocketSession';
+import { INotifierJob } from './interfaces/INotifierJob';
+import { scheduleJob } from 'node-schedule';
+import { NOTIFICATIONS_SCHEDULING_INTERVAL } from './constants';
+import { WSNotificationsScheduler } from './ws/notificationsScheduling.service';
 
 
 class App {
   public app: Application;
   public port: number;
   public sessions: ISession[] = []
+  public notifierJobs: INotifierJob[]= []
   public ioServer: Server | undefined
   public notificationsService: WSNotificationsService
+  public notificationsScheduler: WSNotificationsScheduler
   constructor(appInit: AppInit) {
-    this.notificationsService = new WSNotificationsService()
+    this.notificationsService = new WSNotificationsService
+    this.notificationsScheduler = new WSNotificationsScheduler()
     this.app = express();
     this.port = appInit.port;
     this.initMiddlewares(appInit.middlewares);
@@ -69,6 +76,10 @@ class App {
         this.notificationsService.notificationsOnConnect(io)
       })
     }
+    await this.notificationsScheduler.scheduleNotifications()
+    scheduleJob('regularNotificationsScheduler', `*/${NOTIFICATIONS_SCHEDULING_INTERVAL} * * * *`, async ()=>{
+      await this.notificationsScheduler.scheduleNotifications()
+    })
   }
 }
 

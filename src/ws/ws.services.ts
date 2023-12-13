@@ -2,11 +2,15 @@ import { AuthService } from "@/services/auth.service"
 import { NotificationService } from "@/services/notifications.service"
 import { Socket } from "socket.io"
 import { app as runningApp } from "@/index";
+import { INotificationToSendWS } from "@/interfaces/INotification.interface";
+import * as jwt from 'jsonwebtoken';
+import { envConfig } from "@/env";
+import { ITokenPayload } from "@/interfaces/tokenPayload.interface";
 
 export class WSNotificationsService {
     private authService: AuthService
     private notificationService: NotificationService
-    private maxToSendOnConnect:number = 100
+    private maxToSendOnConnect: number = 100
 
     constructor() {
         this.authService = new AuthService()
@@ -20,8 +24,10 @@ export class WSNotificationsService {
     }
 
     public async notificationsOnConnect(io: Socket): Promise<string | undefined> {
-        const userUUID = io.handshake.auth.user ? io.handshake.auth.user : io.handshake.headers.user as string
-        const onDisconnect = this.onDisconnect
+        const token = io.handshake.auth.token ? io.handshake.auth.token : io.handshake.headers.token as string
+        const decoded = jwt.verify(token, envConfig.secretPrivate) as ITokenPayload;
+        const user = await this.authService.getUserById(decoded.sub);
+        const userUUID = user?.id
         if (!userUUID || !(await this.authService.getUserById(userUUID))) {
             io.send('Unauthrized socket connection')
             io.disconnect(true)
@@ -29,26 +35,33 @@ export class WSNotificationsService {
         }
         else {
             let extractedNotifications = await this.notificationService.getNewNotifications(userUUID, Date.now())
-            if (extractedNotifications.length>this.maxToSendOnConnect){
-                extractedNotifications=extractedNotifications.slice(0, this.maxToSendOnConnect)
+            if (extractedNotifications.length > this.maxToSendOnConnect) {
+                extractedNotifications = extractedNotifications.slice(0, this.maxToSendOnConnect)
             }
+            const scheduledNotifiactionsIds = runningApp.notifierJobs.map((j) => {
+                return j.notification.id
+            })
             const notificationsToSend = extractedNotifications.map((e) => {
-                return {
+                if (scheduledNotifiactionsIds.includes(e.id)) {
+                    runningApp.notificationsScheduler.cancelJob(e)
+                }
+                const respNotification: INotificationToSendWS = {
                     type: e.type,
                     triggeredAt: e.trigger_at,
                     message: e.message
                 }
+                return respNotification
             })
             io.emit('notifications', notificationsToSend)
-            await this.notificationService.setSentStatus(extractedNotifications.map((e) => {return e.id}), true)
+            await this.notificationService.setSentStatus(extractedNotifications.map((e) => { return e.id }), true)
             runningApp.sessions.push(
                 {
                     user: userUUID,
                     socket: io
                 }
             )
-            io.on('disconnect', function () {
-                onDisconnect(io)
+            io.on('disconnect', () => {
+                this.onDisconnect(io)
             })
             return userUUID
         }

@@ -10,6 +10,9 @@ import { LocksFactory } from './db/factories/locks.factory';
 import { QRAccessFactory } from './db/factories/QRAccess.factory';
 import { ELock } from './entities/lock.entity';
 import { ENotification } from './entities/Notification.entity';
+import { EOrganization } from './entities/organization.entity';
+import { EBuilding } from './entities/building.entity';
+import { ETenant } from './entities/tenant.entity';
 
 const dataSourceConfig: DataSourceOptions = {
   type: 'postgres',
@@ -24,7 +27,7 @@ const mockDataSourceConfig: DataSourceOptions & SeederOptions = {
   url: envConfig.dbUri,
   synchronize: true,
   logging: false,
-  entities: [Euser, EQRAccess, ELock, ENotification],
+  entities: [Euser, EQRAccess, ELock, ENotification, EOrganization, EBuilding, ETenant],
   seeds: [MainSeeder],
   factories: [UserFactory, LocksFactory, QRAccessFactory]
 }

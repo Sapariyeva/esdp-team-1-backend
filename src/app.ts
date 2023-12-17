@@ -6,8 +6,8 @@ import { errorHandler } from "./middleware/errorHandler.middleware";
 import { appDataSource } from './dbConfig'
 import { Server } from 'socket.io';
 import { WSNotificationsService } from './ws/ws.services';
-import { ISession } from './interfaces/ISocketSession';
-import { INotifierJob } from './interfaces/INotifierJob';
+import { ISession } from './interfaces/ISocketSession.interface';
+import { INotifierJob } from './interfaces/INotifierJob.interface';
 import { scheduleJob } from 'node-schedule';
 import { NOTIFICATIONS_SCHEDULING_INTERVAL } from './constants';
 import { WSNotificationsScheduler } from './ws/notificationsScheduling.service';

@@ -1,5 +1,5 @@
 import { QRAccessDTO, QRAccessReqDTO } from "@/DTO/QRAccess.DTO";
-import { RequestWithUser } from "@/interfaces/request.interface";
+import { RequestWithUser } from "@/interfaces/IRequest.interface";
 import { QRAccessService } from "@/services/QRAccess.service";
 import { instanceToPlain, plainToInstance } from "class-transformer";
 import { validate } from "class-validator";
@@ -12,7 +12,10 @@ export class QRController {
     this.qrService = new QRAccessService();
   }
 
-  createQREntry: RequestHandler = async (req: RequestWithUser, res): Promise<void> => {
+  createQREntry: RequestHandler = async (
+    req: RequestWithUser,
+    res
+  ): Promise<void> => {
     try {
       const user = req.user;
       if (!user) throw new Error("Unauthorized");
@@ -29,14 +32,14 @@ export class QRController {
         if (result) {
           res.send({
             success: true,
-            link: result.link
+            link: result.link,
           });
         }
       } else {
         res.status(400).send({
           success: false,
           error:
-            "Access ending time should be larger than access starting time"
+            "Access ending time should be larger than access starting time",
         });
       }
     } catch (e) {

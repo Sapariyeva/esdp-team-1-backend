@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { LocksController } from '@/controllers/lock.controller';
+import { checkAuth } from '@/middleware/auth.middleware';
 
 export class LocksRoute {
     public path = '/locks';
@@ -12,7 +13,7 @@ export class LocksRoute {
     }
 
     private init() {
-        this.router.post('/', this.controller.createLockEntry);
-        this.router.get('/', this.controller.getAllLocks)
+        this.router.post('/', checkAuth, this.controller.createLockEntry);
+        this.router.get('/',checkAuth, this.controller.getAllLocksQuery)
     }
 }

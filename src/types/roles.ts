@@ -1,6 +1,7 @@
 export enum ERole {
     user = 'user',
-    spaceAdmin = 'spaceAdmin',
-    orgAdmin = 'orgAdmin',
-    sa = 'sa'
+    umanuAdmin = 'umanuAdmin',
+    buildingAdmin = 'buildingAdmin',
+    organizationAdmin = 'organizationAdmin',
+    tenantAdmin = 'tenantAdmin',
 }

@@ -1,10 +1,13 @@
-import { Entity, Column, PrimaryGeneratedColumn, Unique } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, Unique, ManyToOne, JoinColumn } from 'typeorm';
 import { IUser } from '../interfaces/IUser';
 import { ERole } from '@/types/roles';
 import bcrypt from 'bcrypt';
 import { SALT_WORK_FACTOR } from '@/constants';
 import * as jwt from 'jsonwebtoken';
 import { envConfig } from '@/env';
+import { EBuilding } from './building.entity';
+import { EOrganization } from './organization.entity';
+import { ETenant } from './tenant.entity';
 
 @Entity('users')
 @Unique(['phone'])
@@ -27,6 +30,30 @@ export class Euser implements IUser {
 
   @Column({ nullable: false })
   canCreateQR!: boolean
+
+  @Column({ nullable: true})
+  buildingId?: string
+
+  @Column({ nullable: true})
+  organizationId?: string
+
+  @Column({ nullable: true})
+  tenantId?: string
+
+  @Column({ type: "varchar", nullable: true, length:100, array: true})
+  locks!: string[]
+
+  @ManyToOne(() => EBuilding)
+  @JoinColumn({ name: 'buildingId' })
+  building?: EBuilding;
+
+  @ManyToOne(() => EOrganization)
+  @JoinColumn({ name: 'organizationId' })
+  organization?: EOrganization;
+
+  @ManyToOne(() => ETenant)
+  @JoinColumn({ name: 'tenantId' })
+  tenant?: ETenant;
 
   async hashPass(): Promise<void> {
     const salt = await bcrypt.genSalt(SALT_WORK_FACTOR);

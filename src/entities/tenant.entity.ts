@@ -28,4 +28,7 @@ export class ETenant implements ITenant {
 
   @Column({ type: 'boolean', default: true })
   isActive!: boolean;
+
+  @Column({type: "varchar", length:100, array: true})
+  locks!: string[];
 }

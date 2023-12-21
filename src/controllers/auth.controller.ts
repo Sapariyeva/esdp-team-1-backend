@@ -17,6 +17,9 @@ export class AuthController {
     next
   ): Promise<void> => {
     try {
+      if (!req.body.locks){
+        req.body.locks = []
+      }
       const newUser = plainToInstance(RegisterUserDTO, req.body);
       const DTOErr = await validate(newUser);
       if (DTOErr.length > 0) throw DTOErr;

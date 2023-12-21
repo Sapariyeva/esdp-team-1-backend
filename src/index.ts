@@ -12,7 +12,6 @@ export const app = new App({
   controllers: [ new AuthRoute(), new QRRoute(), new LocksRoute],
 });
 
-
 app.listen();
 
 

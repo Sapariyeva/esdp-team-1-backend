@@ -1,9 +1,11 @@
 import { Faker } from "@faker-js/faker";
 import { setSeederFactory } from "typeorm-extension";
 import { Euser } from "@/entities/user.entity";
-import { nanoid } from "nanoid";
 import { ERole } from "@/types/roles";
-import { getPhoneNumber } from "./QRAccess.factory";
+import { getLocks, getPhoneNumber } from "./QRAccess.factory";
+import { OrganizationRepository } from "@/repositories/organizations.repository";
+import { BuildingsRepository } from "@/repositories/buildings.repository";
+import { TenantRepository } from "@/repositories/tenants.repository";
 
 export const UserFactory = setSeederFactory(Euser, async (faker: Faker) => {
   const user = new Euser();
@@ -12,18 +14,44 @@ export const UserFactory = setSeederFactory(Euser, async (faker: Faker) => {
   user.phone = getPhoneNumber();
   user.pass = 'password';
   user.hashPass();
-  user.role = Math.random() > 0.3 ? ERole.user : ERole.spaceAdmin
+  const rnd = Math.random()
+  if (rnd <= 0.1) {
+    user.role = ERole.umanuAdmin
+  }
+  else if (rnd > 0.1 && rnd <= 0.3) {
+    user.role = ERole.organizationAdmin
+    const orgRepo = new OrganizationRepository()
+    const availableOrgIds = (await orgRepo.getAllOrganizations()).map(o => { return o.id })
+    user.organizationId = faker.helpers.arrayElement(availableOrgIds)
+  }
+  else if (rnd > 0.3 && rnd <= 0.5) {
+    user.role = ERole.buildingAdmin
+    const buildingsRepo = new BuildingsRepository()
+    const buildingIds = (await buildingsRepo.getAllBuildings()).map(b => { return b.id })
+    user.buildingId = faker.helpers.arrayElement(buildingIds)
+  }
+  else if (rnd > 0.5 && rnd <= 0.8) {
+    user.role = ERole.tenantAdmin
+    const tenantRepo = new TenantRepository()
+    const availableTenants = (await tenantRepo.getAllTenants()).map(t => { return t.id })
+    user.tenantId = faker.helpers.arrayElement(availableTenants)
+  }
+  else {
+    user.role = ERole.user
+    user.locks = await getLocks({}, 5)
+  }
   user.canCreateQR = Math.random() > 0.5 ? true : false
+  await user.hashPass()
   return user;
 })
 
-export const fakeIsLoggedIn = () => {
-  const isLogged = (Math.random() > 0.5)
-  if (isLogged) {
-    return nanoid(10)
-  }
-  else {
-    return
-  }
-}
+// export const fakeIsLoggedIn = () => {
+//   const isLogged = (Math.random() > 0.5)
+//   if (isLogged) {
+//     return nanoid(10)
+//   }
+//   else {
+//     return
+//   }
+// }
 

@@ -104,8 +104,14 @@ Requested Fields:
 
 * **username** (string): a login name of a user.
 * **pass** (string): user's password.
-* **role** ("admin" | "user"): sets level of user privileges (not used, as for now)
+* **role** ('user' | 'umanuAdmin' | 'buildingAdmin' | 'organizationAdmin' |'tenantAdmin'): sets level of user privileges
 * **canCreateQR** (integer): denotes if user is allowed to create guest access entries (not used, as for now)
+* **tenantId?** (string):  must be provided if user role is tenantAdmin
+* **buildingId?** (string): must be provided if user role is buildingAdmin,
+* **organizationId?** (string): must be provided if user role is organizationAdmin
+* **locks** (string[]): must be provided if user role is user // list of locks uuids allowed for the user
+
+**!IMPORTANT**: Do not provide data to the optional fields that are not required for the role, the server will reject such requests
 
 Example Response on Success:
 
@@ -125,13 +131,15 @@ Example Response on Failure:
 ```
 
 
-# Get all locks
+# Get locks
 
 Method: get
 
 URL: /locks
 
-Endpoint allows you to retrieve the list of locks
+Endpoint allows you to retrieve the list of locks. JWT should be provided in Bearer token for the request.
+Default request will return a full list of locks available to the user.
+Additional query parameters are supported to narrow the list of locks in response
 
 Example Response on Success:
 
@@ -154,6 +162,13 @@ Response on Failure:
   "error": "Details on the request failure"
 }
 ```
+
+Query Parameters (you can combine multiple query-parameters):
+* **?buildingId=**  Filters locks by a building 
+* **?organizationId=** Filters locks by an organization
+* **?locks=** list of locks identifiers 
+
+**!IMPORTANT**: If user has no access to the entity specified in query parameters a request will be rejected with an error
 
 # Registering new user
 

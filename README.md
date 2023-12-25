@@ -10,7 +10,9 @@ npm i
 * **DB_STRING** - Postgres connection string // in form of postgres://username:userpass@hostname:port/dbName
 * **QR_URL** - base URL for QR-creation service
 * **SECRET_HTTP** - secret key for outbound requests // not used yet
-* **SECRET_PRIVATE** - secret key for encription // not used yet
+* **SECRET_PRIVATE** - secret key for JWT encryption
+* **ACCESS_TOKEN_TTL** - access token time-to-live in seconds
+* **REFRESH_TOKEN_TTL** - refresh token time-to-live in seconds
 
 .env file should be placed in root directory of the project
 
@@ -75,9 +77,6 @@ Example Response on Failure:
 * **success** (boolean): Indicates the success of the operation. 
 * **link** (string): The link to the web page containing the generated QR code. Users can use this link to get the QR code.
 * **error** (string): error string contains details on the request failure
-
-
-
 
 
 # Registering new user

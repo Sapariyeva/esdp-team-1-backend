@@ -9,9 +9,8 @@ import { EBuilding } from './building.entity';
 import { EOrganization } from './organization.entity';
 import { ETenant } from './tenant.entity';
 
-@Entity('users')
-@Unique(['phone'])
-
+@Entity("users")
+@Unique(["phone"])
 export class Euser implements IUser {
   @PrimaryGeneratedColumn("uuid")
   id!: string;
@@ -25,34 +24,34 @@ export class Euser implements IUser {
   @Column({ nullable: true })
   pass!: string;
 
-  @Column({ nullable: false, type: 'text' })
-  role!: ERole
+  @Column({ nullable: false, type: "text" })
+  role!: ERole;
 
   @Column({ nullable: false })
-  canCreateQR!: boolean
+  canCreateQR!: boolean;
 
-  @Column({ nullable: true})
-  buildingId?: string
+  @Column({ nullable: true })
+  buildingId?: string;
 
-  @Column({ nullable: true})
-  organizationId?: string
+  @Column({ nullable: true })
+  organizationId?: string;
 
-  @Column({ nullable: true})
-  tenantId?: string
+  @Column({ nullable: true })
+  tenantId?: string;
 
-  @Column({ type: "varchar", nullable: true, length:100, array: true})
-  locks!: string[]
+  @Column({ type: "varchar", nullable: true, length: 100, array: true })
+  locks!: string[];
 
   @ManyToOne(() => EBuilding)
-  @JoinColumn({ name: 'buildingId' })
+  @JoinColumn({ name: "buildingId" })
   building?: EBuilding;
 
   @ManyToOne(() => EOrganization)
-  @JoinColumn({ name: 'organizationId' })
+  @JoinColumn({ name: "organizationId" })
   organization?: EOrganization;
 
   @ManyToOne(() => ETenant)
-  @JoinColumn({ name: 'tenantId' })
+  @JoinColumn({ name: "tenantId" })
   tenant?: ETenant;
 
   async hashPass(): Promise<void> {
@@ -65,7 +64,15 @@ export class Euser implements IUser {
   }
 
   signAccessToken(): string {
-    return jwt.sign({ sub: this.id }, envConfig.secretPrivate, { expiresIn: '3600s' })
+    return jwt.sign({ sub: this.id }, envConfig.secretPrivate, {
+      expiresIn: `${envConfig.accessTokenTTL}s`,
+    });
+  }
+
+  signRefreshToken(): string {
+    return jwt.sign({ sub: this.id }, envConfig.secretPrivate, {
+      expiresIn: `${envConfig.refreshTOkenTTL}s`,
+    });
   }
 }
 

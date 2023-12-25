@@ -15,4 +15,9 @@ export interface IUser {
 
 export interface ISignInRes extends IUser {
   accessToken: string;
+  refreshToken: string;
+}
+
+export interface IRefreshRes {
+  accessToken: string;
 }

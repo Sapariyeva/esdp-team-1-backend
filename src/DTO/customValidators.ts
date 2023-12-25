@@ -1,5 +1,6 @@
 import { MIN_ACCESS_INTERVAL } from '@/constants';
 import { QRAccessRepository } from '@/repositories/QRAccess.repository';
+import { BuildingRepository } from '@/repositories/building.repository';
 import { LockRepository } from '@/repositories/locks.repository';
 import { UserRepository } from '@/repositories/user.repository';
 import { ENotificationTypes } from '@/types/notifocations';
@@ -64,31 +65,45 @@ export class IsNotificationTypeValidConstraint implements ValidatorConstraintInt
 
 @ValidatorConstraint({ async: true })
 export class IsValidFromPassesConstaint implements ValidatorConstraintInterface {
-    async validate(valid_from: number, args: ValidationArguments) { 
-      const datetime = new Date(valid_from);
-      if (datetime instanceof Date) {
-        const now = new Date().getTime();
-        return valid_from >= now - 60 * 1000 ? true : false;
-      } else {
-        return false;
-      }
+    async validate(valid_from: number, args: ValidationArguments) {
+        const datetime = new Date(valid_from);
+        if (datetime instanceof Date) {
+            const now = new Date().getTime();
+            return valid_from >= now - 60 * 1000 ? true : false;
+        } else {
+            return false;
+        }
     }
 }
 
 @ValidatorConstraint({ async: true })
 export class IsValidToPassesConstaint implements ValidatorConstraintInterface {
-  async validate(valid_to: number, args: ValidationArguments) {
-    const datetime = new Date(valid_to);
-    if (datetime instanceof Date) {
-      const [valid_from] = args.constraints;
-      const dateFromAsNumber = (args.object as any)[valid_from] as number;
-      return valid_to - dateFromAsNumber > MIN_ACCESS_INTERVAL * 60 * 1000 ? true : false;
-    } else {
-      return false;
+    async validate(valid_to: number, args: ValidationArguments) {
+        const datetime = new Date(valid_to);
+        if (datetime instanceof Date) {
+            const [valid_from] = args.constraints;
+            const dateFromAsNumber = (args.object as any)[valid_from] as number;
+            return valid_to - dateFromAsNumber > MIN_ACCESS_INTERVAL * 60 * 1000 ? true : false;
+        } else {
+            return false;
+        }
     }
-  }
 }
 
+@ValidatorConstraint({ async: true })
+export class IsBuildingNameUniqueConstraint implements ValidatorConstraintInterface {
+    async validate(name: string, args: ValidationArguments) {
+        const organizationId = (args.object as { organizationId: string }).organizationId;
+        const buildingRepo = new BuildingRepository();
+        const existingBuilding = await buildingRepo.findOne({
+            where: {
+                name,
+                organizationId,
+            },
+        });
+        return !existingBuilding;
+    }
+}
 
 
 
@@ -154,24 +169,36 @@ export function IsNotificationTypeValid(validationOptions?: ValidationOptions) {
 
 export function IsValidFromPasses(validationOptions?: ValidationOptions) {
     return function (object: Object, propertyName: string) {
-      registerDecorator({
-        target: object.constructor,
-        propertyName: propertyName,
-        options: validationOptions,
-        constraints: [],
-        validator: IsValidFromPassesConstaint
-      });
+        registerDecorator({
+            target: object.constructor,
+            propertyName: propertyName,
+            options: validationOptions,
+            constraints: [],
+            validator: IsValidFromPassesConstaint
+        });
     };
-  }
+}
 
-  export function IsValidToPasses(property: string, validationOptions?: ValidationOptions) {
+export function IsValidToPasses(property: string, validationOptions?: ValidationOptions) {
     return function (object: Object, propertyName: string) {
-      registerDecorator({
-        target: object.constructor,
-        propertyName: propertyName,
-        options: validationOptions,
-        constraints: [property],
-        validator: IsValidToPassesConstaint,
-      });
+        registerDecorator({
+            target: object.constructor,
+            propertyName: propertyName,
+            options: validationOptions,
+            constraints: [property],
+            validator: IsValidToPassesConstaint,
+        });
     };
-  }
+}
+
+export function IsBuildingNameUnique(validationOptions?: ValidationOptions) {
+    return function (object: Object, propertyName: string) {
+        registerDecorator({
+            target: object.constructor,
+            propertyName: propertyName,
+            options: validationOptions,
+            constraints: [],
+            validator: IsBuildingNameUniqueConstraint,
+        });
+    };
+}

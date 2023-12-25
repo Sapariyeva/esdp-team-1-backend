@@ -1,34 +1,35 @@
 import { TenantDTO } from "@/DTO/tenant.DTO";
 import { TenantService } from "@/services/tenant.service";
-import { DTOerrExtractor } from "@/utils/DTOErrorExtractor";
 import { plainToInstance } from "class-transformer";
 import { validate } from "class-validator";
 import { RequestHandler } from "express";
 
 export class TenantController {
-    private service: TenantService;
-    constructor() {
-        this.service = new TenantService();
-    }
+    private service: TenantService = new TenantService();;
+    constructor() { }
 
-    createTenantEntry: RequestHandler = async (req, res): Promise<void> => {
-        const newTenant = plainToInstance(TenantDTO, req.body)
-        const DTOerr = await validate(newTenant)
-        if (DTOerr && DTOerr.length > 0) {
-            res.status(400).send({
-                success: false,
-                error: DTOerrExtractor(DTOerr)
-            })
-        } else {
+    createTenantEntry: RequestHandler = async (req, res, next): Promise<void> => {
+        try {
+            const newTenant = plainToInstance(TenantDTO, req.body)
+            const DTOerr = await validate(newTenant)
+            if (DTOerr.length > 0) throw DTOerr;
             const result = await this.service.createTenantEntry(newTenant)
-            res.send({
-                success: true,
-                tenant: result
-            })
+            if (result) {
+                res.status(201).send({
+                    success: true,
+                });
+            } else {
+                res.status(500).send({
+                    success: false,
+                    error: "unknown internal server error",
+                });
+            }
+        } catch (err) {
+            next(err);
         }
-    }
+    };
 
-    getTenantById: RequestHandler = async (req, res): Promise<void> => {
+    getTenantById: RequestHandler = async (req, res, next): Promise<void> => {
         const { id } = req.params;
         try {
             const tenant = await this.service.getTenantById(id);
@@ -43,26 +44,40 @@ export class TenantController {
                     error: 'Tenant not found',
                 });
             }
-        } catch (error) {
-            console.error(error);
-            res.status(500).send({
-                success: false,
-                error: 'Internal Server Error',
-            });
+        } catch (err) {
+            next(err);
         }
     };
 
-    getAllTenants: RequestHandler = async (req, res) => {
+    getAllTenants: RequestHandler = async (req, res, next) => {
         try {
             const tenants = await this.service.getAllTenants()
-
             res.status(200).send({
                 success: true,
                 payload: tenants
             })
-        } catch (e) {
-            console.log(e)
+        } catch (err) {
+            next(err);
         }
-
     }
+
+    updateTenant: RequestHandler = async (req, res, next): Promise<void> => {
+        const { id } = req.params;
+        const updatedData = plainToInstance(TenantDTO, req.body);
+        try {
+            const result = await this.service.updateTenant(id, updatedData);
+            if (result) {
+                res.status(201).send({
+                    success: true,
+                });
+            } else {
+                res.status(500).send({
+                    success: false,
+                    error: "unknown internal server error",
+                });
+            }
+        } catch (err) {
+            next(err);
+        }
+    };
 }

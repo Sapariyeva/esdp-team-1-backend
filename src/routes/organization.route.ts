@@ -15,5 +15,6 @@ export class OrganizationRoute {
         this.router.post('/', this.controller.createOrganizationEntry);
         this.router.get('/:id', this.controller.getOrganizationById);
         this.router.get('/', this.controller.getAllOrganizations);
+        this.router.put('/:id', this.controller.updateOrganization);
     }
 }

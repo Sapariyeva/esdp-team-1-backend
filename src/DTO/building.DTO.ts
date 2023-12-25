@@ -1,5 +1,6 @@
 import { Expose } from "class-transformer";
 import { IsNotEmpty, IsString, IsUUID } from "class-validator";
+import { IsBuildingNameUnique } from "./customValidators";
 
 export class BuildingDTO {
   @IsNotEmpty()
@@ -11,6 +12,7 @@ export class BuildingDTO {
   @IsNotEmpty()
   @IsString()
   @Expose()
+  @IsBuildingNameUnique({ message: 'Building name must be unique within the organization.' })
   //add custom validator for checking is name unique for the organization
   name!: string;
 

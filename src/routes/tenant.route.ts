@@ -15,5 +15,6 @@ export class TenantRoute {
         this.router.post('/', this.controller.createTenantEntry);
         this.router.get('/:id', this.controller.getTenantById);
         this.router.get('/', this.controller.getAllTenants);
+        this.router.put('/:id', this.controller.updateTenant);
     }
 }

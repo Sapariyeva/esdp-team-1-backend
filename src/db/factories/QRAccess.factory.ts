@@ -5,8 +5,9 @@ import { UserRepository } from "@/repositories/user.repository";
 import { LockRepository } from "@/repositories/locks.repository";
 import axios from "axios";
 import { envConfig } from '@/env';
+import { lockFindOptionsDTO } from "@/DTO/lock.DTO";
 
-const maxLocks = 5
+const maxLocksConst = 5
 const qrAxios = axios.create({ baseURL: envConfig.qrBaseUrl })
 
 export const QRAccessFactory = setSeederFactory(EQRAccess, async (faker: Faker) => {
@@ -25,9 +26,15 @@ export const QRAccessFactory = setSeederFactory(EQRAccess, async (faker: Faker) 
   return access;
 })
 
-const getLocks = async () => {
+export const getLocks = async (options?: lockFindOptionsDTO, maxLocks=maxLocksConst) => {
   const locksRepo = new LockRepository()
-  let availableLocks = (await locksRepo.getAllLocks()).map((e) => { return e.id })
+  let availableLocks: string[] = []
+  if (!options) {
+    availableLocks = (await locksRepo.getAllLocks()).map((e) => { return e.id })
+  }
+  else{
+    availableLocks = (await locksRepo.getAllLocksQuery(options)).map((e) => { return e.id })
+  }
   const numLocksIncluded = parseInt((Math.random() * maxLocks).toString()) + 1
   const locks: string[] = []
   while ((locks.length < numLocksIncluded) && (availableLocks.length > 0)) {

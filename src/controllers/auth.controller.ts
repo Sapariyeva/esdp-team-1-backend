@@ -1,5 +1,7 @@
 import { RegisterUserDTO, SignInUserDTO } from "@/DTO/user.DTO";
 import { RequestWithUser } from "@/interfaces/IRequest.interface";
+import { IRefreshRes } from "@/interfaces/IUser";
+import { ErrorWithStatus } from "@/interfaces/customErrors";
 import { AuthService } from "@/services/auth.service";
 import { plainToInstance } from "class-transformer";
 import { validate } from "class-validator";
@@ -17,6 +19,9 @@ export class AuthController {
     next
   ): Promise<void> => {
     try {
+      if (!req.body.locks){
+        req.body.locks = []
+      }
       const newUser = plainToInstance(RegisterUserDTO, req.body);
       const DTOErr = await validate(newUser);
       if (DTOErr.length > 0) throw DTOErr;
@@ -50,6 +55,24 @@ export class AuthController {
       next(err);
     }
   };
+
+  signRefreshToken: RequestHandler = async (req: RequestWithUser, res, next) => {
+    try {
+      const user = req.user;
+      if (!user) throw new Error("Unauthorized");
+      const result: IRefreshRes = this.service.refreshAccessToken(user);
+      if (result) {
+        res.status(200).send({
+          success: true,
+          ...result
+        })
+      } else {
+        throw new ErrorWithStatus('Error creating access token', 401);
+      }
+    } catch (err) {
+      next(err);
+    }
+  }
 
   // setAllowedCreateQr: RequestHandler = async (req, res): Promise<void> => {
   // }

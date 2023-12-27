@@ -6,15 +6,24 @@ import { Seeder, SeederFactoryManager } from 'typeorm-extension';
 import { fixturesAmount } from '../init.seeds';
 import { NotificationsRepository } from '@/repositories/notifications.repository';
 import { QRAccessRepository } from '@/repositories/QRAccess.repository';
+import { EOrganization } from '@/entities/organization.entity';
+import { EBuilding } from '@/entities/building.entity';
+import { ETenant } from '@/entities/tenant.entity';
 
 export class MainSeeder implements Seeder {
   public async run(dataSource: DataSource, factoryManager: SeederFactoryManager): Promise<void> {
+    const organizationFactory = factoryManager.get(EOrganization)
+    const buildingFactory = factoryManager.get(EBuilding)
+    const tenantFactory = factoryManager.get(ETenant)
     const userFactory = factoryManager.get(Euser);
     const locksFactory = factoryManager.get(ELock);
     const QRAccessFactory = factoryManager.get(EQRAccess);
 
+    await organizationFactory.saveMany(fixturesAmount.organizations);
+    await buildingFactory.saveMany(fixturesAmount.buildings);
+    await locksFactory.saveMany(fixturesAmount.locks);
+    await tenantFactory.saveMany(fixturesAmount.tenants);
     await userFactory.saveMany(fixturesAmount.user);
-    await locksFactory.saveMany(fixturesAmount.locks)
     await QRAccessFactory.saveMany(fixturesAmount.QRAccess);
     await this.addNotifications();
   }

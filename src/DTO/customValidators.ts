@@ -21,6 +21,7 @@ export class IsUserExistConstraint implements ValidatorConstraintInterface {
     }
 }
 
+
 @ValidatorConstraint({ async: true })
 export class IsRoleValidConstraint implements ValidatorConstraintInterface {
     async validate(role: any, args: ValidationArguments) {

@@ -1,7 +1,9 @@
 import { RegisterUserDTO, SignInUserDTO } from '@/DTO/user.DTO';
 import { Euser } from '@/entities/user.entity';
-import { ISignInRes, IUser } from '@/interfaces/IUser';
+import { IRefreshRes, ISignInRes, IUser } from '@/interfaces/IUser';
 import { UserRepository } from '@/repositories/user.repository';
+import * as jwt from 'jsonwebtoken';
+import { envConfig } from '@/env';
 
 export class AuthService {
   private userRepo: UserRepository = new UserRepository();
@@ -30,6 +32,7 @@ export class AuthService {
         ...user,
         pass: undefined,
         accessToken: user.signAccessToken(),
+        refreshToken: user.signRefreshToken()
       } as ISignInRes;
     }
   };
@@ -37,6 +40,13 @@ export class AuthService {
   getUserById = async (id: string) => {
     return await this.userRepo.getUserById(id);
   };
+
+  refreshAccessToken = (user: IUser): IRefreshRes => {
+    const accessToken = jwt.sign({ sub: user.id }, envConfig.secretPrivate, {
+      expiresIn: `${envConfig.accessTokenTTL}s`,
+    });
+    return { accessToken };
+  } 
 
   // authUser = async (dto: SignInUserDTO) => {
   //   return await this.userRepo.authUser(data)

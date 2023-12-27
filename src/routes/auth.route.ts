@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { AuthController } from '@/controllers/auth.controller';
-import { checkAuth } from '@/middleware/auth.middleware';
+import { checkAuth, checkRefresh } from '@/middleware/auth.middleware';
 
 export class AuthRoute {
     public path = '/auth';
@@ -14,6 +14,7 @@ export class AuthRoute {
 
     private init() {
         this.router.post('/register', checkAuth, this.controller.register);
-        this.router.post('/signin', this.controller.signIn)
+        this.router.post('/signin', this.controller.signIn);
+        this.router.get('/refresh', checkRefresh, this.controller.signRefreshToken);
     }
 }

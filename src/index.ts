@@ -15,7 +15,6 @@ export const app = new App({
   controllers: [ new AuthRoute(), new QRRoute(), new LocksRoute, new OrganizationRoute (), new BuildingRoute (), new TenantRoute ()],
 });
 
-
 app.listen();
 
 

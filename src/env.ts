@@ -9,6 +9,8 @@ interface IEnv {
   secretHTTP: string;
   secretPrivate: string;
   qrBaseUrl: string;
+  accessTokenTTL: number;
+  refreshTOkenTTL: number;
 };
 
 export const envConfig: IEnv = {
@@ -17,4 +19,6 @@ export const envConfig: IEnv = {
   secretHTTP: process.env.SECRET_HTTP!,
   secretPrivate: process.env.SECRET_PRIVATE!,
   qrBaseUrl: process.env.QR_URL!,
+  accessTokenTTL: parseInt(process.env.ACCESS_TOKEN_TTL!),
+  refreshTOkenTTL: parseInt(process.env.REFRESH_TOKEN_TTL!)
 };

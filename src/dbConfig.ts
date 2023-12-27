@@ -13,6 +13,9 @@ import { ENotification } from './entities/Notification.entity';
 import { EOrganization } from './entities/organization.entity';
 import { EBuilding } from './entities/building.entity';
 import { ETenant } from './entities/tenant.entity';
+import { TenantsFactory } from './db/factories/Tenants.factory';
+import { BuildingsFactory } from './db/factories/Buildings.factory';
+import { OrganizationsFactory } from './db/factories/organizations.factory';
 
 const dataSourceConfig: DataSourceOptions = {
   type: 'postgres',
@@ -29,7 +32,7 @@ const mockDataSourceConfig: DataSourceOptions & SeederOptions = {
   logging: false,
   entities: [Euser, EQRAccess, ELock, ENotification, EOrganization, EBuilding, ETenant],
   seeds: [MainSeeder],
-  factories: [UserFactory, LocksFactory, QRAccessFactory]
+  factories: [OrganizationsFactory, BuildingsFactory, TenantsFactory, UserFactory, LocksFactory, QRAccessFactory]
 }
 
 export const appDataSource = pathParse(process.argv[1]).name == 'init.seeds' ? new DataSource(mockDataSourceConfig) : new DataSource(dataSourceConfig)

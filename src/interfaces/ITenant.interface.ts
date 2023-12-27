@@ -9,4 +9,5 @@ export interface ITenant {
   phone?: string;
   email?: string;
   isActive: boolean;
+  locks: string[]
 }

@@ -8,9 +8,16 @@ export class ELock implements ILock {
   @PrimaryGeneratedColumn("uuid")
   id!: string;
 
-  @Column({ nullable: true })
-  name?: string;
+  @Column({ nullable: false, unique:true })
+  name!: string;
+
+  @Column({ nullable: false })
+  buildingId!: string;
+
+  @Column({ nullable: false })
+  isActive!: boolean;
 
   @Column({ nullable: false })
   type!: EBarrierType;
+  
 }

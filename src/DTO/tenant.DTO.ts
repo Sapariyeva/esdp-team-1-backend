@@ -3,6 +3,10 @@ import { IsArray, IsEmail, IsNotEmpty, IsOptional, IsPhoneNumber, IsString, IsUU
 import { IsLockExist } from "./customValidators";
 
 export class TenantDTO {
+  @IsOptional()
+  @Expose()
+  id!: string;
+
   //add custom validator for checking if building exists
   @IsNotEmpty()
   @IsUUID()

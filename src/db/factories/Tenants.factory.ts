@@ -1,12 +1,12 @@
 import { Faker } from "@faker-js/faker";
 import { setSeederFactory } from "typeorm-extension";
 import { ETenant } from "@/entities/tenant.entity";
-import { BuildingsRepository } from "@/repositories/buildings.repository";
+import { BuildingRepository } from "@/repositories/building.repository";
 import { getLocks, getPhoneNumber } from "./QRAccess.factory";
 import { lockFindOptionsDTO } from "@/DTO/lock.DTO";
 export const TenantsFactory = setSeederFactory(ETenant, async (faker: Faker) => {
   const tenant = new ETenant();
-  const buildingsRepo = new BuildingsRepository()
+  const buildingsRepo = new BuildingRepository()
   const availableBuildings = (await buildingsRepo.getAllBuildings()).map(b => { return b.id })
   tenant.buildingId = faker.helpers.arrayElement(availableBuildings)
   tenant.email = faker.internet.email()

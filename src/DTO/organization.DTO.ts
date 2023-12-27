@@ -2,6 +2,10 @@ import { Expose } from "class-transformer";
 import { IsEmail, IsNotEmpty, IsOptional, IsPhoneNumber, IsString } from "class-validator";
 
 export class OrganizationDTO {
+  @IsOptional()
+  @Expose()
+  id!: string;
+
   @IsNotEmpty()
   @IsString()
   @Expose()

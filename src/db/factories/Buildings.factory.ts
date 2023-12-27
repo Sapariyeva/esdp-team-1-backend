@@ -1,7 +1,7 @@
 import { Faker } from "@faker-js/faker";
 import { setSeederFactory } from "typeorm-extension";
 import { nanoid } from "nanoid";
-import { OrganizationRepository } from "@/repositories/organizations.repository";
+import { OrganizationRepository } from "@/repositories/organization.repository";
 import { EBuilding } from "@/entities/building.entity";
 export const BuildingsFactory = setSeederFactory(EBuilding, async (faker: Faker) => {
   const building = new EBuilding();

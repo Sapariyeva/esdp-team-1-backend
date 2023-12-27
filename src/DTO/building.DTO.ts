@@ -1,8 +1,12 @@
 import { Expose } from "class-transformer";
-import { IsNotEmpty, IsString, IsUUID } from "class-validator";
+import { IsNotEmpty, IsOptional, IsString, IsUUID } from "class-validator";
 import { IsBuildingNameUnique } from "./customValidators";
 
 export class BuildingDTO {
+  @IsOptional()
+  @Expose()
+  id!: string;
+
   @IsNotEmpty()
   @IsUUID()
   @Expose()

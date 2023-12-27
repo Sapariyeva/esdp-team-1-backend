@@ -90,7 +90,6 @@ export class IsValidToPassesConstaint implements ValidatorConstraintInterface {
     }
 }
 
-// New Validator
 @ValidatorConstraint({ async: true })
 export class IsBuildingNameUniqueConstraint implements ValidatorConstraintInterface {
     async validate(name: string, args: ValidationArguments) {

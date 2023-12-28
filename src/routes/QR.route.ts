@@ -14,6 +14,6 @@ export class QRRoute {
 
     private init() {
         this.router.post('/', checkAuth, this.controller.createQREntry);
-        this.router.get('/', this.controller.getQREntries);
+        this.router.get('/', checkAuth, this.controller.getQREntries);
     }
 }

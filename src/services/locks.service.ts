@@ -2,7 +2,7 @@ import { lockDTO, lockFindOptionsDTO } from "@/DTO/lock.DTO";
 import { IUser } from "@/interfaces/IUser";
 import { ErrorWithStatus } from "@/interfaces/customErrors";
 import { LockRepository } from "@/repositories/locks.repository";
-import { TenantRepository } from "@/repositories/tenants.repository";
+import { TenantRepository } from "@/repositories/tenant.repository";
 import { ERole } from "@/types/roles";
 
 export class LockService {

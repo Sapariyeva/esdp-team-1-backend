@@ -1,9 +1,9 @@
 import { MIN_ACCESS_INTERVAL } from '@/constants';
 import { QRAccessRepository } from '@/repositories/QRAccess.repository';
-import { BuildingsRepository } from '@/repositories/buildings.repository';
+import { BuildingRepository } from '@/repositories/building.repository';
 import { LockRepository } from '@/repositories/locks.repository';
-import { OrganizationRepository } from '@/repositories/organizations.repository';
-import { TenantRepository } from '@/repositories/tenants.repository';
+import { OrganizationRepository } from '@/repositories/organization.repository';
+import { TenantRepository } from '@/repositories/tenant.repository';
 import { UserRepository } from '@/repositories/user.repository';
 import { EBarrierType } from '@/types/barriers';
 import { ENotificationTypes } from '@/types/notifocations';
@@ -58,7 +58,7 @@ export class IsLockExistConstraint implements ValidatorConstraintInterface {
 @ValidatorConstraint({ async: true })
 export class IsBuildingExistConstraint implements ValidatorConstraintInterface {
     async validate(buildingId: any, args: ValidationArguments) {
-        const buildingsRepo = new BuildingsRepository()
+        const buildingsRepo = new BuildingRepository()
         return buildingsRepo.getBuildingById(buildingId).then(building => {
             if (building) return true;
             return false;
@@ -145,7 +145,7 @@ export class ShouldHaveBuildingIdConstraint implements ValidatorConstraintInterf
             return true
         }
         else{
-            const buildingsRepo = new BuildingsRepository()
+            const buildingsRepo = new BuildingRepository()
             return buildingsRepo.getBuildingById(buildingId).then(building => {
                 if (building) return true;
                 return false;
@@ -202,6 +202,20 @@ export class ShouldHaveTenantIdConstraint implements ValidatorConstraintInterfac
   }
 }
 
+@ValidatorConstraint({ async: true })
+export class IsBuildingNameUniqueConstraint implements ValidatorConstraintInterface {
+    async validate(name: string, args: ValidationArguments) {
+        const organizationId = (args.object as { organizationId: string }).organizationId;
+        const buildingRepo = new BuildingRepository();
+        const existingBuilding = await buildingRepo.findOne({
+            where: {
+                name,
+                organizationId,
+            },
+        });
+        return !existingBuilding;
+    }
+}
 
 @ValidatorConstraint({ async: true })
 export class IsLockNameUniqueConstraint implements ValidatorConstraintInterface {
@@ -393,4 +407,16 @@ export function IsValidFromPasses(validationOptions?: ValidationOptions) {
         validator: IsLockNameUniqueConstraint
       });
     };
-  }
+}
+
+export function IsBuildingNameUnique(validationOptions?: ValidationOptions) {
+    return function (object: Object, propertyName: string) {
+        registerDecorator({
+            target: object.constructor,
+            propertyName: propertyName,
+            options: validationOptions,
+            constraints: [],
+            validator: IsBuildingNameUniqueConstraint,
+        });
+    };
+}

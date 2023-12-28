@@ -3,7 +3,7 @@ import { appDataSource } from '@/dbConfig'
 import { ELock } from '@/entities/lock.entity';
 import { ILock } from '@/interfaces/Ilock.interface';
 import { lockDTO, lockFindOptionsDTO } from '@/DTO/lock.DTO';
-import { BuildingsRepository } from './buildings.repository';
+import { BuildingRepository } from './building.repository';
 
 export class LockRepository extends Repository<ELock> {
     constructor() {
@@ -33,7 +33,7 @@ export class LockRepository extends Repository<ELock> {
         };
         if (options.buildingId) findOptions.where = { ...findOptions.where, buildingId: options.buildingId };
         if (options.organizarionId) {
-            const buildingsRepo = new BuildingsRepository()
+            const buildingsRepo = new BuildingRepository()
             const buildingIds = (await buildingsRepo.find(
                 {
                     'where': {

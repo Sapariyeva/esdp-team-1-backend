@@ -3,9 +3,9 @@ import { setSeederFactory } from "typeorm-extension";
 import { Euser } from "@/entities/user.entity";
 import { ERole } from "@/types/roles";
 import { getLocks, getPhoneNumber } from "./QRAccess.factory";
-import { OrganizationRepository } from "@/repositories/organizations.repository";
-import { BuildingsRepository } from "@/repositories/buildings.repository";
-import { TenantRepository } from "@/repositories/tenants.repository";
+import { OrganizationRepository } from "@/repositories/organization.repository";
+import { BuildingRepository } from "@/repositories/building.repository";
+import { TenantRepository } from "@/repositories/tenant.repository";
 
 export const UserFactory = setSeederFactory(Euser, async (faker: Faker) => {
   const user = new Euser();
@@ -26,7 +26,7 @@ export const UserFactory = setSeederFactory(Euser, async (faker: Faker) => {
   }
   else if (rnd > 0.3 && rnd <= 0.5) {
     user.role = ERole.buildingAdmin
-    const buildingsRepo = new BuildingsRepository()
+    const buildingsRepo = new BuildingRepository()
     const buildingIds = (await buildingsRepo.getAllBuildings()).map(b => { return b.id })
     user.buildingId = faker.helpers.arrayElement(buildingIds)
   }

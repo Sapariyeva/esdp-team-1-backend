@@ -1,7 +1,7 @@
 import { DataSource, DataSourceOptions } from 'typeorm';
 import { Euser } from './entities/user.entity';
 import { SeederOptions } from 'typeorm-extension';
-import { parse as pathParse} from 'path';
+import { parse as pathParse } from 'path';
 import { envConfig } from './env';
 import { EQRAccess } from './entities/QRAccess.entity';
 import { MainSeeder } from './db/seeds/main.seeder';

@@ -1,5 +1,8 @@
 import { Router } from 'express';
 import { BuildingController } from '@/controllers/building.controller';
+import { checkAuth } from '@/middleware/auth.middleware';
+import { checkRole } from '@/middleware/roleChecker.middleware';
+import { ERole } from '@/types/roles';
 
 export class BuildingRoute {
     public path = '/buildings';
@@ -12,9 +15,9 @@ export class BuildingRoute {
     }
 
     private init() {
-        this.router.post('/', this.controller.createBuildingEntry);
-        this.router.get('/:id', this.controller.getBuildingById);
-        this.router.get('/', this.controller.getAllBuildings);
-        this.router.put('/:id', this.controller.updateBuilding);
+        this.router.post('/', checkAuth, checkRole([ERole.umanuAdmin]), this.controller.createBuildingEntry);
+        this.router.get('/:id', checkAuth, this.controller.getBuildingById);
+        this.router.get('/', checkAuth, this.controller.getAllBuildings);
+        this.router.put('/:id', checkAuth, this.controller.updateBuilding);
     }
 }

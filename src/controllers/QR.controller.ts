@@ -1,5 +1,6 @@
 import { QRAccessDTO, QRAccessReqDTO } from "@/DTO/QRAccess.DTO";
 import { RequestWithUser } from "@/interfaces/IRequest.interface";
+import { ErrorWithStatus } from "@/interfaces/customErrors";
 import { QRAccessService } from "@/services/QRAccess.service";
 import { instanceToPlain, plainToInstance } from "class-transformer";
 import { validate } from "class-validator";
@@ -18,7 +19,7 @@ export class QRController {
   ): Promise<void> => {
     try {
       const user = req.user;
-      if (!user) throw new Error("Unauthorized");
+      if (!user) throw new ErrorWithStatus("Unauthorized", 403);
       const newAccessDTOReq = plainToInstance(QRAccessReqDTO, req.body);
       const DTOErr = await validate(newAccessDTOReq);
       if (DTOErr.length > 0) throw DTOErr;

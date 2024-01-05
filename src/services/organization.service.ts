@@ -1,7 +1,10 @@
 import { OrganizationRepository } from '@/repositories/organization.repository';
-import { OrganizationDTO } from '@/DTO/organization.DTO';
+import { OrganizationDTO, organizationFindOptionsDTO } from '@/DTO/organization.DTO';
 import { IOrganization } from '@/interfaces/IOrganization.interface';
 import { validate } from 'class-validator';
+import { IUser } from '@/interfaces/IUser';
+import { ERole } from '@/types/roles';
+import { ErrorWithStatus } from '@/interfaces/customErrors';
 
 export class OrganizationService {
     private organizationRepo: OrganizationRepository = new OrganizationRepository;
@@ -23,6 +26,16 @@ export class OrganizationService {
 
     getAllOrganizations = async () => {
         return await this.organizationRepo.getAllOrganizations()
+    }
+
+    getAllOrganizationsQuery = async (user: IUser, options: organizationFindOptionsDTO) => {
+        if ((user.role = ERole.organizationAdmin) && user.organizationId){
+            options.organizations = [user.organizationId]
+        }
+        else if (!([ERole.umanuAdmin, ERole.organizationAdmin].includes(user.role))){
+            throw new ErrorWithStatus('User has no rights to access organizations data', 403)
+        }
+        return await this.organizationRepo.getAllOrganizationsQuery(options)
     }
 
     async updateOrganization(id: string, data: Partial<IOrganization>): Promise<IOrganization | string> {

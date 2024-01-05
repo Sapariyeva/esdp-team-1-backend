@@ -61,6 +61,5 @@ export class LocksController {
       next(e)
       console.log(e)
     }
-
   }
 }

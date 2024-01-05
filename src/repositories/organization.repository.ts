@@ -1,8 +1,8 @@
-import { Repository } from 'typeorm';
+import { FindManyOptions, In, Repository } from 'typeorm';
 import { appDataSource } from '@/dbConfig'
 import { IOrganization } from '@/interfaces/IOrganization.interface';
 import { EOrganization } from '@/entities/organization.entity';
-import { OrganizationDTO } from '@/DTO/organization.DTO';
+import { OrganizationDTO, organizationFindOptionsDTO } from '@/DTO/organization.DTO';
 import { isUUID } from 'class-validator';
 
 export class OrganizationRepository extends Repository<EOrganization> {
@@ -32,6 +32,16 @@ export class OrganizationRepository extends Repository<EOrganization> {
     async getAllOrganizations(): Promise<OrganizationDTO[]> {
         return await this.find()
     }
+
+    async getAllOrganizationsQuery(options: organizationFindOptionsDTO): Promise<OrganizationDTO[]> {
+        let findOptions: FindManyOptions<IOrganization> = {
+        };
+        if (options.organizations) {
+            findOptions.where = { ...findOptions.where, id: In(options.organizations) }
+        }
+        return await this.find(findOptions)
+    }
+
 
     async updateOrganization(id: string, data: Partial<IOrganization>): Promise<IOrganization | null> {
         const existingOrganization = await this.findOne({ where: { id } });

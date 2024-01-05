@@ -32,12 +32,12 @@ export class LockRepository extends Repository<ELock> {
         let findOptions: FindManyOptions<ILock> = {
         };
         if (options.buildingId) findOptions.where = { ...findOptions.where, buildingId: options.buildingId };
-        if (options.organizarionId) {
+        if (options.organizationId) {
             const buildingsRepo = new BuildingRepository()
             const buildingIds = (await buildingsRepo.find(
                 {
                     'where': {
-                        organizationId: options.organizarionId
+                        organizationId: options.organizationId
                     }
                 }
             )).map(b => { return b.id })

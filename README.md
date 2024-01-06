@@ -193,7 +193,7 @@ Example response on success:
 </details>
 
 <details>
-  <summary><strong>Method: GET, Method: GET, URL: /organizations  </strong> <i> &nbsp&nbsp Get organizations</i></summary> 
+  <summary><strong>Method: GET, URL: /organizations  </strong> <i> &nbsp&nbsp Get organizations</i></summary> 
 
 Default request will return a full list of organizations available to the user.\
 Additional query parameter is supported to narrow the list of organizations in response.Request will be rejected with error if invalid query parameter, or query parameter, that assume rights violation is provided.\

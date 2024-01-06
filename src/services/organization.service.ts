@@ -29,10 +29,10 @@ export class OrganizationService {
     }
 
     getAllOrganizationsQuery = async (user: IUser, options: organizationFindOptionsDTO) => {
-        if ((user.role = ERole.organizationAdmin) && user.organizationId){
+        if ((user.role === ERole.organizationAdmin) && user.organizationId){
             options.organizations = [user.organizationId]
         }
-        else if (!([ERole.umanuAdmin, ERole.organizationAdmin].includes(user.role))){
+        if (!([ERole.umanuAdmin, ERole.organizationAdmin].includes(user.role))){
             throw new ErrorWithStatus('User has no rights to access organizations data', 403)
         }
         return await this.organizationRepo.getAllOrganizationsQuery(options)

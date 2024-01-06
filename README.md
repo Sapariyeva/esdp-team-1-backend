@@ -28,7 +28,7 @@ npm run dev
 npm run seed
 ```
 seeds database with fixture users, locks, QRAcess Entries, Notifications, Organizations, Buildings and Tenants. Two notifications (to trigger 30 min hr. and 10 min. before QR expiration) are generated for each Access entrie. \
-<code style="color : lightskyblue">**!NOTE**</code> QR generation service must be available on specified URL for seed to run!
+<code style="color : lightskyblue">**!NOTE**</code>  QR generation service must be available on specified URL for seed to run!
 
 ---
 
@@ -39,45 +39,45 @@ seeds database with fixture users, locks, QRAcess Entries, Notifications, Organi
     Endpoint accepts JSON in the body of a POST request with specific fields and responds with a link to QR-code page. Also generates two notifications (to trigger 1 hr. and 15 min. before QR expiration).
 
     Example request:
-
-    ```json
+```json
     {
         "phone": "+77771231235",
         "valid_from": 123456, 
         "valid_to": 123497,
         "locks":["3371ed33-2bd6-48ce-8d11-5823f04130f6", "51e15c7e-baa2-4cc3-9bab-f4094dbb3681"]
     }
-    ```
+```
 
     Requested Fields:
 
-    * **phone** (string): The phone number for which the QR code is generated.
-    * **locks** (array of strings): An array of strings representing UMANU controllers identificators.
-    * **valid_from** (integer): The starting time of QR code, valid in Unix timestamp format (milliseconds). Minimum starting datetime is not earlier than current moment - 60 seconds
-    * **valid_to** (integer): The expiration time of QR code, valid in Unix timestamp format (milliseconds). Minimum expiration time is not earlier than starting time + 1 hr.
+* **phone** (string): The phone number for which the QR code is generated.
+* **locks** (array of strings): An array of strings representing UMANU controllers identificators.
+* **valid_from** (integer): The starting time of QR code, valid in Unix timestamp format (milliseconds). Minimum starting datetime is not earlier than current moment - 60 seconds
+* **valid_to** (integer): The expiration time of QR code, valid in Unix timestamp format (milliseconds). Minimum expiration time is not earlier than starting time + 1 hr.
 
-    Example Response on Success:
 
-    ```json
+Example Response on Success:
+
+```json
     {
         "success": true,
         "link": "http://192.168.76.71:3000/ae3fd5ac-c1c4-4efc-a990-31605c801c72"
     }
-    ```
+```
 
-    Example Response on Failure:
+Example Response on Failure:
 
-    ```json
+```json
     {
         "success": false,
         "error": "string"
     }
-    ```
+```
 
 
-    * **success** (boolean): Indicates the success of the operation. 
-    * **link** (string): The link to the web page containing the generated QR code. Users can use this link to get the QR code.
-    * **error** (string): error string contains details on the request failure   
+* **success** (boolean): Indicates the success of the operation. 
+* **link** (string): The link to the web page containing the generated QR code. Users can use this link to get the QR code.
+* **error** (string): error string contains details on the request failure   
 </details>
 
 
@@ -306,8 +306,10 @@ Example response on success:
 
 <details>
   <summary><strong>Method: GET, URL: /buildings  </strong> <i> &nbsp&nbsp Get buildings</i></summary> 
-Default request will return a full list of buildings available to the user.\
-Additional query parameters are supported to narrow the list of organizations in response. Request will be rejected with error if invalid query parameters, or query parameters, that assume rights violation are provided.\
+Default request will return a full list of buildings available to the user.
+
+Additional query parameters are supported to narrow the list of organizations in response. Request will be rejected with error if invalid query parameters, or query parameters, that assume rights violation are provided.
+
 Query Parameter (multiple can be combined in one request):
 * **?organizationId=** Filters buildings by an organization
 * **?buildings=** list of buildings identifiers 
@@ -553,7 +555,7 @@ Example Response on Success:
   "payload": [
     "3371ed33-2bd6-48ce-8d11-5823f04130f6",
     "51e15c7e-baa2-4cc3-9bab-f4094dbb3681"
-    //...
+    ...
   ]
 }
 ```

@@ -30,7 +30,7 @@ export class LocksController {
     }
   }
 
-  getAllLocks: RequestHandler = async (req, res) => {
+  getAllLocks: RequestHandler = async (req, res, next) => {
     try {
       const locks = await this.service.getAllLocks()
 
@@ -40,6 +40,7 @@ export class LocksController {
       })
     } catch (e) {
       console.log(e)
+      next(e)
     }
 
   }
@@ -52,7 +53,6 @@ export class LocksController {
       if (!user) throw new ErrorWithStatus('Unauthorized request', 400)
       if (DTOerr && DTOerr.length > 0) throw DTOerr
       const locks = await this.service.getAllLocksQuery(user, searchParams)
-
       res.status(200).send({
         success: true,
         payload: locks
@@ -62,4 +62,22 @@ export class LocksController {
       console.log(e)
     }
   }
+
+  updateLock: RequestHandler = async (req, res, next): Promise<void> => {
+    const { id } = req.params;
+    const updatedData = plainToInstance(lockDTO, req.body);
+    try {
+        const result = await this.service.updateLock(id, updatedData);
+        if (result) {
+            res.status(201).send({
+                success: true,
+            });
+        } else {
+          throw new ErrorWithStatus("unknown internal server error", 500)
+        }
+    } catch (err) {
+        next(err);
+    }
+};
+
 }

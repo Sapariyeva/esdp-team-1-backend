@@ -138,7 +138,7 @@ Example Response on Failure:
 </details>
 
 <details>
-  <summary><strong>Method: POST, URL: /auth/signin  </strong> <i> &nbsp&nbsp !NOT IMPLEMENTED YET</i></summary> 
+  <summary><strong>Method: POST, URL: /auth/signin  </strong> <i> &nbsp&nbsp Sign in with credentials</i></summary> 
 Endpoint allows user to sign in. Returns user data, access token and refresh token in case of  successful authorization.
 Example request:
 

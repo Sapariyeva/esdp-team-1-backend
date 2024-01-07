@@ -4,6 +4,7 @@ import { ELock } from '@/entities/lock.entity';
 import { ILock } from '@/interfaces/Ilock.interface';
 import { lockDTO, lockFindOptionsDTO } from '@/DTO/lock.DTO';
 import { BuildingRepository } from './building.repository';
+import { ErrorWithStatus } from '@/interfaces/customErrors';
 
 export class LockRepository extends Repository<ELock> {
     constructor() {
@@ -32,12 +33,12 @@ export class LockRepository extends Repository<ELock> {
         let findOptions: FindManyOptions<ILock> = {
         };
         if (options.buildingId) findOptions.where = { ...findOptions.where, buildingId: options.buildingId };
-        if (options.organizarionId) {
+        if (options.organizationId) {
             const buildingsRepo = new BuildingRepository()
             const buildingIds = (await buildingsRepo.find(
                 {
                     'where': {
-                        organizationId: options.organizarionId
+                        organizationId: options.organizationId
                     }
                 }
             )).map(b => { return b.id })
@@ -47,5 +48,14 @@ export class LockRepository extends Repository<ELock> {
             findOptions.where = { ...findOptions.where, id: In(options.locks) }
         }
         return await this.find(findOptions)
+    }
+
+    async updateLock(id: string, data: Partial<ILock>): Promise<lockDTO> {
+        const existingLock = await this.findOne({ where: { id } });
+        if (!existingLock) {
+            throw new ErrorWithStatus('No lock with specified Id found. Unable to update', 500)
+        }
+        Object.assign(existingLock, data);
+        return existingLock;
     }
 }

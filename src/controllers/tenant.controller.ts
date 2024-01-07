@@ -1,4 +1,6 @@
-import { TenantDTO } from "@/DTO/tenant.DTO";
+import { TenantDTO, tenantFindOptionsDTO } from "@/DTO/tenant.DTO";
+import { RequestWithUser } from "@/interfaces/IRequest.interface";
+import { ErrorWithStatus } from "@/interfaces/customErrors";
 import { TenantService } from "@/services/tenant.service";
 import { plainToInstance } from "class-transformer";
 import { validate } from "class-validator";
@@ -49,9 +51,14 @@ export class TenantController {
         }
     };
 
-    getAllTenants: RequestHandler = async (req, res, next) => {
+    getAllTenants: RequestHandler = async (req: RequestWithUser, res, next) => {
         try {
-            const tenants = await this.service.getAllTenants()
+            const user = req.user
+            const searchParams = plainToInstance(tenantFindOptionsDTO, req.query)
+            const DTOerr = await validate(searchParams)
+            if (!user) throw new ErrorWithStatus('Unauthorized request', 400)
+            if (DTOerr && DTOerr.length > 0) throw DTOerr
+            const tenants = await this.service.getAllTenantsQuery(user, searchParams)
             res.status(200).send({
                 success: true,
                 payload: tenants

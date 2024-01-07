@@ -68,9 +68,9 @@ export class IsBuildingExistConstraint implements ValidatorConstraintInterface {
 
 @ValidatorConstraint({ async: true })
 export class IsOrganizationExistConstraint implements ValidatorConstraintInterface {
-    async validate(organizarionId: any, args: ValidationArguments) {
+    async validate(organizationId: any, args: ValidationArguments) {
         const orgRepo = new OrganizationRepository()
-        return orgRepo.getOrganizationById(organizarionId).then(org => {
+        return orgRepo.getOrganizationById(organizationId).then(org => {
             if (org) return true;
             return false;
         });

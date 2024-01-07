@@ -1,6 +1,6 @@
 import { Expose } from "class-transformer";
 import { IsArray, IsEmail, IsNotEmpty, IsOptional, IsPhoneNumber, IsString, IsUUID } from "class-validator";
-import { IsLockExist } from "./customValidators";
+import { IsBuildingExist, IsLockExist, IsOrganizationExist, IsTenantExist } from "./customValidators";
 
 export class TenantDTO {
   @IsOptional()
@@ -10,6 +10,7 @@ export class TenantDTO {
   //add custom validator for checking if building exists
   @IsNotEmpty()
   @IsUUID()
+  @IsBuildingExist()
   @Expose()
   buildingId!: string;
 
@@ -41,4 +42,24 @@ export class TenantDTO {
   @IsLockExist({each: true, message: "Some of the specified locks are not registered"})
   // @IsLockBelongsToBuilding()
   locks!: string[];
+}
+
+export class tenantFindOptionsDTO {
+  @Expose()
+  @IsOptional()
+  @IsOrganizationExist({ message: 'Organization with Id provided in search params is not registered' })
+  organizationId?: string
+
+  @Expose()
+  @IsOptional()
+  @IsString({ message: 'building Id should be string' })
+  @IsBuildingExist({ message: 'Building with Id provided in search params is not registered' })
+  buildingId?: string;
+
+  @Expose()
+  @IsOptional()
+  @IsString({ each: true, message: "Tenants must have string type id" })
+  @IsArray({ message: "tenants field must contain an array of tenant UUIDs" })
+  @IsTenantExist({ each: true, message: "Some of the tenants specified in search params are not registered" })
+  tenants?: string[]
 }

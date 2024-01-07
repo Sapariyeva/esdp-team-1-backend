@@ -39,7 +39,7 @@ export class lockFindOptionsDTO {
     @Expose()
     @IsOptional()
     @IsOrganizationExist({ message: 'Organization with Id provided in search params is not registered' })
-    organizarionId?: string
+    organizationId?: string
 
     @Expose()
     @IsOptional()

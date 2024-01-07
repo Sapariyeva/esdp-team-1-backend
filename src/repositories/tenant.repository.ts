@@ -1,9 +1,10 @@
-import { Repository } from 'typeorm';
+import { FindManyOptions, In, Repository } from 'typeorm';
 import { appDataSource } from '@/dbConfig'
 import { ETenant } from '@/entities/tenant.entity';
 import { ITenant } from '@/interfaces/ITenant.interface';
-import { TenantDTO } from '@/DTO/tenant.DTO';
+import { TenantDTO, tenantFindOptionsDTO } from '@/DTO/tenant.DTO';
 import { isUUID } from 'class-validator';
+import { BuildingRepository } from './building.repository';
 
 export class TenantRepository extends Repository<ETenant> {
     constructor() {
@@ -31,6 +32,27 @@ export class TenantRepository extends Repository<ETenant> {
 
     async getAllTenants(): Promise<TenantDTO[]> {
         return await this.find()
+    }
+
+    async getAllTenantsQuery(options: tenantFindOptionsDTO): Promise<ETenant[]> {
+        let findOptions: FindManyOptions<ITenant> = {
+        };
+        if (options.buildingId) findOptions.where = { ...findOptions.where, buildingId: options.buildingId };
+        if (options.organizationId) {
+            const buildingsRepo = new BuildingRepository()
+            const buildingIds = (await buildingsRepo.find(
+                {
+                    'where': {
+                        organizationId: options.organizationId
+                    }
+                }
+            )).map(b => { return b.id })
+            findOptions.where = { ...findOptions.where, buildingId: In(buildingIds) }
+        }
+        if (options.tenants) {
+            findOptions.where = { ...findOptions.where, id: In(options.tenants) }
+        }
+        return await this.find(findOptions)
     }
 
     async updateTenant(id: string, data: Partial<ITenant>): Promise<ITenant | null> {

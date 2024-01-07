@@ -1,4 +1,6 @@
-import { OrganizationDTO } from "@/DTO/organization.DTO";
+import { OrganizationDTO, organizationFindOptionsDTO } from "@/DTO/organization.DTO";
+import { RequestWithUser } from "@/interfaces/IRequest.interface";
+import { ErrorWithStatus } from "@/interfaces/customErrors";
 import { OrganizationService } from "@/services/organization.service";
 import { plainToInstance } from "class-transformer";
 import { validate } from "class-validator";
@@ -49,9 +51,14 @@ export class OrganizationController {
         }
     };
 
-    getAllOrganizations: RequestHandler = async (req, res, next) => {
+    getAllOrganizations: RequestHandler = async (req:RequestWithUser, res, next) => {
         try {
-            const organizations = await this.service.getAllOrganizations()
+            const user = req.user
+            const searchParams = plainToInstance(organizationFindOptionsDTO, req.query)
+            const DTOerr = await validate(searchParams)
+            if (!user) throw new ErrorWithStatus('Unauthorized request', 400)
+            if (DTOerr && DTOerr.length > 0) throw DTOerr
+            const organizations = await this.service.getAllOrganizationsQuery(user, searchParams)
             res.status(200).send({
                 success: true,
                 payload: organizations

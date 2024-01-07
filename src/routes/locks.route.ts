@@ -17,5 +17,6 @@ export class LocksRoute {
     private init() {
         this.router.post('/', checkAuth, checkRole([ERole.umanuAdmin]), this.controller.createLockEntry);
         this.router.get('/', checkAuth, this.controller.getAllLocksQuery)
+        this.router.put('/:id', checkAuth, checkRole([ERole.umanuAdmin]), this.controller.updateLock);
     }
 }

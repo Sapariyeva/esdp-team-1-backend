@@ -1,6 +1,6 @@
 import { Expose } from "class-transformer";
-import { IsNotEmpty, IsOptional, IsString, IsUUID } from "class-validator";
-import { IsBuildingNameUnique } from "./customValidators";
+import { IsArray, IsNotEmpty, IsOptional, IsString, IsUUID } from "class-validator";
+import { IsBuildingExist, IsBuildingNameUnique, IsOrganizationExist } from "./customValidators";
 
 export class BuildingDTO {
   @IsOptional()
@@ -24,4 +24,18 @@ export class BuildingDTO {
   @IsString()
   @Expose()
   address!: string;
+}
+
+export class buildingFindOptionsDTO {
+  @Expose()
+  @IsOptional()
+  @IsOrganizationExist({ message: 'Organization with Id provided in search params is not registered' })
+  organizationId?: string
+
+  @Expose()
+  @IsOptional()
+  @IsString({ each: true, message: "buildings must have string type id" })
+  @IsArray({ message: "buildings field must contain an array of building UUIDs" })
+  @IsBuildingExist({ each: true, message: "Some of the specified buildings in search params are not registered" })
+  buildings?: string[]
 }

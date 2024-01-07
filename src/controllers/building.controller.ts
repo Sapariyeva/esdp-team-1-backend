@@ -1,4 +1,6 @@
-import { BuildingDTO } from "@/DTO/building.DTO";
+import { BuildingDTO, buildingFindOptionsDTO } from "@/DTO/building.DTO";
+import { RequestWithUser } from "@/interfaces/IRequest.interface";
+import { ErrorWithStatus } from "@/interfaces/customErrors";
 import { BuildingService } from "@/services/building.service";
 import { plainToInstance } from "class-transformer";
 import { validate } from "class-validator";
@@ -49,9 +51,14 @@ export class BuildingController {
         }
     };
 
-    getAllBuildings: RequestHandler = async (req, res, next) => {
+    getAllBuildings: RequestHandler = async (req: RequestWithUser, res, next) => {
         try {
-            const buildings = await this.service.getAllBuildings();
+            const user = req.user
+            const searchParams = plainToInstance(buildingFindOptionsDTO, req.query)
+            const DTOerr = await validate(searchParams)
+            if (!user) throw new ErrorWithStatus('Unauthorized request', 400)
+            if (DTOerr && DTOerr.length > 0) throw DTOerr
+            const buildings = await this.service.getAllBuildingsQuery(user, searchParams);
             res.status(200).json({
                 success: true,
                 payload: buildings,

@@ -35,7 +35,7 @@ export class RegisterUserDTO {
 
     @Expose()
     @ShouldHaveOrganizationId('role', { message: 'Organization administrators must have valid organization Id attached, other roles must have this field empty' })
-    organizarionId?:string
+    organizationId?:string
 
     @Expose()
     @ShouldHaveTenantId('role', { message: 'Tenant Administrators must have valid tenant Id attached, other roles must have this field empty' })

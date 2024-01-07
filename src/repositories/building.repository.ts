@@ -1,8 +1,8 @@
-import { Repository } from 'typeorm';
+import { FindManyOptions, In, Repository } from 'typeorm';
 import { appDataSource } from '@/dbConfig'
 import { EBuilding } from "@/entities/building.entity";
 import { IBuilding } from "@/interfaces/IBuilding.interface";
-import { BuildingDTO } from "@/DTO/building.DTO";
+import { BuildingDTO, buildingFindOptionsDTO } from "@/DTO/building.DTO";
 import { isUUID } from 'class-validator';
 
 export class BuildingRepository extends Repository<EBuilding> {
@@ -29,8 +29,18 @@ export class BuildingRepository extends Repository<EBuilding> {
         }
     }
 
-    async getAllBuildings(): Promise<BuildingDTO[]> {
+    async getAllBuildings(): Promise<EBuilding[]> {
         return await this.find()
+    }
+
+    async getAllBuildingsQuery(options: buildingFindOptionsDTO): Promise<EBuilding[]> {
+        let findOptions: FindManyOptions<IBuilding> = {
+        };
+        if (options.organizationId) findOptions.where = { ...findOptions.where, organizationId: options.organizationId };
+        if (options.buildings) {
+            findOptions.where = { ...findOptions.where, id: In(options.buildings) }
+        }
+        return await this.find(findOptions)
     }
 
     async updateBuilding(id: string, data: Partial<IBuilding>): Promise<IBuilding | null> {

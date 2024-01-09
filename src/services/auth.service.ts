@@ -15,6 +15,13 @@ export class AuthService {
     newUser.pass = dto.pass;
     newUser.role = dto.role;
     newUser.canCreateQR = dto.canCreateQR;
+    if (dto.organizationId) {
+      newUser.organizationId = dto.organizationId;
+    } else if (dto.buildingId) {
+      newUser.buildingId = dto.buildingId;
+    } else if (dto.tenantId) {
+      newUser.tenantId = dto.tenantId;
+    }
     await newUser.hashPass();
     return await this.userRepo.createUser(newUser);
   };

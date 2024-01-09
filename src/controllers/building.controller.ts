@@ -12,6 +12,7 @@ export class BuildingController {
 
     createBuildingEntry: RequestHandler = async (req, res, next): Promise<void> => {
         try {
+            req.body.id = undefined
             const newBuild = plainToInstance(BuildingDTO, req.body);
             const DTOerr = await validate(newBuild);
             if (DTOerr.length > 0) throw DTOerr;
@@ -69,21 +70,20 @@ export class BuildingController {
     }
 
     updateBuilding: RequestHandler = async (req, res, next): Promise<void> => {
-        const { id } = req.params;
-        const updatedData = plainToInstance(BuildingDTO, req.body);
         try {
-            const result = await this.service.updateBuilding(id, updatedData);
+            const updatedData = plainToInstance(BuildingDTO, req.body.updateData);
+            const DTOerr = await validate(updatedData);
+            if (DTOerr && DTOerr.length > 0) throw DTOerr
+            const result = await this.service.updateBuilding(updatedData);
             if (result) {
                 res.status(201).send({
                     success: true,
                 });
             } else {
-                res.status(500).send({
-                    success: false,
-                    error: "unknown internal server error",
-                });
+                throw new ErrorWithStatus("Update failed. Unknown server error", 500)
             }
-        } catch (err) {
+        }
+        catch (err) {
             next(err);
         }
     };

@@ -1,11 +1,9 @@
 import { lockDTO, lockFindOptionsDTO } from "@/DTO/lock.DTO";
 import { IUser } from "@/interfaces/IUser";
-import { ILock } from "@/interfaces/Ilock.interface";
 import { ErrorWithStatus } from "@/interfaces/customErrors";
 import { LockRepository } from "@/repositories/locks.repository";
 import { TenantRepository } from "@/repositories/tenant.repository";
 import { ERole } from "@/types/roles";
-import { validate } from "class-validator";
 
 export class LockService {
   private lockRepo: LockRepository = new LockRepository()
@@ -20,11 +18,13 @@ export class LockService {
     return await this.lockRepo.getAllLocks()
   }
 
-  updateLock = async (id: string, data: Partial<ILock>): Promise<ILock> => {
-    const updatedLock = await this.lockRepo.updateLock(id, data);
-    const DTOerr = await validate(updatedLock);
-    if (DTOerr && DTOerr.length > 0) throw DTOerr
-    return await this.lockRepo.save(updatedLock);
+  updateLock = async (data: lockDTO): Promise<boolean> => {
+    try {
+      return !!(await this.lockRepo.update(data.id, data))
+  }
+  catch (e) {
+      throw new ErrorWithStatus('unknown server error', 500)
+  }
 }
 
   getAllLocksQuery = async (user: IUser, options: lockFindOptionsDTO) => {

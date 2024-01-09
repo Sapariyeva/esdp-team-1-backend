@@ -4,6 +4,7 @@ import { checkAuth } from '@/middleware/auth.middleware';
 import { checkRole } from '@/middleware/roleChecker.middleware';
 import { ERole } from '@/types/roles';
 import { checkEntityAccess } from '@/middleware/updateChecker.midleware';
+import { buildUpdateEntity } from '@/middleware/updateEntitiesMerger.middleware copy';
 
 export class OrganizationRoute {
   public path = "/organizations";
@@ -33,6 +34,7 @@ export class OrganizationRoute {
       "/:id",
       checkAuth,
       checkRole([ERole.umanuAdmin]),
+      buildUpdateEntity('organization'),
       this.controller.updateOrganization
     );
   }

@@ -111,101 +111,102 @@ export class IsNotificationTypeValidConstraint implements ValidatorConstraintInt
 
 @ValidatorConstraint({ async: true })
 export class IsValidFromPassesConstraint implements ValidatorConstraintInterface {
-    async validate(valid_from: number, args: ValidationArguments) { 
-      const datetime = new Date(valid_from);
-      if (datetime instanceof Date) {
-        const now = new Date().getTime();
-        return valid_from >= now - 60 * 1000 ? true : false;
-      } else {
-        return false;
-      }
+    async validate(valid_from: number, args: ValidationArguments) {
+        const datetime = new Date(valid_from);
+        if (datetime instanceof Date) {
+            const now = new Date().getTime();
+            return valid_from >= now - 60 * 1000 ? true : false;
+        } else {
+            return false;
+        }
     }
 }
 
 @ValidatorConstraint({ async: true })
 export class IsValidToPassesConstraint implements ValidatorConstraintInterface {
-  async validate(valid_to: number, args: ValidationArguments) {
-    const datetime = new Date(valid_to);
-    if (datetime instanceof Date) {
-      const [valid_from] = args.constraints;
-      const dateFromAsNumber = (args.object as any)[valid_from] as number;
-      return valid_to - dateFromAsNumber > MIN_ACCESS_INTERVAL * 60 * 1000 ? true : false;
-    } else {
-      return false;
+    async validate(valid_to: number, args: ValidationArguments) {
+        const datetime = new Date(valid_to);
+        if (datetime instanceof Date) {
+            const [valid_from] = args.constraints;
+            const dateFromAsNumber = (args.object as any)[valid_from] as number;
+            return valid_to - dateFromAsNumber > MIN_ACCESS_INTERVAL * 60 * 1000 ? true : false;
+        } else {
+            return false;
+        }
     }
-  }
 }
 
 @ValidatorConstraint({ async: true })
 export class ShouldHaveBuildingIdConstraint implements ValidatorConstraintInterface {
-  async validate(buildingId: any, args: ValidationArguments) {
-    try{
-        const [role] = args.constraints;
-        if (buildingId == null && role !== ERole.buildingAdmin){
-            return true
+    async validate(buildingId: any, args: ValidationArguments) {
+        try {
+            const [role] = args.constraints;
+            if (buildingId == null && role !== ERole.buildingAdmin) {
+                return true
+            }
+            else {
+                const buildingsRepo = new BuildingRepository()
+                return buildingsRepo.getBuildingById(buildingId).then(building => {
+                    if (building) return true;
+                    return false;
+                });
+            }
         }
-        else{
-            const buildingsRepo = new BuildingRepository()
-            return buildingsRepo.getBuildingById(buildingId).then(building => {
-                if (building) return true;
-                return false;
-            });
+        catch {
+            return false
         }
     }
-    catch{
-        return false
-    }
-  }
 }
 
 @ValidatorConstraint({ async: true })
 export class ShouldHaveOrganizationIdConstraint implements ValidatorConstraintInterface {
-  async validate(orgId: any, args: ValidationArguments) {
-    try{
-        const [role] = args.constraints;
-        if (orgId == null && (role !== ERole.organizationAdmin)){
-            return true
+    async validate(orgId: any, args: ValidationArguments) {
+        try {
+            const [role] = args.constraints;
+            if (orgId == null && (role !== ERole.organizationAdmin)) {
+                return true
+            }
+            else {
+                const orgRepo = new OrganizationRepository()
+                return orgRepo.getOrganizationById(orgId).then(org => {
+                    if (org) return true;
+                    return false;
+                });
+            }
         }
-        else{
-            const orgRepo = new OrganizationRepository()
-            return orgRepo.getOrganizationById(orgId).then(org => {
-                if (org) return true;
-                return false;
-            });
+        catch {
+            return false
         }
     }
-    catch{
-        return false
-    }
-  }
 }
 
 @ValidatorConstraint({ async: true })
 export class ShouldHaveTenantIdConstraint implements ValidatorConstraintInterface {
-  async validate(tenantId: any, args: ValidationArguments) {
-    try{
-        const [role] = args.constraints;
-        if (tenantId == null && (role !== ERole.tenantAdmin)){
-            return true
+    async validate(tenantId: any, args: ValidationArguments) {
+        try {
+            const [role] = args.constraints;
+            if (tenantId == null && (role !== ERole.tenantAdmin)) {
+                return true
+            }
+            else {
+                const tenantRepo = new TenantRepository()
+                return tenantRepo.getTenantById(tenantId).then(tenant => {
+                    if (tenant) return true;
+                    return false;
+                });
+            }
         }
-        else{
-            const tenantRepo = new TenantRepository()
-            return tenantRepo.getTenantById(tenantId).then(tenant => {
-                if (tenant) return true;
-                return false;
-            });
+        catch {
+            return false
         }
     }
-    catch{
-        return false
-    }
-  }
 }
 
 @ValidatorConstraint({ async: true })
 export class IsBuildingNameUniqueConstraint implements ValidatorConstraintInterface {
     async validate(name: string, args: ValidationArguments) {
         const organizationId = (args.object as { organizationId: string }).organizationId;
+        const id = (args.object as { id: string }).id;
         const buildingRepo = new BuildingRepository();
         const existingBuilding = await buildingRepo.findOne({
             where: {
@@ -213,18 +214,46 @@ export class IsBuildingNameUniqueConstraint implements ValidatorConstraintInterf
                 organizationId,
             },
         });
-        return !existingBuilding;
+        if (id !== existingBuilding?.id) {
+            return !existingBuilding;
+        }
+        else {
+            return true
+        }
+
+    }
+}
+
+@ValidatorConstraint({ async: true })
+export class IsTenantNameUniqueConstraint implements ValidatorConstraintInterface {
+    async validate(name: string, args: ValidationArguments) {
+        const buildingId = (args.object as { buildingId: string }).buildingId;
+        const id = (args.object as { id: string }).id;
+        const tenantRepo = new TenantRepository();
+        const existingTenant = await tenantRepo.findOne({
+            where: {
+                name,
+                buildingId,
+            },
+        });
+        if (id !== existingTenant?.id) {
+            return !existingTenant;
+        }
+        else {
+            return true
+        }
     }
 }
 
 @ValidatorConstraint({ async: true })
 export class IsLockNameUniqueConstraint implements ValidatorConstraintInterface {
-  async validate(name: string, args: ValidationArguments) {
-    const [buildingId] = args.constraints;
-    const lockRepo = new LockRepository()
-    return !(await lockRepo.getAllLocks()).filter(l => {return l.buildingId===buildingId})
-    .map((l=>{return l.name})).includes(name)
-  }
+    async validate(name: string, args: ValidationArguments) {
+        const buildingId = (args.object as { buildingId: string }).buildingId;
+        const id = (args.object as { id: string }).id;
+        const lockRepo = new LockRepository()
+        const locksOfBuilding = (await lockRepo.getAllLocks()).filter(l => { return l.buildingId === buildingId })
+        return !(locksOfBuilding.map((l => { return l.name })).includes(name)) || (locksOfBuilding.map((l => { return l.id })).includes(id))
+    }
 }
 
 export function IsUserExist(validationOptions?: ValidationOptions) {
@@ -337,75 +366,75 @@ export function IsNotificationTypeValid(validationOptions?: ValidationOptions) {
 
 export function IsValidFromPasses(validationOptions?: ValidationOptions) {
     return function (object: Object, propertyName: string) {
-      registerDecorator({
-        target: object.constructor,
-        propertyName: propertyName,
-        options: validationOptions,
-        constraints: [],
-        validator: IsValidFromPassesConstraint
-      });
+        registerDecorator({
+            target: object.constructor,
+            propertyName: propertyName,
+            options: validationOptions,
+            constraints: [],
+            validator: IsValidFromPassesConstraint
+        });
     };
-  }
+}
 
-  export function IsValidToPasses(property: string, validationOptions?: ValidationOptions) {
+export function IsValidToPasses(property: string, validationOptions?: ValidationOptions) {
     return function (object: Object, propertyName: string) {
-      registerDecorator({
-        target: object.constructor,
-        propertyName: propertyName,
-        options: validationOptions,
-        constraints: [property],
-        validator: IsValidToPassesConstraint,
-      });
+        registerDecorator({
+            target: object.constructor,
+            propertyName: propertyName,
+            options: validationOptions,
+            constraints: [property],
+            validator: IsValidToPassesConstraint,
+        });
     };
-  }
+}
 
-  export function ShouldHaveBuildingId(property: string, validationOptions?: ValidationOptions) {
+export function ShouldHaveBuildingId(property: string, validationOptions?: ValidationOptions) {
     return function (object: Object, propertyName: string) {
-      registerDecorator({
-        target: object.constructor,
-        propertyName: propertyName,
-        options: validationOptions,
-        constraints: [property],
-        validator: ShouldHaveBuildingIdConstraint
-      });
+        registerDecorator({
+            target: object.constructor,
+            propertyName: propertyName,
+            options: validationOptions,
+            constraints: [property],
+            validator: ShouldHaveBuildingIdConstraint
+        });
     };
-  }
+}
 
-  export function ShouldHaveOrganizationId(property: string, validationOptions?: ValidationOptions) {
+export function ShouldHaveOrganizationId(property: string, validationOptions?: ValidationOptions) {
     return function (object: Object, propertyName: string) {
-      registerDecorator({
-        target: object.constructor,
-        propertyName: propertyName,
-        options: validationOptions,
-        constraints: [property],
-        validator: ShouldHaveOrganizationIdConstraint
-      });
+        registerDecorator({
+            target: object.constructor,
+            propertyName: propertyName,
+            options: validationOptions,
+            constraints: [property],
+            validator: ShouldHaveOrganizationIdConstraint
+        });
     };
-  }
+}
 
-  export function ShouldHaveTenantId(property: string, validationOptions?: ValidationOptions) {
+export function ShouldHaveTenantId(property: string, validationOptions?: ValidationOptions) {
     return function (object: Object, propertyName: string) {
-      registerDecorator({
-        target: object.constructor,
-        propertyName: propertyName,
-        options: validationOptions,
-        constraints: [property],
-        validator: ShouldHaveTenantIdConstraint
-      });
+        registerDecorator({
+            target: object.constructor,
+            propertyName: propertyName,
+            options: validationOptions,
+            constraints: [property],
+            validator: ShouldHaveTenantIdConstraint
+        });
     };
-  }
+}
 
 
 
-  export function IsLockNameUnique(property: string, validationOptions?: ValidationOptions) {
+export function IsLockNameUnique(property: string, validationOptions?: ValidationOptions) {
     return function (object: Object, propertyName: string) {
-      registerDecorator({
-        target: object.constructor,
-        propertyName: propertyName,
-        options: validationOptions,
-        constraints: [property],
-        validator: IsLockNameUniqueConstraint
-      });
+        registerDecorator({
+            target: object.constructor,
+            propertyName: propertyName,
+            options: validationOptions,
+            constraints: [property],
+            validator: IsLockNameUniqueConstraint
+        });
     };
 }
 

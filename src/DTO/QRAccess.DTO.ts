@@ -81,13 +81,13 @@ export class QrFindOptionsDTO implements IQrFindOptions {
 
     @Expose()
     @IsOptional()
-    @IsPositive()
-    only_active?: number;
+    @IsString()
+    only_active?: string;
 
     @Expose()
     @IsOptional()
-    @IsPositive()
-    only_expired?: number;
+    @IsString()
+    only_expired?: string;
 
     @Expose()
     @IsOptional()

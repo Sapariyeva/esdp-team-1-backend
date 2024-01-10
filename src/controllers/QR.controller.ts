@@ -57,7 +57,9 @@ export class QRController {
     try {
       const user = req.user;
       if (!user) throw new ErrorWithStatus('Unauthorized', 403);
-      const entries = await this.qrService.getQrEntries(user, req.findOptions);
+      const findOptions = req.findOptions;
+      if (findOptions?.lock) findOptions.locks = [findOptions.lock];
+      const entries = await this.qrService.getQrEntries(user, findOptions);
       if (!entries) throw new ErrorWithStatus('Error getting QR access entries', 400);
       res.status(200).send({
         success: true,

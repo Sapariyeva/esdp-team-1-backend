@@ -43,30 +43,35 @@ export class QRAccessService {
   }
 
   async getQrEntries(user: IUser, findOptions?: IQrFindOptions) {
-    if (findOptions) {
+    if (findOptions && findOptions.locks) {
       return await this.QRAccessRepo.getQrEntries(findOptions);
     } else {
-      const options: IQrFindOptions = {}
+      const options: IQrFindOptions = {};
       switch (user.role) {
         case ERole.umanuAdmin:
-          return await this.QRAccessRepo.getAllQRAccess();
+          const allLocks = await this.lockRepo.getAllLocks();
+          const allIds = allLocks.map(l => l.id);
+          findOptions ? findOptions.locks = allIds : options.locks = allIds;
+          break;
         case ERole.organizationAdmin:
           const orgLocks = await this.lockRepo.getLocksByOrganization(user.organizationId!);
           const orgLocksIds = orgLocks.map(l => l.id);
-          options.locks = orgLocksIds;
+          findOptions ? findOptions.locks = orgLocksIds : options.locks = orgLocksIds;
           break;
         case ERole.buildingAdmin:
           const buildLocks = await this.lockRepo.find({ where: { buildingId: user.buildingId }});
           const buildLocksIds = buildLocks.map(l => l.id);
-          options.locks = buildLocksIds;
+          findOptions ? findOptions.locks = buildLocksIds : options.locks = buildLocksIds;
           break;
         case ERole.tenantAdmin:
           const tenant = await this.tenantRepo.findOne({where: { id: user.tenantId }});
-          options.locks = tenant?.locks;
+          findOptions ? findOptions.locks = tenant?.locks : options.locks = tenant?.locks;
           break;
         default: break;
       }
-      return await this.QRAccessRepo.getQrEntries(options);
+      return findOptions
+        ? await this.QRAccessRepo.getQrEntries(findOptions)
+        : await this.QRAccessRepo.getQrEntries(options);
     }
   }
 }

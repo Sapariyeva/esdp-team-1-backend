@@ -22,7 +22,7 @@ npm i
 npm run dev
 ```
 
-#seeding db with fixtures
+# Seeding db with fixtures
 
 ```bash
 npm run seed
@@ -82,8 +82,44 @@ Example Response on Failure:
 
 
 <details>
-  <summary><strong>Method: GET, URL: /qr  </strong> <i> &nbsp&nbsp !NOT IMPLEMENTED YET</i></summary> 
-    Endpoint returns list of guest Qr access entries
+  <summary><strong>Method: GET, URL: /qr  </strong> <i> &nbsp&nbsp Get QR access entries</i></summary> 
+    Endpoint returns list of guest Qr access entries. Accepts several query-parameters for additional data filtering.
+
+Example response on success:
+
+```json
+{
+    "success": true,
+    "payload": [
+        {
+            "id": "50ad27e7-bcdc-46aa-85df-c87c50e6075a",
+            "author": "1ba3bc5b-da4e-4428-9ec4-837ff05f92a2",
+            "phone": "+77076732599",
+            "valid_from": "1803766077076",
+            "valid_to": "1803852477000",
+            "locks": [
+                "7046f86f-28b3-465f-a50b-74b94528c44c"
+            ],
+            "link": "http://192.168.77.177:3000/50ad27e7-bcdc-46aa-85df-c87c50e6075a"
+        },
+        ...
+    ]
+}
+```
+
+Query Parameters (multiple can be combined in query-parameters of one request):
+* **?author=**  Filters entries by user, who has created QR guest accesses 
+* **?phone=** Filters entries by a guest's phone number
+* **?locks=** single lock identifier to filter QR entries
+* **?locks=** list of locks identifiers to filter QR entries
+* **?date_from=** Sets the starting date for data retrieval (Unix milliseconds)
+* **?date_to=** Sets the ending date for data retrieval (Unix milliseconds) 
+* **?only_active=** only active QR entries 
+* **?only_expired=** only expired QR entries
+* **?offset=** Sets the offset for pagination (numbers of entries to skip)
+
+<code style="color : red">**!IMPORTANT**</code>: If user has no access to the lock specified in query parameters a request will be rejected with an error
+
 </details>
 
 <details>

@@ -4,13 +4,13 @@ import { plainToInstance } from 'class-transformer';
 import { validate } from 'class-validator';
 import { NextFunction, Response } from 'express';
 
+// potentially can be implemented for other entities as well
 type TEntity = 'qr'
 
 export function checkQuery<T>(entity: TEntity) {
   return async (req: RequestWithFindOptions<T>, res: Response, next: NextFunction) => {
     try {
       let dtoSignature;
-      // patentially can be implemented for other entities as well
       switch (entity) {
         case 'qr':
           dtoSignature = QrFindOptionsDTO;

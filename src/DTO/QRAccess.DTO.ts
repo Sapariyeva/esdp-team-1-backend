@@ -1,8 +1,8 @@
-import { IQRAccess, IQRAccessReq } from "@/interfaces/IQRAccess.interface";
-import { Expose } from "class-transformer"
-import {IsArray, ArrayMinSize, IsNotEmpty, IsString, IsPositive, IsPhoneNumber, IsOptional, IsBoolean } from 'class-validator'
-import {IsValidFromPasses, IsValidToPasses, IsLockExist, IsUserExist } from "./customValidators";
 import { IQrFindOptions } from "@/interfaces/IFindOptions.interface";
+import { IQRAccess, IQRAccessReq } from "@/interfaces/IQRAccess.interface";
+import { Expose } from "class-transformer";
+import { ArrayMinSize, IsArray, IsNotEmpty, IsOptional, IsPhoneNumber, IsPositive, IsString } from 'class-validator';
+import { IsLockExist, IsUserExist, IsValidFromPasses, IsValidToPasses } from "./customValidators";
 
 export class QRAccessReqDTO implements IQRAccessReq{
     @IsString({ message: "Phone number should be string" })
@@ -72,22 +72,22 @@ export class QrFindOptionsDTO implements IQrFindOptions {
     @Expose()
     @IsOptional()
     @IsPositive({ message: "valid_from field should be a positive number" })
-    valid_from?: number;
+    date_from?: number;
 
     @Expose()
     @IsOptional()
     @IsPositive({ message: "valid_to field should be a positive number" })
-    valid_to?: number;
+    date_to?: number;
 
     @Expose()
     @IsOptional()
-    @IsBoolean()
-    only_active?: boolean;
+    @IsPositive()
+    only_active?: number;
 
     @Expose()
     @IsOptional()
-    @IsBoolean()
-    only_expired?: boolean;
+    @IsPositive()
+    only_expired?: number;
 
     @Expose()
     @IsOptional()

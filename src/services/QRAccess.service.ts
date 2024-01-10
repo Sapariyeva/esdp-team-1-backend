@@ -4,12 +4,14 @@ import { IQrFindOptions } from "@/interfaces/IFindOptions.interface";
 import { IUser } from "@/interfaces/IUser";
 import { QRAccessRepository } from "@/repositories/QRAccess.repository";
 import { LockRepository } from "@/repositories/locks.repository";
+import { TenantRepository } from "@/repositories/tenant.repository";
 import { ERole } from "@/types/roles";
 import axios, { AxiosInstance } from "axios";
 
 export class QRAccessService {
   private QRAccessRepo: QRAccessRepository = new QRAccessRepository()
   private lockRepo: LockRepository = new LockRepository()
+  private tenantRepo: TenantRepository = new TenantRepository()
   private qrAxios: AxiosInstance = axios.create({baseURL: envConfig.qrBaseUrl})
   private postPath = 'generate'
 
@@ -49,8 +51,22 @@ export class QRAccessService {
         case ERole.umanuAdmin:
           return await this.QRAccessRepo.getAllQRAccess();
         case ERole.organizationAdmin:
-          const orgLocks = await this.lockRepo.find({where: { b }})
+          const orgLocks = await this.lockRepo.getLocksByOrganization(user.organizationId!);
+          const orgLocksIds = orgLocks.map(l => l.id);
+          options.locks = orgLocksIds;
+          break;
+        case ERole.buildingAdmin:
+          const buildLocks = await this.lockRepo.find({ where: { buildingId: user.buildingId }});
+          const buildLocksIds = buildLocks.map(l => l.id);
+          options.locks = buildLocksIds;
+          break;
+        case ERole.tenantAdmin:
+          const tenant = await this.tenantRepo.findOne({where: { id: user.tenantId }});
+          options.locks = tenant?.locks;
+          break;
+        default: break;
       }
+      return await this.QRAccessRepo.getQrEntries(options);
     }
   }
 }

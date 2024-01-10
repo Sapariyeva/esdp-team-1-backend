@@ -2,9 +2,9 @@ export interface IQrFindOptions {
   author?: string;
   lock?: string;
   locks?: string[];
-  valid_from?: number;
-  valid_to?: number;
-  only_active?: boolean;
-  only_expired?: boolean;
+  date_from?: number;
+  date_to?: number;
+  only_active?: number;
+  only_expired?: number;
   offset?: number;
 }

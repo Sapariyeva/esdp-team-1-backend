@@ -1,5 +1,6 @@
 import { QRAccessDTO, QRAccessReqDTO } from "@/DTO/QRAccess.DTO";
-import { RequestWithUser } from "@/interfaces/IRequest.interface";
+import { IQrFindOptions } from "@/interfaces/IFindOptions.interface";
+import { RequestWithFindOptions, RequestWithUser } from "@/interfaces/IRequest.interface";
 import { ErrorWithStatus } from "@/interfaces/customErrors";
 import { QRAccessService } from "@/services/QRAccess.service";
 import { instanceToPlain, plainToInstance } from "class-transformer";
@@ -52,7 +53,18 @@ export class QRController {
     }
   };
 
-  getQREntries: RequestHandler = async (req, res): Promise<void> => {
-    // TODO Provide Entries by phone number or time period
+  getQREntries: RequestHandler = async (req: RequestWithFindOptions<IQrFindOptions>, res, next): Promise<void> => {
+    try {
+      const user = req.user;
+      if (!user) throw new ErrorWithStatus('Unauthorized', 403);
+      const entries = await this.qrService.getQrEntries(user, req.findOptions);
+      if (!entries) throw new ErrorWithStatus('Error getting QR access entries', 400);
+      res.status(200).send({
+        success: true,
+        payload: entries
+      })
+    } catch (err) {
+      next(err);
+    }
   };
 }

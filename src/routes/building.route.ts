@@ -1,9 +1,9 @@
-import { Router } from 'express';
-import { BuildingController } from '@/controllers/building.controller';
-import { checkAuth } from '@/middleware/auth.middleware';
-import { checkRole } from '@/middleware/roleChecker.middleware';
-import { ERole } from '@/types/roles';
-import { checkEntityAccess } from '@/middleware/updateChecker.midleware';
+import { Router } from "express";
+import { BuildingController } from "@/controllers/building.controller";
+import { checkAuth } from "@/middleware/auth.middleware";
+import { checkRole } from "@/middleware/roleChecker.middleware";
+import { ERole } from "@/types/roles";
+import { checkEntityAccess } from "@/middleware/updateChecker.midleware";
 
 export class BuildingRoute {
   public path = "/buildings";

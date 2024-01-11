@@ -246,21 +246,6 @@ export class IsTenantNameUniqueConstraint implements ValidatorConstraintInterfac
 }
 
 @ValidatorConstraint({ async: true })
-export class IsTenantNameUniqueConstraint implements ValidatorConstraintInterface {
-    async validate(name: string, args: ValidationArguments) {
-        const buildingId = (args.object as { buildingId: string }).buildingId;
-        const tenantRepo = new TenantRepository();
-        const existingTenant = await tenantRepo.findOne({
-            where: {
-                name,
-                buildingId,
-            },
-        });
-        return !existingTenant;
-    }
-}
-
-@ValidatorConstraint({ async: true })
 export class IsLockNameUniqueConstraint implements ValidatorConstraintInterface {
     async validate(name: string, args: ValidationArguments) {
         const buildingId = (args.object as { buildingId: string }).buildingId;

@@ -15,6 +15,7 @@ export class LocksController {
 
   createLockEntry: RequestHandler = async (req: RequestWithUser, res, next): Promise<void> => {
     try {
+      req.body.id = undefined
       const newLock = plainToInstance(lockDTO, req.body)
       const DTOerr = await validate(newLock)
       if (DTOerr && DTOerr.length > 0) throw DTOerr
@@ -64,20 +65,22 @@ export class LocksController {
   }
 
   updateLock: RequestHandler = async (req, res, next): Promise<void> => {
-    const { id } = req.params;
-    const updatedData = plainToInstance(lockDTO, req.body);
     try {
-        const result = await this.service.updateLock(id, updatedData);
-        if (result) {
-            res.status(201).send({
-                success: true,
-            });
-        } else {
-          throw new ErrorWithStatus("unknown internal server error", 500)
-        }
-    } catch (err) {
-        next(err);
-    }
+      const updatedData = plainToInstance(lockDTO, req.body.updateData);
+      const DTOerr = await validate(updatedData);
+      if (DTOerr && DTOerr.length > 0) throw DTOerr
+      const result = await this.service.updateLock(updatedData);
+      if (result) {
+          res.status(201).send({
+              success: true,
+          });
+      } else {
+          throw new ErrorWithStatus("Update failed. Unknown server error", 500)
+      }
+  }
+  catch (err) {
+      next(err);
+  }
 };
 
 }

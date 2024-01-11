@@ -29,24 +29,21 @@ export class OrganizationService {
     }
 
     getAllOrganizationsQuery = async (user: IUser, options: organizationFindOptionsDTO) => {
-        if ((user.role === ERole.organizationAdmin) && user.organizationId){
+        if ((user.role === ERole.organizationAdmin) && user.organizationId) {
             options.organizations = [user.organizationId]
         }
-        if (!([ERole.umanuAdmin, ERole.organizationAdmin].includes(user.role))){
+        if (!([ERole.umanuAdmin, ERole.organizationAdmin].includes(user.role))) {
             throw new ErrorWithStatus('User has no rights to access organizations data', 403)
         }
         return await this.organizationRepo.getAllOrganizationsQuery(options)
     }
 
-    async updateOrganization(id: string, data: Partial<IOrganization>): Promise<IOrganization | string> {
-        const updatedOrganization = await this.organizationRepo.updateOrganization(id, data);
-        if (!updatedOrganization) {
-            return "No organization with this id was found.";
+    async updateOrganization(data: OrganizationDTO): Promise<boolean> {
+        try {
+            return !!(await this.organizationRepo.update(data.id, data))
         }
-        const validationResult = await validate({ ...updatedOrganization, ...data });
-        if (validationResult.length > 0) {
-            return validationResult[0].constraints?.[Object.keys(validationResult[0].constraints)[0]] || 'Validation failed.';
+        catch (e) {
+            throw new ErrorWithStatus('unknown server error', 500)
         }
-        return await this.organizationRepo.save(updatedOrganization);
     }
 }

@@ -12,6 +12,7 @@ export class TenantController {
 
     createTenantEntry: RequestHandler = async (req, res, next): Promise<void> => {
         try {
+            req.body.id = undefined
             const newTenant = plainToInstance(TenantDTO, req.body)
             const DTOerr = await validate(newTenant)
             if (DTOerr.length > 0) throw DTOerr;
@@ -69,21 +70,21 @@ export class TenantController {
     }
 
     updateTenant: RequestHandler = async (req, res, next): Promise<void> => {
-        const { id } = req.params;
-        const updatedData = plainToInstance(TenantDTO, req.body);
         try {
-            const result = await this.service.updateTenant(id, updatedData);
+            const updatedData = plainToInstance(TenantDTO, req.body.updateData);
+            console.log('!!!!!!!', updatedData)
+            const DTOerr = await validate(updatedData);
+            if (DTOerr && DTOerr.length > 0) throw DTOerr
+            const result = await this.service.updateTenant(updatedData);
             if (result) {
                 res.status(201).send({
                     success: true,
                 });
             } else {
-                res.status(500).send({
-                    success: false,
-                    error: "unknown internal server error",
-                });
+                throw new ErrorWithStatus("Update failed. Unknown server error", 500)
             }
-        } catch (err) {
+        }
+        catch (err) {
             next(err);
         }
     };

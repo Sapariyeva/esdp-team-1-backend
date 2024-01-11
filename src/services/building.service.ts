@@ -27,16 +27,13 @@ export class BuildingService {
         return await this.buildingRepo.getAllBuildings()
     }
 
-    async updateBuilding(id: string, data: Partial<IBuilding>): Promise<IBuilding | string> {
-        const updatedBuilding = await this.buildingRepo.updateBuilding(id, data);
-        if (!updatedBuilding) {
-            return "No building with this id was found.";
+    async updateBuilding(data: BuildingDTO): Promise<boolean> {
+        try {
+            return !!(await this.buildingRepo.update(data.id, data))
         }
-        const validationResult = await validate({ ...updatedBuilding, ...data });
-        if (validationResult.length > 0) {
-            return validationResult[0].constraints?.[Object.keys(validationResult[0].constraints)[0]] || 'Validation failed.';
+        catch (e) {
+            throw new ErrorWithStatus('unknown server error', 500)
         }
-        return await this.buildingRepo.save(updatedBuilding);
     }
 
     getAllBuildingsQuery = async (user: IUser, options: buildingFindOptionsDTO) => {

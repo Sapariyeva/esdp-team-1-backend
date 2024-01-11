@@ -6,6 +6,8 @@ import { lockDTO, lockFindOptionsDTO } from '@/DTO/lock.DTO';
 import { BuildingRepository } from './building.repository';
 
 export class LockRepository extends Repository<ELock> {
+    private buildingRepo: BuildingRepository = new BuildingRepository()
+
     constructor() {
         super(ELock, appDataSource.createEntityManager());
     }
@@ -47,5 +49,20 @@ export class LockRepository extends Repository<ELock> {
             findOptions.where = { ...findOptions.where, id: In(options.locks) }
         }
         return await this.find(findOptions)
+    }
+
+    async getLocksByOrganization(organizationId: string): Promise<ILock[]> {
+        const buildings = await this.buildingRepo.find({ where: {  organizationId} });
+        const buildingsIds = buildings.map(m => m.id);
+        return await this.find({ where: { buildingId: In(buildingsIds) } });
+    }
+
+    async updateLock(id: string, data: Partial<ILock>): Promise<lockDTO> {
+        const existingLock = await this.findOne({ where: { id } });
+        if (!existingLock) {
+            throw new ErrorWithStatus('No lock with specified Id found. Unable to update', 500)
+        }
+        Object.assign(existingLock, data);
+        return existingLock;
     }
 }

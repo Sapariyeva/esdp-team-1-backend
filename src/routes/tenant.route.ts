@@ -23,7 +23,7 @@ export class TenantRoute {
       checkRole([
         ERole.umanuAdmin,
         ERole.organizationAdmin,
-        ERole.buildingAdmin
+        ERole.buildingAdmin,
       ]),
       this.controller.createTenantEntry
     );
@@ -40,7 +40,7 @@ export class TenantRoute {
       checkRole([
         ERole.umanuAdmin,
         ERole.organizationAdmin,
-        ERole.buildingAdmin
+        ERole.buildingAdmin,
       ]),
       checkEntityAccess('tenant'),
       buildUpdateEntity('tenant'),

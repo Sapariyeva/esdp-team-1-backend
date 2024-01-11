@@ -5,3 +5,6 @@ export interface RequestWithUser extends Request {
   user?: IUser;
 }
 
+export interface RequestWithFindOptions<T> extends RequestWithUser {
+  findOptions?: T
+}

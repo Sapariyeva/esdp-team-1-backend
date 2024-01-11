@@ -1,4 +1,5 @@
-import { RequestWithUser } from "@/interfaces/IRequest.interface";
+import { IQrFindOptions } from "@/interfaces/IFindOptions.interface";
+import { RequestWithFindOptions } from "@/interfaces/IRequest.interface";
 import { ErrorWithStatus } from "@/interfaces/customErrors";
 import { BuildingRepository } from "@/repositories/building.repository";
 import { LockRepository } from "@/repositories/locks.repository";
@@ -9,7 +10,7 @@ import { In } from "typeorm";
 
 
 export const checkLockAccess: RequestHandler = async (
-  req: RequestWithUser,
+  req: RequestWithFindOptions<IQrFindOptions>,
   res,
   next
 ) => {
@@ -20,7 +21,7 @@ export const checkLockAccess: RequestHandler = async (
     const user = req.user;
     if (!user) throw new ErrorWithStatus("Unauthorized", 401);
 
-    const locksIds = req.body.locks as string[];
+    const locksIds = req.body.locks as string[] || [req.findOptions?.lock] || req.findOptions?.locks;
     const locks = await locksRepo.find({ where: { id: In(locksIds) } });
     const buildingsIds = locks.map((l) => l.buildingId);
     const buildings = await buildingRepo.find({ where: { id: In(buildingsIds) }});

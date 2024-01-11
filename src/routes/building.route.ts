@@ -4,6 +4,7 @@ import { checkAuth } from '@/middleware/auth.middleware';
 import { checkRole } from '@/middleware/roleChecker.middleware';
 import { ERole } from '@/types/roles';
 import { checkEntityAccess } from '@/middleware/updateChecker.midleware';
+import { buildUpdateEntity } from '@/middleware/updateEntitiesMerger.middleware copy';
 
 export class BuildingRoute {
   public path = "/buildings";
@@ -34,6 +35,7 @@ export class BuildingRoute {
       checkAuth,
       checkRole([ERole.umanuAdmin, ERole.organizationAdmin]),
       checkEntityAccess("building"),
+      buildUpdateEntity("building"),
       this.controller.updateBuilding
     );
   }

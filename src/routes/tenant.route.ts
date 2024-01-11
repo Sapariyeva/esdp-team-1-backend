@@ -2,6 +2,7 @@ import { TenantController } from '@/controllers/tenant.controller';
 import { checkAuth } from '@/middleware/auth.middleware';
 import { checkRole } from '@/middleware/roleChecker.middleware';
 import { checkEntityAccess } from '@/middleware/updateChecker.midleware';
+import { buildUpdateEntity } from '@/middleware/updateEntitiesMerger.middleware copy';
 import { ERole } from '@/types/roles';
 import { Router } from 'express';
 
@@ -42,6 +43,7 @@ export class TenantRoute {
         ERole.buildingAdmin
       ]),
       checkEntityAccess('tenant'),
+      buildUpdateEntity('tenant'),
       this.controller.updateTenant
     );
   }

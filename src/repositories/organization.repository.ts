@@ -42,13 +42,4 @@ export class OrganizationRepository extends Repository<EOrganization> {
         return await this.find(findOptions)
     }
 
-
-    async updateOrganization(id: string, data: Partial<IOrganization>): Promise<IOrganization | null> {
-        const existingOrganization = await this.findOne({ where: { id } });
-        if (!existingOrganization) {
-            return null;
-        }
-        Object.assign(existingOrganization, data);
-        return existingOrganization;
-    }
 }

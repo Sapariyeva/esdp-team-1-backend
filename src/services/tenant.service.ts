@@ -112,15 +112,12 @@ export class TenantService {
         return await this.tenantRepo.getAllTenantsQuery(options)
     }
 
-    async updateTenant(id: string, data: Partial<ITenant>): Promise<ITenant | string> {
-        const updatedTenant = await this.tenantRepo.updateTenant(id, data);
-        if (!updatedTenant) {
-            return "No building with this id was found.";
+    async updateTenant(data: TenantDTO): Promise<boolean> {
+        try {
+            return !!(await this.tenantRepo.update(data.id, data))
         }
-        const validationResult = await validate({ ...updatedTenant, ...data });
-        if (validationResult.length > 0) {
-            return validationResult[0].constraints?.[Object.keys(validationResult[0].constraints)[0]] || 'Validation failed.';
+        catch (e) {
+            throw new ErrorWithStatus('unknown server error', 500)
         }
-        return await this.tenantRepo.save(updatedTenant);
     }
 }

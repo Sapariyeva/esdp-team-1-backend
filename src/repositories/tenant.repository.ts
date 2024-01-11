@@ -55,12 +55,4 @@ export class TenantRepository extends Repository<ETenant> {
         return await this.find(findOptions)
     }
 
-    async updateTenant(id: string, data: Partial<ITenant>): Promise<ITenant | null> {
-        const existingTenant = await this.findOne({ where: { id } });
-        if (!existingTenant) {
-            return null;
-        }
-        Object.assign(existingTenant, data);
-        return existingTenant;
-    }
 }

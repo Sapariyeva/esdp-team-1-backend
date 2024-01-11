@@ -42,13 +42,4 @@ export class BuildingRepository extends Repository<EBuilding> {
         }
         return await this.find(findOptions)
     }
-
-    async updateBuilding(id: string, data: Partial<IBuilding>): Promise<IBuilding | null> {
-        const existingBuilding = await this.findOne({ where: { id } });
-        if (!existingBuilding) {
-            return null;
-        }
-        Object.assign(existingBuilding, data);
-        return existingBuilding;
-    }
 }

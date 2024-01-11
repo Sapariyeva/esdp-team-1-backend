@@ -218,6 +218,21 @@ export class IsBuildingNameUniqueConstraint implements ValidatorConstraintInterf
 }
 
 @ValidatorConstraint({ async: true })
+export class IsTenantNameUniqueConstraint implements ValidatorConstraintInterface {
+    async validate(name: string, args: ValidationArguments) {
+        const buildingId = (args.object as { buildingId: string }).buildingId;
+        const tenantRepo = new TenantRepository();
+        const existingTenant = await tenantRepo.findOne({
+            where: {
+                name,
+                buildingId,
+            },
+        });
+        return !existingTenant;
+    }
+}
+
+@ValidatorConstraint({ async: true })
 export class IsLockNameUniqueConstraint implements ValidatorConstraintInterface {
   async validate(name: string, args: ValidationArguments) {
     const [buildingId] = args.constraints;
@@ -225,6 +240,21 @@ export class IsLockNameUniqueConstraint implements ValidatorConstraintInterface 
     return !(await lockRepo.getAllLocks()).filter(l => {return l.buildingId===buildingId})
     .map((l=>{return l.name})).includes(name)
   }
+}
+
+@ValidatorConstraint({ async: true })
+export class IsLockBelongsToBuildingConstraint implements ValidatorConstraintInterface {
+    async validate(id: string, args: ValidationArguments) {
+        const buildingId = (args.object as { buildingId: string }).buildingId;
+        const lockRepo = new LockRepository();
+        const existingLock = await lockRepo.findOne({
+            where: {
+                id,
+                buildingId,
+            },
+        });
+        return !!(existingLock);
+    }
 }
 
 export function IsUserExist(validationOptions?: ValidationOptions) {
@@ -417,6 +447,30 @@ export function IsBuildingNameUnique(validationOptions?: ValidationOptions) {
             options: validationOptions,
             constraints: [],
             validator: IsBuildingNameUniqueConstraint,
+        });
+    };
+}
+
+export function IsTenantNameUnique(validationOptions?: ValidationOptions) {
+    return function (object: Object, propertyName: string) {
+        registerDecorator({
+            target: object.constructor,
+            propertyName: propertyName,
+            options: validationOptions,
+            constraints: [],
+            validator: IsTenantNameUniqueConstraint,
+        });
+    };
+}
+
+export function IsLockBelongsToBuilding(validationOptions?: ValidationOptions) {
+    return function (object: Object, propertyName: string) {
+        registerDecorator({
+            target: object.constructor,
+            propertyName: propertyName,
+            options: validationOptions,
+            constraints: [],
+            validator: IsLockBelongsToBuildingConstraint,
         });
     };
 }

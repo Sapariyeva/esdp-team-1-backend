@@ -4,7 +4,8 @@ import { appDataSource } from "@/dbConfig";
 import { EQRAccess } from "@/entities/QRAccess.entity";
 import { IQrFindOptions } from "@/interfaces/IFindOptions.interface";
 import { IQRAccess } from "@/interfaces/IQRAccess.interface";
-import { Between, FindManyOptions, LessThanOrEqual, MoreThanOrEqual, Repository } from "typeorm";
+import { createQrFindOptions } from "@/utils/findOptionsCreator";
+import { Repository } from "typeorm";
 import { NotificationsRepository } from "./notifications.repository";
 
 export class QRAccessRepository extends Repository<EQRAccess> {
@@ -31,47 +32,18 @@ export class QRAccessRepository extends Repository<EQRAccess> {
     return await this.find();
   }
 
-  async getQrEntries(query: IQrFindOptions): Promise<IQRAccess[]> {
-    let findOptions: FindManyOptions<EQRAccess> = {
-      order: { valid_from: "DESC" },
-      take: 30,
-    };
-    const { author, phone, locks, date_from, date_to, only_active, only_expired, offset } = query;
-    if (author) findOptions.where = {...findOptions.where, author};
-    if (phone) findOptions.where = {...findOptions.where, phone};
-    if (only_active === '') {
-        findOptions.where = {...findOptions.where, valid_to: MoreThanOrEqual(new Date().getTime())};
-    } else if (only_expired === '') {
-        findOptions.where = {...findOptions.where, valid_to: LessThanOrEqual(new Date().getTime())};
-    }
-    if (date_from && date_to) {
-        findOptions.where = {
-          ...findOptions.where,
-          valid_from: Between(date_from, date_to),
-          valid_to: Between(date_from, date_to),
-        };
-      } else if (date_from && !date_to) {
-        findOptions.where = { ...findOptions.where, valid_from: MoreThanOrEqual(date_from) };
-      } else if (!date_from && date_to) {
-        findOptions.where = { ...findOptions.where, valid_to: LessThanOrEqual(date_to) };
-      }
-    findOptions.skip = offset || 0;
-    
-    if (locks && locks.length > 0) {
-      const rawResult = await this.find(findOptions);
-      const filteredResult = await this.createQueryBuilder("eqr_access")
-        .where(
-          'EXISTS(SELECT 1 FROM unnest("eqr_access"."locks") AS lock WHERE lock IN (:...lockIds))',
-          { lockIds: locks }
-        )
-        .getMany();
-      const finalResults = rawResult.filter((result) =>
-        filteredResult.some((res) => res.id === result.id)
-      );
-      return finalResults;
-    }
+  async getQrEntries(queryOptions: IQrFindOptions): Promise<IQRAccess[]> {
+    const findOptions = createQrFindOptions(queryOptions);
 
-    return await this.find(findOptions);
+    const { locks } = queryOptions;
+
+    const unfilteredResult = await this.find(findOptions);
+
+    if (locks && locks.length > 0) {
+      return await this.filterQueryByLockIds(locks, unfilteredResult);
+    } else {
+      return unfilteredResult;
+    }
   }
 
   async updateQRAccess(id: string, access: QRAccessDTO) {
@@ -99,5 +71,21 @@ export class QRAccessRepository extends Repository<EQRAccess> {
     }
     await this.delete(id);
     return true;
+  }
+
+  async filterQueryByLockIds(
+    locks: string[],
+    rawResult: EQRAccess[]
+  ): Promise<EQRAccess[]> {
+    const filteredResult = await this.createQueryBuilder("eqr_access")
+      .where(
+        'EXISTS(SELECT 1 FROM unnest("eqr_access"."locks") AS lock WHERE lock IN (:...lockIds))',
+        { lockIds: locks }
+      )
+      .getMany();
+    const finalResults = rawResult.filter((result) =>
+      filteredResult.some((res) => res.id === result.id)
+    );
+    return finalResults;
   }
 }

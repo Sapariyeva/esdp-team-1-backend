@@ -1,7 +1,7 @@
 import { IQrFindOptions } from "@/interfaces/IFindOptions.interface";
 import { IQRAccess, IQRAccessReq } from "@/interfaces/IQRAccess.interface";
 import { Expose } from "class-transformer";
-import { ArrayMinSize, IsArray, IsNotEmpty, IsOptional, IsPhoneNumber, IsPositive, IsString } from 'class-validator';
+import { ArrayMinSize, IsArray, IsNotEmpty, IsNumberString, IsOptional, IsPhoneNumber, IsPositive, IsString } from 'class-validator';
 import { IsLockExist, IsUserExist, IsValidFromPasses, IsValidToPasses } from "./customValidators";
 
 export class QRAccessReqDTO implements IQRAccessReq{
@@ -91,7 +91,7 @@ export class QrFindOptionsDTO implements IQrFindOptions {
 
     @Expose()
     @IsOptional()
-    @IsPositive()
+    @IsNumberString()
     offset?: number;
 }
 

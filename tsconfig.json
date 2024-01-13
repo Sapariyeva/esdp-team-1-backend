@@ -16,8 +16,9 @@
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
     "moduleResolution": "node",
+    "baseUrl": "./",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["src/*"]
     },
     "allowSyntheticDefaultImports": true,
     "experimentalDecorators": true,
@@ -27,5 +28,8 @@
   },
   "include": ["src/**/*.ts", "process-env.d.ts"],
   "exclude": ["node_modules"],
-  "typeRoots": ["src/types/global.d.ts" ]
+  "typeRoots": ["src/types/global.d.ts" ],
+  "ts-node": {
+    "require": ["tsconfig-paths/register"]
+  }
 }

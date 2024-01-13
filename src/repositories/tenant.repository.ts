@@ -31,11 +31,12 @@ export class TenantRepository extends Repository<ETenant> {
     }
 
     async getAllTenants(): Promise<TenantDTO[]> {
-        return await this.find()
+        return await this.find({ order: { name: 'ASC' } })
     }
 
     async getAllTenantsQuery(options: tenantFindOptionsDTO): Promise<ETenant[]> {
         let findOptions: FindManyOptions<ITenant> = {
+            order: { name: 'ASC' }
         };
         if (options.buildingId) findOptions.where = { ...findOptions.where, buildingId: options.buildingId };
         if (options.organizationId) {

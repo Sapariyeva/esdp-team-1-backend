@@ -15,6 +15,8 @@ export const createUserFindOptions = (query: IUserFindOptions): FindManyOptions<
     organizationId,
     buildingId,
     tenantId,
+    only_active,
+    only_blocked,
     offset
   } = query;
 
@@ -40,6 +42,12 @@ export const createUserFindOptions = (query: IUserFindOptions): FindManyOptions<
 
   if (tenantId) {
     findOptions.where = {...findOptions.where, tenantId};
+  }
+
+  if (only_active === "") {
+    findOptions.where = {...findOptions.where, isActive: true};
+  } else if (only_blocked === "") {
+    findOptions.where = {...findOptions.where, isActive: false};
   }
 
   findOptions.skip = offset || 0;

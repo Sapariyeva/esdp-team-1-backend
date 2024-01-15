@@ -20,4 +20,6 @@ export interface IUserFindOptions {
   buildingId?: string;
   tenantId?: string;
   offset?: number;
+  only_active?: string;
+  only_blocked?: string;
 }

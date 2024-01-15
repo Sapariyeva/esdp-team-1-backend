@@ -1,6 +1,6 @@
 import { Euser } from "@/entities/user.entity";
 import { IUserFindOptions } from "@/interfaces/IFindOptions.interface";
-import { FindManyOptions } from "typeorm";
+import { FindManyOptions, In } from "typeorm";
 
 export const createUserFindOptions = (query: IUserFindOptions): FindManyOptions<Euser> => {
   const findOptions: FindManyOptions<Euser> = {
@@ -15,6 +15,7 @@ export const createUserFindOptions = (query: IUserFindOptions): FindManyOptions<
     organizationId,
     buildingId,
     tenantId,
+    tenants,
     offset
   } = query;
 
@@ -36,11 +37,13 @@ export const createUserFindOptions = (query: IUserFindOptions): FindManyOptions<
 
   if (buildingId) {
     findOptions.where = {...findOptions.where, buildingId};
-  } 
+  }
 
   if (tenantId) {
     findOptions.where = {...findOptions.where, tenantId};
-  } 
+  } else if (tenants) {
+    findOptions.where = {...findOptions.where, tenantId: In(tenants)};
+  }
 
   findOptions.skip = offset || 0;
 

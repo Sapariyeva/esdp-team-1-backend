@@ -19,5 +19,8 @@ export interface IUserFindOptions {
   organizationId?: string;
   buildingId?: string;
   tenantId?: string;
+  organizations?: string[];
+  buildings?: string[];
+  tenants?: string[];
   offset?: number;
 }

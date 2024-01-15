@@ -7,10 +7,11 @@ export interface IUser {
   pass?: string;
   role: ERole;
   canCreateQR: Boolean;
-  tenantId?: string
-  buildingId?: string,
-  organizationId?: string,
-  locks: string[]
+  tenantId?: string;
+  buildingId?: string;
+  organizationId?: string;
+  locks: string[];
+  isActive: boolean;
 }
 
 export interface ISignInRes extends IUser {

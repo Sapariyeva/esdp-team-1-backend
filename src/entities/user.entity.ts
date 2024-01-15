@@ -54,6 +54,9 @@ export class Euser implements IUser {
   @JoinColumn({ name: "tenantId" })
   tenant?: ETenant;
 
+  @Column({ type: 'boolean', default: true })
+  isActive!: boolean;
+
   async hashPass(): Promise<void> {
     const salt = await bcrypt.genSalt(SALT_WORK_FACTOR);
     this.pass = await bcrypt.hash(this.pass, salt);

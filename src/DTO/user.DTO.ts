@@ -32,21 +32,26 @@ export class RegisterUserDTO {
 
     @Expose()
     @ShouldHaveBuildingId('role',{ message: 'TBuilding administrators must have valid building Id attached, other roles must have this field empty' })
-    buildingId?:string
+    buildingId?:string;
 
     @Expose()
     @ShouldHaveOrganizationId('role', { message: 'Organization administrators must have valid organization Id attached, other roles must have this field empty' })
-    organizationId?:string
+    organizationId?:string;
 
     @Expose()
     @ShouldHaveTenantId('role', { message: 'Tenant Administrators must have valid tenant Id attached, other roles must have this field empty' })
-    tenantId?:string
+    tenantId?:string;
 
     @Expose()
     @IsString({each: true, message: "Locks must have string type id"})
     @IsArray({ message: "locks field must contain an array of lock UUIDs" })
     @IsLockExist({each: true, message: "Some of the specified locks are not registered"})
-    locks?:string[]
+    locks?:string[];
+
+    @Expose()
+    @IsOptional()
+    @IsBoolean()
+    isActive?: boolean;
 }
 
 export class SignInUserDTO {

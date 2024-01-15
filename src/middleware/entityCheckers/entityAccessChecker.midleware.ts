@@ -1,8 +1,9 @@
 import { IUserFindOptions } from '@/interfaces/IFindOptions.interface';
-import { RequestWithFindOptions } from '@/interfaces/IRequest.interface';
+import { RequestWithFindOptions, RequestWithUser } from '@/interfaces/IRequest.interface';
 import { ErrorWithStatus } from '@/interfaces/customErrors';
 import { BuildingRepository } from '@/repositories/building.repository';
 import { TenantRepository } from '@/repositories/tenant.repository';
+import { UserRepository } from '@/repositories/user.repository';
 import { ERole } from '@/types/roles';
 import { RequestHandler } from 'express';
 
@@ -117,6 +118,48 @@ export const checkTenantAccess: RequestHandler = async (
       }
     } else {
       return next();
+    }
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const checkAccessToUser: RequestHandler = async (
+  req: RequestWithUser,
+  res,
+  next
+) => {
+  try {
+    const userRepo = new UserRepository();
+    const user = req.user!;
+    const { id } = req.params;
+    const prefindedUser = await userRepo.findOne({ where: { id } });
+    if (!prefindedUser) {
+      throw new ErrorWithStatus("Cannot find user with provided id", 400);
+    }
+    switch (user.role) {
+      case ERole.umanuAdmin:
+        return next();
+      case ERole.organizationAdmin:
+        if (prefindedUser.organizationId === user.organizationId) {
+          return next();
+        } else {
+          throw new ErrorWithStatus("Access denied", 403);
+        }
+      case ERole.buildingAdmin:
+        if (user.buildingId === prefindedUser.buildingId) {
+          return next();
+        } else {
+          throw new ErrorWithStatus("Access denied", 403);
+        }
+      case ERole.tenantAdmin:
+        if (user.tenantId === prefindedUser.tenantId) {
+          return next();
+        } else {
+          throw new ErrorWithStatus("Access denied", 403);
+        }
+      default:
+        throw new ErrorWithStatus("Access denied", 403);
     }
   } catch (err) {
     next(err);

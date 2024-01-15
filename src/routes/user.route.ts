@@ -2,6 +2,7 @@ import { UserController } from "@/controllers/user.controller";
 import { IUserFindOptions } from "@/interfaces/IFindOptions.interface";
 import { checkAuth } from "@/middleware/auth.middleware";
 import {
+  checkAccessToUser,
   checkBuildingAccess,
   checkOrganizationAccess,
 } from "@/middleware/entityCheckers/entityAccessChecker.midleware";
@@ -36,6 +37,6 @@ export class UserRoute {
       this.controller.getUsers
     );
     this.router.get("/current", checkAuth, this.controller.getCurrentUser);
-    this.router.get("/:id", checkAuth, this.controller.getCurrentUser);
+    this.router.get("/:id", checkAuth, checkAccessToUser, this.controller.getCurrentUser);
   }
 }

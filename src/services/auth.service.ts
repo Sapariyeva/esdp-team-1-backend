@@ -4,6 +4,8 @@ import { IRefreshRes, ISignInRes, IUser } from '@/interfaces/IUser';
 import { UserRepository } from '@/repositories/user.repository';
 import * as jwt from 'jsonwebtoken';
 import { envConfig } from '@/env';
+import { IUserFindOptions } from '@/interfaces/IFindOptions.interface';
+import { ERole } from '@/types/roles';
 
 export class AuthService {
   private userRepo: UserRepository = new UserRepository();
@@ -44,6 +46,22 @@ export class AuthService {
     }
   };
 
+  getUsersQuery = async (user: IUser, findOptions?: IUserFindOptions): Promise<IUser[]> => {
+    const queryOptions = {...findOptions}
+    switch (user.role) {
+      case ERole.umanuAdmin:
+        return findOptions
+          ? await this.userRepo.getUsersQuery(findOptions)
+          : await this.userRepo.getAllUsers();
+      case ERole.organizationAdmin:
+      case ERole.buildingAdmin:
+      case ERole.tenantAdmin:
+        queryOptions.tenantId = user.tenantId;
+        break;
+    }
+    return await this.userRepo.getUsersQuery(queryOptions);
+  }
+
   getUserById = async (id: string) => {
     return await this.userRepo.getUserById(id);
   };
@@ -53,7 +71,8 @@ export class AuthService {
       expiresIn: `${envConfig.accessTokenTTL}s`,
     });
     return { accessToken };
-  } 
+  } ;
+
 
   // authUser = async (dto: SignInUserDTO) => {
   //   return await this.userRepo.authUser(data)

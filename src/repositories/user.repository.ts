@@ -2,7 +2,7 @@ import { Euser } from '@/entities/user.entity';
 import { IUser } from '@/interfaces/IUser';
 import { Repository } from 'typeorm';
 import { appDataSource } from '../dbConfig';
-import { isUUID } from 'class-validator';
+import { isArray, isUUID } from 'class-validator';
 import { IUserFindOptions } from '@/interfaces/IFindOptions.interface';
 import { createUserFindOptions } from '@/utils/findOptionsBuilders/findUserOptionsCreator';
 
@@ -42,5 +42,15 @@ export class UserRepository extends Repository<Euser> {
   async getUsersQuery(queryOptions: IUserFindOptions): Promise<IUser[]> {
     const findOptions = createUserFindOptions(queryOptions);
     return await this.find(findOptions);
+  }
+
+  removePasswords(data: IUser[] | IUser): IUser[] | IUser {
+    if (isArray(data)) {
+      return data.map(u => {
+        return {...u, pass: undefined};
+      })
+    } else {
+      return {...data, pass: undefined};
+    }
   }
 }

@@ -36,5 +36,6 @@ export class UserRoute {
       this.controller.getUsers
     );
     this.router.get("/current", checkAuth, this.controller.getCurrentUser);
+    this.router.get("/:id", checkAuth, this.controller.getCurrentUser);
   }
 }

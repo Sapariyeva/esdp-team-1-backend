@@ -19,12 +19,29 @@ export class UserController {
       }
       res.status(200).send({
         success: true,
-        payload: user
-      })
+        payload: user,
+      });
     } catch (err) {
       next(err);
     }
-  }
+  };
+
+  getUserById: RequestHandler = async (req, res, next): Promise<void> => {
+    const { id } = req.params;
+    try {
+      const user = await this.service.getUserById(id);
+      if (!user) {
+        throw new ErrorWithStatus("Error getting user", 500);
+      } else {
+        res.status(200).send({
+          success: true,
+          payload: user,
+        });
+      }
+    } catch (err) {
+      next(err);
+    }
+  };
 
   getUsers: RequestHandler = async (
     req: RequestWithFindOptions<IUserFindOptions>,
@@ -43,7 +60,7 @@ export class UserController {
       }
       res.status(200).send({
         success: true,
-        payload: users
+        payload: users,
       });
     } catch (err) {
       next(err);

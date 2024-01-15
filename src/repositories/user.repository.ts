@@ -3,10 +3,10 @@ import { IUserFindOptions } from '@/interfaces/IFindOptions.interface';
 import { IUser } from '@/interfaces/IUser';
 import { createUserFindOptions } from '@/utils/findOptionsBuilders/findUserOptionsCreator';
 import { isUUID } from 'class-validator';
-import { Repository } from 'typeorm';
+import { Repository, UpdateResult } from 'typeorm';
 import { appDataSource } from '../dbConfig';
-import { OrganizationRepository } from './organization.repository';
 import { BuildingRepository } from './building.repository';
+import { OrganizationRepository } from './organization.repository';
 import { TenantRepository } from './tenant.repository';
 
 export class UserRepository extends Repository<Euser> {
@@ -60,13 +60,15 @@ export class UserRepository extends Repository<Euser> {
   }
 
   async getUsersQuery(queryOptions: IUserFindOptions): Promise<IUser[]> {
-    console.log(queryOptions);
-    
     const findOptions = createUserFindOptions(queryOptions);
     const users = await this.find(findOptions);
     return users.map(u => {
       return this.removeUserPassword(u);
     });
+  }
+
+  async updateUser(id: string, data: Partial<IUser>): Promise<UpdateResult> {
+    return await this.update({ id }, data);
   }
 
   removeUserPassword(user: IUser): IUser {

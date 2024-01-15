@@ -6,6 +6,7 @@ import {
   checkBuildingAccess,
   checkOrganizationAccess,
 } from "@/middleware/entityCheckers/entityAccessChecker.midleware";
+import { checkUserUpdate } from "@/middleware/entityCheckers/userUpdateChecker.middleware";
 import { checkQuery } from "@/middleware/queryChecker.middleware";
 import { checkRole } from "@/middleware/roleChecker.middleware";
 import { ERole } from "@/types/roles";
@@ -37,6 +38,18 @@ export class UserRoute {
       this.controller.getUsers
     );
     this.router.get("/current", checkAuth, this.controller.getCurrentUser);
-    this.router.get("/:id", checkAuth, checkAccessToUser, this.controller.getCurrentUser);
+    this.router.get(
+      "/:id",
+      checkAuth,
+      checkAccessToUser,
+      this.controller.getCurrentUser
+    );
+    this.router.put(
+      "/:id",
+      checkAuth,
+      checkAccessToUser,
+      checkUserUpdate,
+      this.controller.updateUser
+    );
   }
 }

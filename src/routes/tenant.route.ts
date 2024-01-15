@@ -2,7 +2,7 @@ import { TenantController } from "@/controllers/tenant.controller";
 import { checkAuth } from "@/middleware/auth.middleware";
 import { checkTenantAccess } from "@/middleware/entityCheckers/entityAccessChecker.midleware";
 import { checkRole } from "@/middleware/roleChecker.middleware";
-import { buildUpdateEntity } from "@/middleware/updateEntitiesMerger.middleware copy";
+import { buildUpdateEntity } from "@/middleware/entityCheckers/updateEntitiesMerger.middleware";
 import { ERole } from "@/types/roles";
 import { Router } from "express";
 

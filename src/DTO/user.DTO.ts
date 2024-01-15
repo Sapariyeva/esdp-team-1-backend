@@ -3,6 +3,7 @@ import { Expose } from "class-transformer";
 import { IsArray, IsBoolean, IsNotEmpty, IsNumberString, IsOptional, IsPhoneNumber, IsString } from 'class-validator';
 import { IsLockExist, ShouldHaveBuildingId, ShouldHaveOrganizationId, ShouldHaveTenantId } from "./customValidators";
 import { IUserFindOptions } from "@/interfaces/IFindOptions.interface";
+import { IUser } from "@/interfaces/IUser";
 // import { IsRoleValid } from "./customValidators";
 
 export class RegisterUserDTO {
@@ -102,4 +103,41 @@ export class UserFindOptionsDTO implements IUserFindOptions {
     @IsOptional()
     @IsNumberString()
     offset?: number;
+}
+
+export class UpdateUserDTO implements Partial<IUser> {
+    @Expose()
+    @IsOptional()
+    @IsNotEmpty()
+    @IsString({ message: 'User name should be string' })
+    username?: string;
+
+    @Expose()
+    @IsOptional()
+    @IsString()
+    @IsNotEmpty()
+    pass?: string;
+
+    @Expose()
+    @IsOptional()
+    @IsString()
+    @IsNotEmpty({ message: 'Role required' })
+    role?: ERole;
+
+    @Expose()
+    @IsOptional()
+    @IsBoolean()
+    canCreateQR?: boolean;
+
+    @Expose()
+    @IsOptional()
+    @IsBoolean()
+    isActive?: boolean;
+
+    @Expose()
+    @IsOptional()
+    @IsString({each: true, message: "Locks must have string type id"})
+    @IsArray({ message: "locks field must contain an array of lock UUIDs" })
+    @IsLockExist({each: true, message: "Some of the specified locks are not registered"})
+    locks?: string[];
 }

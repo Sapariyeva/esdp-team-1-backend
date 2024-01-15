@@ -6,7 +6,7 @@ export interface IUser {
   username: string;
   pass?: string;
   role: ERole;
-  canCreateQR: Boolean;
+  canCreateQR: boolean;
   tenantId?: string;
   buildingId?: string;
   organizationId?: string;

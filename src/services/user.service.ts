@@ -1,7 +1,9 @@
+import { Euser } from '@/entities/user.entity';
 import { IUserFindOptions } from '@/interfaces/IFindOptions.interface';
 import { IUser } from '@/interfaces/IUser';
 import { UserRepository } from '@/repositories/user.repository';
 import { ERole } from '@/types/roles';
+import { UpdateResult } from 'typeorm';
 
 export class UserService {
   private userRepo: UserRepository = new UserRepository();
@@ -26,6 +28,16 @@ export class UserService {
         break;
     }
     return await this.userRepo.getUsersQuery(queryOptions);
+  }
+
+  updateUser = async (id: string, data: Partial<IUser>): Promise<UpdateResult> => {
+    if (data.pass) {
+      const updatedUser = new Euser();
+      Object.assign(updatedUser, data);
+      await updatedUser.hashPass();
+      return await this.userRepo.updateUser(id, updatedUser);
+    }
+    return await this.userRepo.updateUser(id, data);
   }
 }
 

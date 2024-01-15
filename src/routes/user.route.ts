@@ -1,6 +1,10 @@
 import { UserController } from "@/controllers/user.controller";
 import { IUserFindOptions } from "@/interfaces/IFindOptions.interface";
 import { checkAuth } from "@/middleware/auth.middleware";
+import {
+  checkBuildingAccess,
+  checkOrganizationAccess,
+} from "@/middleware/entityCheckers/entityAccessChecker.midleware";
 import { checkQuery } from "@/middleware/queryChecker.middleware";
 import { checkRole } from "@/middleware/roleChecker.middleware";
 import { ERole } from "@/types/roles";
@@ -26,7 +30,9 @@ export class UserRoute {
         ERole.buildingAdmin,
         ERole.tenantAdmin,
       ]),
-      checkQuery<IUserFindOptions>('user'),
+      checkQuery<IUserFindOptions>("user"),
+      checkOrganizationAccess,
+      checkBuildingAccess,
       this.controller.getUsers
     );
     this.router.get("/current", checkAuth, this.controller.getCurrentUser);

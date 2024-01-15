@@ -60,6 +60,8 @@ export class UserRepository extends Repository<Euser> {
   }
 
   async getUsersQuery(queryOptions: IUserFindOptions): Promise<IUser[]> {
+    console.log(queryOptions);
+    
     const findOptions = createUserFindOptions(queryOptions);
     const users = await this.find(findOptions);
     return users.map(u => {

@@ -1,10 +1,10 @@
-import { TenantController } from '@/controllers/tenant.controller';
-import { checkAuth } from '@/middleware/auth.middleware';
-import { checkRole } from '@/middleware/roleChecker.middleware';
-import { checkEntityAccess } from '@/middleware/updateChecker.midleware';
-import { buildUpdateEntity } from '@/middleware/updateEntitiesMerger.middleware copy';
-import { ERole } from '@/types/roles';
-import { Router } from 'express';
+import { TenantController } from "@/controllers/tenant.controller";
+import { checkAuth } from "@/middleware/auth.middleware";
+import { checkTenantAccess } from "@/middleware/entityCheckers/entityAccessChecker.midleware";
+import { checkRole } from "@/middleware/roleChecker.middleware";
+import { buildUpdateEntity } from "@/middleware/updateEntitiesMerger.middleware copy";
+import { ERole } from "@/types/roles";
+import { Router } from "express";
 
 export class TenantRoute {
   public path = "/tenants";
@@ -30,7 +30,7 @@ export class TenantRoute {
     this.router.get(
       "/:id",
       checkAuth,
-      checkEntityAccess("tenant"),
+      checkTenantAccess,
       this.controller.getTenantById
     );
     this.router.get("/", checkAuth, this.controller.getAllTenants);
@@ -42,8 +42,8 @@ export class TenantRoute {
         ERole.organizationAdmin,
         ERole.buildingAdmin,
       ]),
-      checkEntityAccess('tenant'),
-      buildUpdateEntity('tenant'),
+      checkTenantAccess,
+      buildUpdateEntity("tenant"),
       this.controller.updateTenant
     );
   }

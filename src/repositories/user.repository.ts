@@ -5,13 +5,30 @@ import { createUserFindOptions } from '@/utils/findOptionsBuilders/findUserOptio
 import { isUUID } from 'class-validator';
 import { Repository } from 'typeorm';
 import { appDataSource } from '../dbConfig';
+import { OrganizationRepository } from './organization.repository';
+import { BuildingRepository } from './building.repository';
+import { TenantRepository } from './tenant.repository';
 
 export class UserRepository extends Repository<Euser> {
+  private organizationRepo: OrganizationRepository = new OrganizationRepository();
+  private buildingRepo: BuildingRepository = new BuildingRepository();
+  private tenantRepo: TenantRepository = new TenantRepository();
+  
   constructor() {
     super(Euser, appDataSource.createEntityManager());
   }
 
   async createUser(user: Euser): Promise<IUser> {
+    if (user.tenantId) {
+      const tenant = await this.tenantRepo.findOne({ where: { id: user.tenantId} });
+      const building = await this.buildingRepo.findOne({ where: { id: tenant?.buildingId } });
+      const organization = await this.organizationRepo.findOne({ where: { id: building?.organizationId } });
+      user.buildingId = building?.id;
+      user.organizationId = organization?.id; 
+    } else if (user.buildingId) {
+      const building = await this.buildingRepo.findOne({ where: { id: user.buildingId } });
+      user.organizationId = building?.organizationId;
+    }
     const newUser = (await this.save(user)) as IUser;
     delete newUser.pass;
     return newUser;

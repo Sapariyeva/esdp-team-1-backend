@@ -42,7 +42,6 @@ export class RegisterUserDTO {
     @ShouldHaveTenantId('role', { message: 'Tenant Administrators must have valid tenant Id attached, other roles must have this field empty' })
     tenantId?:string
 
-
     @Expose()
     @IsString({each: true, message: "Locks must have string type id"})
     @IsArray({ message: "locks field must contain an array of lock UUIDs" })

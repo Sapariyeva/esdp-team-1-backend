@@ -14,6 +14,7 @@ export const createUserFindOptions = (query: IUserFindOptions): FindManyOptions<
     role,
     organizationId,
     buildingId,
+    buildings,
     tenantId,
     tenants,
     offset
@@ -37,6 +38,8 @@ export const createUserFindOptions = (query: IUserFindOptions): FindManyOptions<
 
   if (buildingId) {
     findOptions.where = {...findOptions.where, buildingId};
+  } else if (buildings) {
+    findOptions.where = {...findOptions.where, buildingId: In(buildings)};
   }
 
   if (tenantId) {

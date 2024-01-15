@@ -1,7 +1,8 @@
 import { ERole } from "@/types/roles";
 import { Expose } from "class-transformer";
-import { IsArray, IsBoolean, IsNotEmpty, IsPhoneNumber, IsString } from 'class-validator';
+import { IsArray, IsBoolean, IsNotEmpty, IsNumberString, IsOptional, IsPhoneNumber, IsString } from 'class-validator';
 import { IsLockExist, ShouldHaveBuildingId, ShouldHaveOrganizationId, ShouldHaveTenantId } from "./customValidators";
+import { IUserFindOptions } from "@/interfaces/IFindOptions.interface";
 // import { IsRoleValid } from "./customValidators";
 
 export class RegisterUserDTO {
@@ -59,4 +60,42 @@ export class SignInUserDTO {
     @IsNotEmpty({ message: 'Password required' })
     @IsString()
     pass!: string;
+}
+
+export class UserFindOptionsDTO implements IUserFindOptions {
+    @Expose()
+    @IsOptional()
+    @IsString()
+    username?: string;
+    
+    @Expose()
+    @IsOptional()
+    @IsString({ message: "Phone number should be string" })
+    @IsPhoneNumber(undefined, { message: "Invalid phone number format" })
+    phone?: string;
+    
+    @Expose()
+    @IsOptional()
+    @IsString()
+    role?: ERole;
+
+    @Expose()
+    @IsOptional()
+    @IsString()
+    organizationId?: string;
+
+    @Expose()
+    @IsOptional()
+    @IsString()
+    buildingId?: string;
+
+    @Expose()
+    @IsOptional()
+    @IsString()
+    tenantId?: string;
+
+    @Expose()
+    @IsOptional()
+    @IsNumberString()
+    offset?: number;
 }

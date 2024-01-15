@@ -4,7 +4,7 @@ import { appDataSource } from "@/dbConfig";
 import { EQRAccess } from "@/entities/QRAccess.entity";
 import { IQrFindOptions } from "@/interfaces/IFindOptions.interface";
 import { IQRAccess } from "@/interfaces/IQRAccess.interface";
-import { createQrFindOptions } from "@/utils/findOptionsCreator";
+import { createQrFindOptions } from "@/utils/findOptionsBuilders/findQrOptionsCreator";
 import { Repository } from "typeorm";
 import { NotificationsRepository } from "./notifications.repository";
 

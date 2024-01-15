@@ -1,3 +1,5 @@
+import { ERole } from "@/types/roles";
+
 export interface IQrFindOptions {
   author?: string;
   phone?: string;
@@ -7,5 +9,15 @@ export interface IQrFindOptions {
   date_to?: number;
   only_active?: string;
   only_expired?: string;
+  offset?: number;
+}
+
+export interface IUserFindOptions {
+  phone?: string;
+  username?: string;
+  role?: ERole;
+  organizationId?: string;
+  buildingId?: string;
+  tenantId?: string;
   offset?: number;
 }

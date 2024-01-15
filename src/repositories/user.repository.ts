@@ -3,6 +3,8 @@ import { IUser } from '@/interfaces/IUser';
 import { Repository } from 'typeorm';
 import { appDataSource } from '../dbConfig';
 import { isUUID } from 'class-validator';
+import { IUserFindOptions } from '@/interfaces/IFindOptions.interface';
+import { createUserFindOptions } from '@/utils/findOptionsBuilders/findUserOptionsCreator';
 
 export class UserRepository extends Repository<Euser> {
   constructor() {
@@ -20,7 +22,7 @@ export class UserRepository extends Repository<Euser> {
   }
 
   async getAllUsers(): Promise<IUser[]> {
-    return await this.find();
+    return await this.find({ order: { username: 'ASC' } });
   }
 
   async getUserById(id: string): Promise<IUser | undefined> {
@@ -35,5 +37,10 @@ export class UserRepository extends Repository<Euser> {
     } else {
       return;
     }
+  }
+
+  async getUsersQuery(queryOptions: IUserFindOptions): Promise<IUser[]> {
+    const findOptions = createUserFindOptions(queryOptions);
+    return await this.find(findOptions);
   }
 }

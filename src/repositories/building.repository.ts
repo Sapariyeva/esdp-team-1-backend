@@ -30,11 +30,12 @@ export class BuildingRepository extends Repository<EBuilding> {
     }
 
     async getAllBuildings(): Promise<EBuilding[]> {
-        return await this.find()
+        return await this.find({ order: { name: 'ASC' } })
     }
 
     async getAllBuildingsQuery(options: buildingFindOptionsDTO): Promise<EBuilding[]> {
         let findOptions: FindManyOptions<IBuilding> = {
+            order: { name: 'ASC' }
         };
         if (options.organizationId) findOptions.where = { ...findOptions.where, organizationId: options.organizationId };
         if (options.buildings) {

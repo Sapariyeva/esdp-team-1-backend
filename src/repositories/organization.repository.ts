@@ -30,11 +30,12 @@ export class OrganizationRepository extends Repository<EOrganization> {
     }
 
     async getAllOrganizations(): Promise<OrganizationDTO[]> {
-        return await this.find()
+        return await this.find({ order: { name: 'ASC' } })
     }
 
     async getAllOrganizationsQuery(options: organizationFindOptionsDTO): Promise<OrganizationDTO[]> {
         let findOptions: FindManyOptions<IOrganization> = {
+          order: { name: "ASC" }
         };
         if (options.organizations) {
             findOptions.where = { ...findOptions.where, id: In(options.organizations) }

@@ -20,7 +20,7 @@ export class UserRepository extends Repository<Euser> {
   }
 
   async getAllUsers(): Promise<IUser[]> {
-    return await this.find();
+    return await this.find({ order: { username: 'ASC' } });
   }
 
   async getUserById(id: string): Promise<IUser | undefined> {

@@ -73,13 +73,4 @@ export class AuthController {
       next(err);
     }
   }
-
-  // setAllowedCreateQr: RequestHandler = async (req, res): Promise<void> => {
-  // }
-  //
-  // authorizeUser: RequestHandler = async (req, res): Promise<void> => {
-  // }
-  //
-  // logOut: RequestHandler = async (req, res): Promise<void> => {
-  // }
 }

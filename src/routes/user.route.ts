@@ -29,5 +29,6 @@ export class UserRoute {
       checkQuery<IUserFindOptions>('user'),
       this.controller.getUsers
     );
+    this.router.get("/current", checkAuth, this.controller.getCurrentUser);
   }
 }

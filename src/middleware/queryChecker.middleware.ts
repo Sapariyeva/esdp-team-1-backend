@@ -5,8 +5,7 @@ import { plainToInstance } from 'class-transformer';
 import { validate } from 'class-validator';
 import { NextFunction, Response } from 'express';
 
-// potentially can be implemented for other entities as well
-type TEntity = 'qr' | 'user'
+type TEntity = 'qr' | 'user';
 
 export function checkQuery<T>(entity: TEntity) {
   return async (req: RequestWithFindOptions<T>, res: Response, next: NextFunction) => {

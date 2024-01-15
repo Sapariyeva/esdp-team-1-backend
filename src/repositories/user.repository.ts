@@ -1,10 +1,10 @@
 import { Euser } from '@/entities/user.entity';
+import { IUserFindOptions } from '@/interfaces/IFindOptions.interface';
 import { IUser } from '@/interfaces/IUser';
+import { createUserFindOptions } from '@/utils/findOptionsBuilders/findUserOptionsCreator';
+import { isUUID } from 'class-validator';
 import { Repository } from 'typeorm';
 import { appDataSource } from '../dbConfig';
-import { isArray, isUUID } from 'class-validator';
-import { IUserFindOptions } from '@/interfaces/IFindOptions.interface';
-import { createUserFindOptions } from '@/utils/findOptionsBuilders/findUserOptionsCreator';
 
 export class UserRepository extends Repository<Euser> {
   constructor() {
@@ -22,7 +22,10 @@ export class UserRepository extends Repository<Euser> {
   }
 
   async getAllUsers(): Promise<IUser[]> {
-    return await this.find({ order: { username: 'ASC' } });
+    const users = await this.find({ order: { username: 'ASC' } });
+    return users.map(u => {
+      return this.removeUserPassword(u);
+    });
   }
 
   async getUserById(id: string): Promise<IUser | undefined> {
@@ -33,7 +36,7 @@ export class UserRepository extends Repository<Euser> {
       where: { id },
     });
     if (extractedUser) {
-      return extractedUser;
+      return this.removeUserPassword(extractedUser);
     } else {
       return;
     }
@@ -41,16 +44,14 @@ export class UserRepository extends Repository<Euser> {
 
   async getUsersQuery(queryOptions: IUserFindOptions): Promise<IUser[]> {
     const findOptions = createUserFindOptions(queryOptions);
-    return await this.find(findOptions);
+    const users = await this.find(findOptions);
+    return users.map(u => {
+      return this.removeUserPassword(u);
+    });
   }
 
-  removePasswords(data: IUser[] | IUser): IUser[] | IUser {
-    if (isArray(data)) {
-      return data.map(u => {
-        return {...u, pass: undefined};
-      })
-    } else {
-      return {...data, pass: undefined};
-    }
+  removeUserPassword(user: IUser): IUser {
+    delete user.pass;
+    return user;
   }
 }

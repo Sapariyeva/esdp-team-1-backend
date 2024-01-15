@@ -1,19 +1,19 @@
-import { AuthService } from "@/services/auth.service";
-import { NotificationService } from "@/services/notifications.service";
-import { Socket } from "socket.io";
+import { envConfig } from "@/env";
 import { app as runningApp } from "@/index";
 import { INotificationToSendWS } from "@/interfaces/INotification.interface";
-import * as jwt from "jsonwebtoken";
-import { envConfig } from "@/env";
 import { ITokenPayload } from "@/interfaces/ITokenPayload.interface";
+import { NotificationService } from "@/services/notifications.service";
+import { UserService } from "@/services/user.service";
+import * as jwt from "jsonwebtoken";
+import { Socket } from "socket.io";
 
 export class WSNotificationsService {
-  private authService: AuthService;
+  private userService: UserService;
   private notificationService: NotificationService;
   private maxToSendOnConnect: number = 100;
 
   constructor() {
-    this.authService = new AuthService();
+    this.userService = new UserService();
     this.notificationService = new NotificationService();
   }
 
@@ -29,9 +29,9 @@ export class WSNotificationsService {
       : (io.handshake.headers.token as string);
     try {
       const decoded = jwt.verify(token, envConfig.secretPrivate) as ITokenPayload;
-      const user = await this.authService.getUserById(decoded.sub);
+      const user = await this.userService.getUserById(decoded.sub);
       const userUUID = user?.id;
-      if (!userUUID || !(await this.authService.getUserById(userUUID))) {
+      if (!userUUID || !(await this.userService.getUserById(userUUID))) {
         io.send("Unauthrized socket connection");
         io.disconnect(true);
         return;

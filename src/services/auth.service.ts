@@ -62,30 +62,11 @@ export class AuthService {
     return await this.userRepo.getUsersQuery(queryOptions);
   }
 
-  getUserById = async (id: string) => {
-    return await this.userRepo.getUserById(id);
-  };
-
   refreshAccessToken = (user: IUser): IRefreshRes => {
     const accessToken = jwt.sign({ sub: user.id }, envConfig.secretPrivate, {
       expiresIn: `${envConfig.accessTokenTTL}s`,
     });
     return { accessToken };
   } ;
-
-
-  // authUser = async (dto: SignInUserDTO) => {
-  //   return await this.userRepo.authUser(data)
-  // }
-
-  // validateToken = async (data:string) => {
-  //   const result = await this.userRepo.validateRequest(data)
-  //   return result
-  // }
-
-  // logoutUser = async (data:string) => {
-  //   const result = await this.userRepo.logoutUser(data)
-  //   return result
-  // }
 }
 

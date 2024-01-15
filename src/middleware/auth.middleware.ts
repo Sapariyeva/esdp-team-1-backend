@@ -1,11 +1,11 @@
 import { envConfig } from "@/env";
 import { RequestWithUser } from "@/interfaces/IRequest.interface";
 import { ITokenPayload } from "@/interfaces/ITokenPayload.interface";
-import { AuthService } from "@/services/auth.service";
+import { UserService } from "@/services/user.service";
 import { RequestHandler } from "express-serve-static-core";
 import * as jwt from "jsonwebtoken";
 
-const authService = new AuthService();
+const userService = new UserService();
 
 export const checkAuth: RequestHandler = async (
   req: RequestWithUser,
@@ -28,7 +28,7 @@ export const checkAuth: RequestHandler = async (
       });
     }
     const decoded = jwt.verify(token, envConfig.secretPrivate) as ITokenPayload;
-    const user = await authService.getUserById(decoded.sub);
+    const user = await userService.getUserById(decoded.sub);
     if (!user) {
       return res.status(401).send({
         success: false,
@@ -60,7 +60,7 @@ export const checkRefresh: RequestHandler = async (
       refreshToken,
       envConfig.secretPrivate
     ) as ITokenPayload;
-    const user = await authService.getUserById(decoded.sub);
+    const user = await userService.getUserById(decoded.sub);
     if (!user) {
       return res.status(401).send({
         success: false,

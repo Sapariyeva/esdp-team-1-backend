@@ -74,7 +74,11 @@ export class UserController {
     try {
       const { id } = req.params;
       const updatedData = plainToInstance(UpdateUserDTO, req.body);
-      const DTOerr = await validate(updatedData);
+      const DTOerr = await validate(updatedData, { whitelist: true });
+      const isDtoEmpty = Object.values(updatedData).every(v => v === undefined);
+      if (isDtoEmpty) {
+        throw new ErrorWithStatus('Data for user update not provided', 400);
+      }
       if (DTOerr && DTOerr.length > 0) throw DTOerr;
       const result = await this.service.updateUser(id, updatedData);
       if (result) {

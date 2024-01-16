@@ -120,12 +120,6 @@ export class UpdateUserDTO implements Partial<IUser> {
 
     @Expose()
     @IsOptional()
-    @IsString()
-    @IsNotEmpty({ message: 'Role required' })
-    role?: ERole;
-
-    @Expose()
-    @IsOptional()
     @IsBoolean()
     canCreateQR?: boolean;
 

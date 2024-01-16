@@ -6,6 +6,7 @@ import {
   checkBuildingAccess,
   checkOrganizationAccess,
 } from "@/middleware/entityCheckers/entityAccessChecker.midleware";
+import { buildUpdateEntity } from "@/middleware/entityCheckers/updateEntitiesMerger.middleware";
 import { checkUserUpdate } from "@/middleware/entityCheckers/userUpdateChecker.middleware";
 import { checkQuery } from "@/middleware/queryChecker.middleware";
 import { checkRole } from "@/middleware/roleChecker.middleware";
@@ -49,6 +50,7 @@ export class UserRoute {
       checkAuth,
       checkAccessToUser,
       checkUserUpdate,
+      buildUpdateEntity("user"),
       this.controller.updateUser
     );
   }

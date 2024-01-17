@@ -71,12 +71,12 @@ export class QrFindOptionsDTO implements IQrFindOptions {
 
     @Expose()
     @IsOptional()
-    @IsPositive({ message: "valid_from field should be a positive number" })
+    @IsNumberString()
     date_from?: number;
 
     @Expose()
     @IsOptional()
-    @IsPositive({ message: "valid_to field should be a positive number" })
+    @IsNumberString()
     date_to?: number;
 
     @Expose()

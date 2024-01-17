@@ -44,6 +44,9 @@ export class QRAccessService {
 
   async getQrEntries(user: IUser, findOptions?: IQrFindOptions) {
     if (findOptions && findOptions.locks) {
+      if (user.role === ERole.user) {
+        findOptions.author = user.id;
+      }
       return await this.QRAccessRepo.getQrEntries(findOptions);
     } else {
       const options: IQrFindOptions = {};
@@ -67,7 +70,9 @@ export class QRAccessService {
           const tenant = await this.tenantRepo.findOne({where: { id: user.tenantId }});
           findOptions ? findOptions.locks = tenant?.locks : options.locks = tenant?.locks;
           break;
-        default: break;
+        case ERole.user:
+          findOptions ? findOptions.author = user.id : options.author = user.id;
+          break;
       }
       return findOptions
         ? await this.QRAccessRepo.getQrEntries(findOptions)

@@ -72,12 +72,12 @@ export class QrFindOptionsDTO implements IQrFindOptions {
     @Expose()
     @IsOptional()
     @IsNumberString()
-    date_from?: number;
+    valid_from?: number;
 
     @Expose()
     @IsOptional()
     @IsNumberString()
-    date_to?: number;
+    valid_to?: number;
 
     @Expose()
     @IsOptional()

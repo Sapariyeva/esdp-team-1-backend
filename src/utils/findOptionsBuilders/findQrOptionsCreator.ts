@@ -11,8 +11,8 @@ export const createQrFindOptions = (query: IQrFindOptions): FindManyOptions<EQRA
   const {
     author,
     phone,
-    date_from,
-    date_to,
+    valid_from,
+    valid_to,
     only_active,
     only_expired,
     offset
@@ -38,21 +38,21 @@ export const createQrFindOptions = (query: IQrFindOptions): FindManyOptions<EQRA
     };
   }
 
-  if (date_from && date_to) {
+  if (valid_from && valid_to) {
     findOptions.where = {
       ...findOptions.where,
-      valid_from: Between(date_from, date_to),
-      valid_to: Between(date_from, date_to),
+      valid_from: Between(valid_from, valid_to),
+      valid_to: Between(valid_from, valid_to),
     };
-  } else if (date_from && !date_to) {
+  } else if (valid_from && !valid_to) {
     findOptions.where = {
       ...findOptions.where,
-      valid_from: MoreThanOrEqual(date_from),
+      valid_from: MoreThanOrEqual(valid_from),
     };
-  } else if (!date_from && date_to) {
+  } else if (!valid_from && valid_to) {
     findOptions.where = {
       ...findOptions.where,
-      valid_to: LessThanOrEqual(date_to),
+      valid_to: LessThanOrEqual(valid_to),
     };
   }
 

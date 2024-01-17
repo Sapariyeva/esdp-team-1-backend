@@ -7,22 +7,36 @@ import { LockRepository } from "@/repositories/locks.repository";
 import { TenantRepository } from "@/repositories/tenant.repository";
 import { ERole } from "@/types/roles";
 import axios, { AxiosInstance } from "axios";
+import bcrypt from 'bcrypt';
 
 export class QRAccessService {
   private QRAccessRepo: QRAccessRepository = new QRAccessRepository()
   private lockRepo: LockRepository = new LockRepository()
   private tenantRepo: TenantRepository = new TenantRepository()
-  private qrAxios: AxiosInstance = axios.create({baseURL: envConfig.qrBaseUrl})
+  private qrAxios: AxiosInstance = axios.create({ baseURL: envConfig.qrBaseUrl })
   private postPath = 'generate'
+  // private secretKey = envConfig.secretPrivate;
+  private hashKey = envConfig.secretHTTP;
 
   constructor() {
+  }
+
+  private async createRequestSignature(data: QRAccessDTO): Promise<string> {
+    return bcrypt.hash(JSON.stringify(data), 10);
   }
 
   async createQRAccessEntry(access: QRAccessDTO) {
     const newAccess = await this.QRAccessRepo.saveQRAccess(access);
 
     try {
-      const response = await this.qrAxios.post(this.postPath, newAccess);
+      const signature = await this.createRequestSignature(newAccess);
+
+      const response = await this.qrAxios.post(this.postPath, newAccess, {
+        headers: {
+          'X-Secret-Hash': this.hashKey,
+          'X-Signature': signature,
+        },
+      });
 
       if (!response.data.success) {
         await this.QRAccessRepo.delQRAccessById(newAccess.id);
@@ -59,12 +73,12 @@ export class QRAccessService {
           findOptions ? findOptions.locks = orgLocksIds : options.locks = orgLocksIds;
           break;
         case ERole.buildingAdmin:
-          const buildLocks = await this.lockRepo.find({ where: { buildingId: user.buildingId }});
+          const buildLocks = await this.lockRepo.find({ where: { buildingId: user.buildingId } });
           const buildLocksIds = buildLocks.map(l => l.id);
           findOptions ? findOptions.locks = buildLocksIds : options.locks = buildLocksIds;
           break;
         case ERole.tenantAdmin:
-          const tenant = await this.tenantRepo.findOne({where: { id: user.tenantId }});
+          const tenant = await this.tenantRepo.findOne({ where: { id: user.tenantId } });
           findOptions ? findOptions.locks = tenant?.locks : options.locks = tenant?.locks;
           break;
         default: break;

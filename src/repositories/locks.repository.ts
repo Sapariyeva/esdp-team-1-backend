@@ -4,7 +4,7 @@ import { ELock } from "@/entities/lock.entity";
 import { ILock } from "@/interfaces/Ilock.interface";
 import { lockDTO, lockFindOptionsDTO } from "@/DTO/lock.DTO";
 import { BuildingRepository } from "./building.repository";
-import { ErrorWithStatus } from "@/interfaces/customErrors.interface";
+import { ErrorWithStatus } from "@/interfaces/customErrors";
 
 export class LockRepository extends Repository<ELock> {
   private buildingRepo: BuildingRepository = new BuildingRepository();

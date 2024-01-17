@@ -1,7 +1,9 @@
 import { ERole } from "@/types/roles";
 import { Expose } from "class-transformer";
-import { IsArray, IsBoolean, IsNotEmpty, IsPhoneNumber, IsString } from 'class-validator';
+import { IsArray, IsBoolean, IsNotEmpty, IsNumberString, IsOptional, IsPhoneNumber, IsString } from 'class-validator';
 import { IsLockExist, ShouldHaveBuildingId, ShouldHaveOrganizationId, ShouldHaveTenantId } from "./customValidators";
+import { IUserFindOptions } from "@/interfaces/IFindOptions.interface";
+import { IUser } from "@/interfaces/IUser";
 // import { IsRoleValid } from "./customValidators";
 
 export class RegisterUserDTO {
@@ -31,22 +33,26 @@ export class RegisterUserDTO {
 
     @Expose()
     @ShouldHaveBuildingId('role',{ message: 'TBuilding administrators must have valid building Id attached, other roles must have this field empty' })
-    buildingId?:string
+    buildingId?:string;
 
     @Expose()
     @ShouldHaveOrganizationId('role', { message: 'Organization administrators must have valid organization Id attached, other roles must have this field empty' })
-    organizationId?:string
+    organizationId?:string;
 
     @Expose()
     @ShouldHaveTenantId('role', { message: 'Tenant Administrators must have valid tenant Id attached, other roles must have this field empty' })
-    tenantId?:string
-
+    tenantId?:string;
 
     @Expose()
     @IsString({each: true, message: "Locks must have string type id"})
     @IsArray({ message: "locks field must contain an array of lock UUIDs" })
     @IsLockExist({each: true, message: "Some of the specified locks are not registered"})
-    locks?:string[]
+    locks?:string[];
+
+    @Expose()
+    @IsOptional()
+    @IsBoolean()
+    isActive?: boolean;
 }
 
 export class SignInUserDTO {
@@ -59,4 +65,73 @@ export class SignInUserDTO {
     @IsNotEmpty({ message: 'Password required' })
     @IsString()
     pass!: string;
+}
+
+export class UserFindOptionsDTO implements IUserFindOptions {
+    @Expose()
+    @IsOptional()
+    @IsString()
+    username?: string;
+    
+    @Expose()
+    @IsOptional()
+    @IsString({ message: "Phone number should be string" })
+    @IsPhoneNumber(undefined, { message: "Invalid phone number format" })
+    phone?: string;
+    
+    @Expose()
+    @IsOptional()
+    @IsString()
+    role?: ERole;
+
+    @Expose()
+    @IsOptional()
+    @IsString()
+    organizationId?: string;
+
+    @Expose()
+    @IsOptional()
+    @IsString()
+    buildingId?: string;
+
+    @Expose()
+    @IsOptional()
+    @IsString()
+    tenantId?: string;
+
+    @Expose()
+    @IsOptional()
+    @IsNumberString()
+    offset?: number;
+}
+
+export class UpdateUserDTO implements Partial<IUser> {
+    @Expose()
+    @IsOptional()
+    @IsNotEmpty()
+    @IsString({ message: 'User name should be string' })
+    username?: string;
+
+    @Expose()
+    @IsOptional()
+    @IsString()
+    @IsNotEmpty()
+    pass?: string;
+
+    @Expose()
+    @IsOptional()
+    @IsBoolean()
+    canCreateQR?: boolean;
+
+    @Expose()
+    @IsOptional()
+    @IsBoolean()
+    isActive?: boolean;
+
+    @Expose()
+    @IsOptional()
+    @IsString({each: true, message: "Locks must have string type id"})
+    @IsArray({ message: "locks field must contain an array of lock UUIDs" })
+    @IsLockExist({each: true, message: "Some of the specified locks are not registered"})
+    locks?: string[];
 }

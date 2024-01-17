@@ -7,12 +7,21 @@ import { LocksRoute } from './routes/locks.route';
 import { OrganizationRoute } from './routes/organization.route';
 import { BuildingRoute } from './routes/building.route';
 import { TenantRoute } from './routes/tenant.route';
+import { UserRoute } from './routes/user.route';
 
 
 export const app = new App({
   port: envConfig.port,
   middlewares: [cors()],
-  controllers: [ new AuthRoute(), new QRRoute(), new LocksRoute, new OrganizationRoute (), new BuildingRoute (), new TenantRoute ()],
+  controllers: [
+    new AuthRoute(),
+    new QRRoute(),
+    new LocksRoute(),
+    new OrganizationRoute(),
+    new BuildingRoute(),
+    new TenantRoute(),
+    new UserRoute()
+  ]
 });
 
 app.listen();

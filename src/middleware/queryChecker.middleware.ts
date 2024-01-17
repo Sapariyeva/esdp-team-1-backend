@@ -1,11 +1,11 @@
 import { QrFindOptionsDTO } from '@/DTO/QRAccess.DTO';
+import { UserFindOptionsDTO } from '@/DTO/user.DTO';
 import { RequestWithFindOptions } from '@/interfaces/IRequest.interface';
 import { plainToInstance } from 'class-transformer';
 import { validate } from 'class-validator';
 import { NextFunction, Response } from 'express';
 
-// potentially can be implemented for other entities as well
-type TEntity = 'qr'
+type TEntity = 'qr' | 'user';
 
 export function checkQuery<T>(entity: TEntity) {
   return async (req: RequestWithFindOptions<T>, res: Response, next: NextFunction) => {
@@ -14,6 +14,9 @@ export function checkQuery<T>(entity: TEntity) {
       switch (entity) {
         case 'qr':
           dtoSignature = QrFindOptionsDTO;
+          break;
+        case 'user':
+          dtoSignature = UserFindOptionsDTO;
           break;
       } 
       const findOptions = plainToInstance(dtoSignature, req.query);

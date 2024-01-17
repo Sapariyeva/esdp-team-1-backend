@@ -1,10 +1,10 @@
-import { Router } from 'express';
-import { BuildingController } from '@/controllers/building.controller';
-import { checkAuth } from '@/middleware/auth.middleware';
-import { checkRole } from '@/middleware/roleChecker.middleware';
-import { ERole } from '@/types/roles';
-import { checkEntityAccess } from '@/middleware/updateChecker.midleware';
-import { buildUpdateEntity } from '@/middleware/updateEntitiesMerger.middleware copy';
+import { BuildingController } from "@/controllers/building.controller";
+import { checkAuth } from "@/middleware/auth.middleware";
+import { checkBuildingAccess } from "@/middleware/entityCheckers/entityAccessChecker.midleware";
+import { checkRole } from "@/middleware/roleChecker.middleware";
+import { buildUpdateEntity } from "@/middleware/entityCheckers/updateEntitiesMerger.middleware";
+import { ERole } from "@/types/roles";
+import { Router } from "express";
 
 export class BuildingRoute {
   public path = "/buildings";
@@ -26,7 +26,7 @@ export class BuildingRoute {
     this.router.get(
       "/:id",
       checkAuth,
-      checkEntityAccess("building"),
+      checkBuildingAccess,
       this.controller.getBuildingById
     );
     this.router.get("/", checkAuth, this.controller.getAllBuildings);
@@ -34,7 +34,7 @@ export class BuildingRoute {
       "/:id",
       checkAuth,
       checkRole([ERole.umanuAdmin, ERole.organizationAdmin]),
-      checkEntityAccess("building"),
+      checkBuildingAccess,
       buildUpdateEntity("building"),
       this.controller.updateBuilding
     );

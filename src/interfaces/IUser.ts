@@ -6,11 +6,12 @@ export interface IUser {
   username: string;
   pass?: string;
   role: ERole;
-  canCreateQR: Boolean;
-  tenantId?: string
-  buildingId?: string,
-  organizationId?: string,
-  locks: string[]
+  canCreateQR: boolean;
+  tenantId?: string;
+  buildingId?: string;
+  organizationId?: string;
+  locks: string[];
+  isActive: boolean;
 }
 
 export interface ISignInRes extends IUser {

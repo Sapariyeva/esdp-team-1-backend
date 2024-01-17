@@ -1,10 +1,10 @@
-import { Router } from 'express';
-import { OrganizationController } from '@/controllers/organization.controller';
-import { checkAuth } from '@/middleware/auth.middleware';
-import { checkRole } from '@/middleware/roleChecker.middleware';
-import { ERole } from '@/types/roles';
-import { checkEntityAccess } from '@/middleware/updateChecker.midleware';
-import { buildUpdateEntity } from '@/middleware/updateEntitiesMerger.middleware copy';
+import { OrganizationController } from "@/controllers/organization.controller";
+import { checkAuth } from "@/middleware/auth.middleware";
+import { checkOrganizationAccess } from "@/middleware/entityCheckers/entityAccessChecker.midleware";
+import { checkRole } from "@/middleware/roleChecker.middleware";
+import { buildUpdateEntity } from "@/middleware/entityCheckers/updateEntitiesMerger.middleware";
+import { ERole } from "@/types/roles";
+import { Router } from "express";
 
 export class OrganizationRoute {
   public path = "/organizations";
@@ -26,7 +26,7 @@ export class OrganizationRoute {
     this.router.get(
       "/:id",
       checkAuth,
-      checkEntityAccess("organization"),
+      checkOrganizationAccess,
       this.controller.getOrganizationById
     );
     this.router.get("/", checkAuth, this.controller.getAllOrganizations);
@@ -34,7 +34,7 @@ export class OrganizationRoute {
       "/:id",
       checkAuth,
       checkRole([ERole.umanuAdmin]),
-      buildUpdateEntity('organization'),
+      buildUpdateEntity("organization"),
       this.controller.updateOrganization
     );
   }

@@ -72,7 +72,6 @@ export class TenantController {
     updateTenant: RequestHandler = async (req, res, next): Promise<void> => {
         try {
             const updatedData = plainToInstance(TenantDTO, req.body.updateData);
-            console.log('!!!!!!!', updatedData)
             const DTOerr = await validate(updatedData);
             if (DTOerr && DTOerr.length > 0) throw DTOerr
             const result = await this.service.updateTenant(updatedData);

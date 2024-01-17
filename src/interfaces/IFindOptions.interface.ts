@@ -5,8 +5,8 @@ export interface IQrFindOptions {
   phone?: string;
   lock?: string;
   locks?: string[];
-  date_from?: number;
-  date_to?: number;
+  valid_from?: number;
+  valid_to?: number;
   only_active?: string;
   only_expired?: string;
   offset?: number;

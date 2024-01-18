@@ -50,11 +50,17 @@ export class TenantService {
             }
             else if (options.organizationId && !options.buildingId) {
                 const buildingFromUserData = await this.buildingRepo.findOneBy({
-                    id: options.buildingId
+                    id: user.buildingId
                 })
                 if (buildingFromUserData?.organizationId !== options.organizationId) {
                     throw new ErrorWithStatus('Organization Id specified in query does not match organization associated with this administrator', 403)
                 }
+                else{
+                    options.buildingId = user.buildingId
+                }
+            }
+            else{
+                options.buildingId = user.buildingId
             }
             if (options.tenants) {
                 if (user.role === ERole.buildingAdmin) {

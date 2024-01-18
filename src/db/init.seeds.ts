@@ -6,11 +6,11 @@ export const fakeImgsLogPath = './public/fakeFileLog.log'
 
 export const fixturesAmount = {
   organizations:2,
-  buildings: 4,
-  tenants: 8,
-  user: 20,
-  locks: 64,
-  QRAccess: 20,
+  buildings: 3,
+  tenants: 12,
+  user: 100,
+  locks: 256,
+  QRAccess: 100,
 }
 if (pathParse(process.argv[1]).name === 'init.seeds') {
   const seedsMain = async () => {

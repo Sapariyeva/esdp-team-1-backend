@@ -30,7 +30,7 @@ export class LockService {
   getAllLocksQuery = async (user: IUser, options: lockFindOptionsDTO) => {
     if ((user.role === ERole.user)) {  // Not a bulletproof chceck, but fine for now
       if (!options.locks) {
-        options.locks = user.locks
+        user.locks ?  options.locks = user.locks : options.locks = []
       }
       else {
         if (!options.locks.every((l) => { return user.locks.includes(l) })) {
@@ -65,7 +65,7 @@ export class LockService {
       if (!options.buildingId) {
         options.buildingId = user.buildingId!
       }
-      else if (!(options.buildingId === user.buildingId)) {
+      else if (options.buildingId !== user.buildingId) {
         throw new ErrorWithStatus('user has no rights to retrieve locks from this building', 403)
       }
     }

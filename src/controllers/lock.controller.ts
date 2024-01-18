@@ -40,7 +40,6 @@ export class LocksController {
         payload: locks
       })
     } catch (e) {
-      console.log(e)
       next(e)
     }
 
@@ -60,7 +59,6 @@ export class LocksController {
       })
     } catch (e) {
       next(e)
-      console.log(e)
     }
   }
 

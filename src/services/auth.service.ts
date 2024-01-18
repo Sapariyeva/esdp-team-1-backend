@@ -12,18 +12,7 @@ export class AuthService {
 
   register = async (dto: RegisterUserDTO): Promise<IUser> => {
     const newUser = new Euser();
-    newUser.phone = dto.phone;
-    newUser.username = dto.username;
-    newUser.pass = dto.pass;
-    newUser.role = dto.role;
-    newUser.canCreateQR = dto.canCreateQR;
-    if (dto.organizationId) {
-      newUser.organizationId = dto.organizationId;
-    } else if (dto.buildingId) {
-      newUser.buildingId = dto.buildingId;
-    } else if (dto.tenantId) {
-      newUser.tenantId = dto.tenantId;
-    }
+    Object.assign(newUser, dto);
     await newUser.hashPass();
     return await this.userRepo.createUser(newUser);
   };

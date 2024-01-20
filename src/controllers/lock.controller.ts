@@ -2,7 +2,6 @@ import { lockDTO, lockFindOptionsDTO } from "@/DTO/lock.DTO";
 import { RequestWithUser } from "@/interfaces/IRequest.interface";
 import { ErrorWithStatus } from "@/interfaces/customErrors";
 import { LockService } from "@/services/locks.service";
-import { ERole } from "@/types/roles";
 import { plainToInstance } from "class-transformer";
 import { validate } from "class-validator";
 import { RequestHandler } from "express";
@@ -15,18 +14,39 @@ export class LocksController {
 
   createLockEntry: RequestHandler = async (req: RequestWithUser, res, next): Promise<void> => {
     try {
-      req.body.id = undefined
-      const newLock = plainToInstance(lockDTO, req.body)
-      const DTOerr = await validate(newLock)
-      if (DTOerr && DTOerr.length > 0) throw DTOerr
-      if (req.user?.role != ERole.umanuAdmin) throw new Error('User is not allowed to register new locks')
-      const result = await this.service.createLockEntry(newLock)
-      res.send({
-        success: true,
-        lock: result
-      })
+      if (Array.isArray(req.body)) {
+        const createdLocks =  await Promise.all(req.body.map(async (l) => {
+          l.id = undefined
+          if (typeof(l.isActive) !== 'boolean'){
+            l.isActive = true
+          }
+          const newLock = plainToInstance(lockDTO, l)
+          const DTOerr = await validate(newLock)
+          if (DTOerr && DTOerr.length > 0) throw DTOerr
+          const result = await this.service.createLockEntry(newLock)
+          return result
+        }))
+        res.send({
+          success: true,
+          lock: createdLocks
+        })
+      }
+      else {
+        req.body.id = undefined
+        if (typeof(req.body.isActive) !== 'boolean'){
+          req.body.isActive = true
+        }
+        const newLock = plainToInstance(lockDTO, req.body)
+        const DTOerr = await validate(newLock)
+        if (DTOerr && DTOerr.length > 0) throw DTOerr
+        const result = await this.service.createLockEntry(newLock)
+        res.send({
+          success: true,
+          lock: result
+        })
+      }
     }
-    catch(err){
+    catch (err) {
       next(err)
     }
   }
@@ -45,7 +65,7 @@ export class LocksController {
 
   }
 
-  getAllLocksQuery: RequestHandler = async (req:RequestWithUser, res, next) => {
+  getAllLocksQuery: RequestHandler = async (req: RequestWithUser, res, next) => {
     try {
       const user = req.user
       const searchParams = plainToInstance(lockFindOptionsDTO, req.query)
@@ -69,16 +89,16 @@ export class LocksController {
       if (DTOerr && DTOerr.length > 0) throw DTOerr
       const result = await this.service.updateLock(updatedData);
       if (result) {
-          res.status(201).send({
-              success: true,
-          });
+        res.status(201).send({
+          success: true,
+        });
       } else {
-          throw new ErrorWithStatus("Update failed. Unknown server error", 500)
+        throw new ErrorWithStatus("Update failed. Unknown server error", 500)
       }
-  }
-  catch (err) {
+    }
+    catch (err) {
       next(err);
-  }
-};
+    }
+  };
 
 }

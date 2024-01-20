@@ -15,8 +15,13 @@ export class LockRepository extends Repository<ELock> {
   }
 
   async createLock(data: ILock): Promise<ILock> {
-    const newRecord = this.create(data);
-    return await this.save(newRecord);
+    try {
+      const newRecord = this.create(data);
+      return await this.save(newRecord);
+    }
+    catch(e){
+      throw new ErrorWithStatus('unknown server error', 500)
+    }
   }
 
   async getLockById(id: string): Promise<ILock | null> {

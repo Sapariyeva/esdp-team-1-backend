@@ -34,7 +34,7 @@ export class QRController {
         if (result) {
           res.send({
             success: true,
-            payload: result.link,
+            payload: result,
           });
         }
       } else {

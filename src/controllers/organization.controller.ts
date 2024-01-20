@@ -23,7 +23,7 @@ export class OrganizationController {
             } else {
                 res.status(500).send({
                     success: false,
-                    error: "unknown internal server error",
+                    message: "unknown internal server error",
                 });
             }
         } catch (err) {
@@ -43,7 +43,7 @@ export class OrganizationController {
             } else {
                 res.status(404).send({
                     success: false,
-                    error: 'Organization not found',
+                    message: 'Organization not found',
                 });
             }
         } catch (err) {

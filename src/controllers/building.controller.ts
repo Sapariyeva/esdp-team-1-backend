@@ -24,7 +24,7 @@ export class BuildingController {
             } else {
                 res.status(500).send({
                     success: false,
-                    error: "unknown internal server error",
+                    message: "unknown internal server error",
                 });
             }
         } catch (err) {
@@ -44,7 +44,7 @@ export class BuildingController {
             } else {
                 res.status(404).send({
                     success: false,
-                    error: 'Building not found',
+                    message: 'Building not found',
                 });
             }
         } catch (err) {

@@ -49,7 +49,7 @@ export class AuthController {
       const result = await this.service.signIn(credentials);
       res.status(200).send({
         success: true,
-        ...result,
+        payload: result,
       });
     } catch (err) {
       next(err);
@@ -64,7 +64,7 @@ export class AuthController {
       if (result) {
         res.status(200).send({
           success: true,
-          ...result
+          payload: result
         })
       } else {
         throw new ErrorWithStatus('Error creating access token', 401);

@@ -61,7 +61,7 @@ export class UserController {
       if (!users) {
         throw new ErrorWithStatus("Error getting QR access entries", 500);
       }
-      res.status(200).send({
+      res.status(400).send({
         success: true,
         payload: users,
       });

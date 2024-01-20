@@ -24,7 +24,7 @@ export class TenantController {
             } else {
                 res.status(500).send({
                     success: false,
-                    error: "unknown internal server error",
+                    message: "unknown internal server error",
                 });
             }
         } catch (err) {
@@ -39,12 +39,12 @@ export class TenantController {
             if (tenant) {
                 res.status(200).send({
                     success: true,
-                    tenant,
+                    payload: tenant,
                 });
             } else {
                 res.status(404).send({
                     success: false,
-                    error: 'Tenant not found',
+                    message: 'Tenant not found',
                 });
             }
         } catch (err) {

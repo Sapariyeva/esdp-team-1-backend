@@ -28,7 +28,7 @@ export class LocksController {
         }))
         res.send({
           success: true,
-          lock: createdLocks
+          payload: createdLocks
         })
       }
       else {
@@ -42,7 +42,7 @@ export class LocksController {
         const result = await this.service.createLockEntry(newLock)
         res.send({
           success: true,
-          lock: result
+          payload: result
         })
       }
     }

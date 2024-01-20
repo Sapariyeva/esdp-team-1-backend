@@ -34,13 +34,13 @@ export class QRController {
         if (result) {
           res.send({
             success: true,
-            link: result.link,
+            payload: result.link,
           });
         }
       } else {
         res.status(400).send({
           success: false,
-          error:
+          message:
             "Access ending time should be larger than access starting time",
         });
       }
@@ -48,7 +48,7 @@ export class QRController {
       console.log(e);
       res.status(500).send({
         success: false,
-        error: "Internal server error",
+        message: "Internal server error",
       });
     }
   };

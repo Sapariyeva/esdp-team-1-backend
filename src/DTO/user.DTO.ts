@@ -1,10 +1,10 @@
 import { ERole } from "@/types/roles";
 import { Expose } from "class-transformer";
 import { IsArray, IsBoolean, IsNotEmpty, IsNumberString, IsOptional, IsPhoneNumber, IsString } from 'class-validator';
-import { IsLockExist, ShouldHaveBuildingId, ShouldHaveOrganizationId, ShouldHaveTenantId } from "./customValidators";
 import { IUserFindOptions } from "@/interfaces/IFindOptions.interface";
 import { IUser } from "@/interfaces/IUser";
-// import { IsRoleValid } from "./customValidators";
+import { IsPhoneUnique, IsRoleValid, ShouldHaveBuildingId, ShouldHaveOrganizationId, ShouldHaveTenantId } from "./validators/usersValidators";
+import { IsLockExist } from "./validators/locksValidators";
 
 export class RegisterUserDTO {
     @Expose()
@@ -22,7 +22,7 @@ export class RegisterUserDTO {
     pass!: string;
 
     @IsNotEmpty({ message: 'Role required' })
-    // @IsRoleValid({ message: 'Attempted to assign an invalid role' })
+    @IsRoleValid({ message: 'Invalid role' })
     @Expose()
     role!: ERole;
 
@@ -77,6 +77,7 @@ export class UserFindOptionsDTO implements IUserFindOptions {
     @IsOptional()
     @IsString({ message: "Phone number should be string" })
     @IsPhoneNumber(undefined, { message: "Invalid phone number format" })
+    @IsPhoneUnique({ message: "Phone number is not unique" })
     phone?: string;
     
     @Expose()

@@ -1,8 +1,9 @@
 import { Expose } from "class-transformer"
 import { IsNotEmpty, IsString, IsPositive, IsOptional, IsBoolean } from 'class-validator'
-import { IsAccessEntryExist,  IsNotificationTypeValid, IsUserExist } from "./customValidators";
 import { INotification } from "@/interfaces/INotification.interface";
 import { ENotificationTypes } from "@/types/notifocations";
+import { IsUserExist } from "./validators/usersValidators";
+import { IsAccessEntryExist, IsNotificationTypeValid } from "./validators/notificationsValidators";
 
 export class NotificationDTO implements INotification{
     @IsOptional()

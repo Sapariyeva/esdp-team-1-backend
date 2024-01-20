@@ -1,6 +1,6 @@
 import { Expose } from "class-transformer";
 import { IsArray, IsEmail, IsNotEmpty, IsOptional, IsPhoneNumber, IsString } from "class-validator";
-import { IsOrganizationExist } from "./customValidators";
+import { IsOrganizationExist } from "./validators/organizationsValidators";
 
 export class OrganizationDTO {
   @IsOptional()

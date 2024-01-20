@@ -2,7 +2,9 @@ import { ILock } from "@/interfaces/Ilock.interface";
 import { EBarrierType } from "@/types/barriers";
 import { Expose } from "class-transformer";
 import { IsArray, IsBoolean, IsOptional, IsString, MaxLength } from "class-validator";
-import { IsBarrierTypeValid, IsBuildingExist, IsLockExist, IsLockNameUnique, IsOrganizationExist } from "./customValidators";
+import { IsBuildingExist } from "./validators/buildingsValidators";
+import { IsBarrierTypeValid, IsLockExist, IsLockNameUnique } from "./validators/locksValidators";
+import { IsOrganizationExist } from "./validators/organizationsValidators";
 
 export class lockDTO implements ILock {
     @IsOptional()

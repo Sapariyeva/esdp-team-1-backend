@@ -1,13 +1,16 @@
 import { Expose } from "class-transformer";
 import { IsArray, IsEmail, IsNotEmpty, IsOptional, IsPhoneNumber, IsString, IsUUID } from "class-validator";
-import { IsBuildingExist, IsLockBelongsToBuilding, IsLockExist, IsOrganizationExist, IsTenantExist, IsTenantNameUnique } from "./customValidators";
+import { IsBuildingExist } from "./validators/buildingsValidators";
+import { IsTenantExist, IsTenantNameUnique } from "./validators/tenantsValidators";
+import { IsLockBelongsToBuilding, IsLockExist } from "./validators/locksValidators";
+import { IsOrganizationExist } from "./validators/organizationsValidators";
+
 
 export class TenantDTO {
   @IsOptional()
   @Expose()
   id!: string;
 
-  //add custom validator for checking if building exists
   @IsNotEmpty()
   @IsUUID()
   @IsBuildingExist()

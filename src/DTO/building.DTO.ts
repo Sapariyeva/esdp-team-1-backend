@@ -1,6 +1,8 @@
 import { Expose } from "class-transformer";
 import { IsArray, IsNotEmpty, IsOptional, IsString, IsUUID } from "class-validator";
-import { IsBuildingExist, IsBuildingNameUnique, IsOrganizationExist } from "./customValidators";
+import { IsBuildingExist, IsBuildingNameUnique } from "./validators/buildingsValidators";
+import { IsOrganizationExist } from "./validators/organizationsValidators";
+
 
 export class BuildingDTO {
   @IsOptional()
@@ -10,14 +12,13 @@ export class BuildingDTO {
   @IsNotEmpty()
   @IsUUID()
   @Expose()
-  //add custom validator for checking if organization exists
+  @IsOrganizationExist()
   organizationId!: string;
 
   @IsNotEmpty()
   @IsString()
   @Expose()
   @IsBuildingNameUnique({ message: 'Building name must be unique within the organization.' })
-  //add custom validator for checking is name unique for the organization
   name!: string;
 
   @IsNotEmpty()

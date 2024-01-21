@@ -171,14 +171,14 @@ export class IsPhoneUniqueConstraint implements ValidatorConstraintInterface {
         const userRepo = new UserRepository();
         const existingUser = await userRepo.findOne({
             where: {
-                phone,
+                phone
             },
         });
-        if (id !== existingUser?.id) {
-            return false;
+        if (!existingUser || (id === existingUser?.id)) {
+            return true;
         }
         else {
-            return true
+            return false
         }
     }
 }

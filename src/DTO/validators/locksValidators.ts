@@ -1,6 +1,6 @@
 import { LockRepository } from "@/repositories/locks.repository";
 import { EBarrierType } from "@/types/barriers";
-import { ValidationArguments, ValidationOptions, ValidatorConstraint, ValidatorConstraintInterface, registerDecorator } from "class-validator";
+import { ValidationArguments, ValidationOptions, ValidatorConstraint, ValidatorConstraintInterface, isUUID, registerDecorator } from "class-validator";
 
 export function IsLockBelongsToBuilding(validationOptions?: ValidationOptions) {
     return function (object: Object, propertyName: string) {
@@ -57,7 +57,17 @@ export class IsLockNameUniqueConstraint implements ValidatorConstraintInterface 
         const id = (args.object as { id: string }).id;
         const lockRepo = new LockRepository()
         const locksOfBuilding = (await lockRepo.getAllLocks()).filter(l => { return l.buildingId === buildingId })
-        return !(locksOfBuilding.map((l => { return l.name })).includes(name)) || (locksOfBuilding.map((l => { return l.id })).includes(id))
+        const locksOfBuildingNames = locksOfBuilding.map((l => { return l.name }))
+        const locksOfBuildingIds = locksOfBuilding.map((l => { return l.id }))
+        if (locksOfBuildingNames.includes(name) && locksOfBuildingIds.includes(id)){
+            return true
+        }
+        else if (locksOfBuildingNames.includes(name)){
+            return false
+        }
+        else{
+            return true
+        }
     }
 }
 
@@ -67,6 +77,9 @@ export class IsLockBelongsToBuildingConstraint implements ValidatorConstraintInt
     async validate(id: string, args: ValidationArguments) {
         const buildingId = (args.object as { buildingId: string }).buildingId;
         const lockRepo = new LockRepository();
+        if (!isUUID(buildingId)) {
+            return false
+        }
         const existingLock = await lockRepo.findOne({
             where: {
                 id,

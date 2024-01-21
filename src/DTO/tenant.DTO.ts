@@ -11,30 +11,30 @@ export class TenantDTO {
   @Expose()
   id!: string;
 
-  @IsNotEmpty()
-  @IsUUID()
-  @IsBuildingExist()
   @Expose()
+  @IsNotEmpty({ message: 'building Id should be specified' })
+  @IsUUID(undefined, { message: "malformed building Id" })
+  @IsBuildingExist({ message: 'Building with specified Id is not registered' })
   buildingId!: string;
 
   @IsTenantNameUnique({ message: "Tenant with this name already exists in the specified building" })
-  @IsNotEmpty()
-  @IsString()
+  @IsNotEmpty({ message: 'tenants name should be specified' })
+  @IsString({ message: 'tenants name should be of string type' })
   @Expose()
   name!: string;
 
   @IsOptional()
-  @IsString()
+  @IsString(({ message: 'Tenants legal adress should be of string type' }))
   @Expose()
   legalAddress?: string;
 
   @IsOptional()
-  @IsPhoneNumber()
+  @IsPhoneNumber(undefined, {message: "malformed phone number"})
   @Expose()
   phone?: string;
 
   @IsOptional()
-  @IsEmail()
+  @IsEmail(undefined, {message: "malformed email"})
   @Expose()
   email?: string;
 
@@ -56,6 +56,7 @@ export class tenantFindOptionsDTO {
   @IsOptional()
   @IsString({ message: 'building Id should be string' })
   @IsBuildingExist({ message: 'Building with Id provided in search params is not registered' })
+  @IsUUID(undefined, { message: "malformed building Id" })
   buildingId?: string;
 
   @Expose()

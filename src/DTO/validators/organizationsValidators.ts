@@ -32,14 +32,14 @@ export class IsOrganizationNameUniqueConstraint implements ValidatorConstraintIn
         const organizationRepo = new OrganizationRepository();
         const existingOrganization = await organizationRepo.findOne({
             where: {
-                name,
+                name
             },
         });
-        if (id !== existingOrganization?.id) {
-            return false;
+        if (!existingOrganization || (id === existingOrganization?.id)) {
+            return true;
         }
         else {
-            return true
+            return false
         }
     }
 }

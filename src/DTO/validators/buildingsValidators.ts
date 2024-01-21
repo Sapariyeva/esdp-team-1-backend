@@ -31,19 +31,18 @@ export class IsBuildingNameUniqueConstraint implements ValidatorConstraintInterf
         const organizationId = (args.object as { organizationId: string }).organizationId;
         const id = (args.object as { id: string }).id;
         const buildingRepo = new BuildingRepository();
-        const existingBuilding = await buildingRepo.findOne({
+        const buildingsWithSameName = await buildingRepo.find({
             where: {
-                name,
-                organizationId,
+                name
             },
         });
-        if (id !== existingBuilding?.id) {
-            return false;
+        const existingBuilding = buildingsWithSameName.find(b => {return b.organizationId === organizationId})
+        if (!existingBuilding || (id === existingBuilding?.id)) {
+            return true;
         }
         else {
-            return true
+            return false
         }
-
     }
 }
 

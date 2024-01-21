@@ -47,6 +47,6 @@ export class lockFindOptionsDTO {
     @IsOptional()
     @IsString({ each: true, message: "Locks must have string type id" })
     @IsArray({ message: "locks field must contain an array of lock UUIDs" })
-    @IsLockExist({ each: true, message: "Some of the specified locks in search params are not registered" })
+    @IsLockExist({ each: true, message: "Some of the locks specified in search params are not registered" })
     locks?: string[]
 }

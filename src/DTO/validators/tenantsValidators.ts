@@ -31,17 +31,17 @@ export class IsTenantNameUniqueConstraint implements ValidatorConstraintInterfac
         const buildingId = (args.object as { buildingId: string }).buildingId;
         const id = (args.object as { id: string }).id;
         const tenantRepo = new TenantRepository();
-        const existingTenant = await tenantRepo.findOne({
+        const existingTenantsWithSameName = await tenantRepo.find({
             where: {
-                name,
-                buildingId,
+                name: name,
             },
         });
-        if (id !== existingTenant?.id) {
-            return !existingTenant;
+        const existingTenant = existingTenantsWithSameName.find(t => {return t.buildingId===buildingId})
+        if (!existingTenant || (id === existingTenant?.id)) {
+            return true;
         }
         else {
-            return true
+            return false
         }
     }
 }

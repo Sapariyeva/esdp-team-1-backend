@@ -45,7 +45,6 @@ export class QRController {
         });
       }
     } catch (e) {
-      console.log(e);
       res.status(500).send({
         success: false,
         message: "Internal server error",

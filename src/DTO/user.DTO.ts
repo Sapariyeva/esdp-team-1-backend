@@ -9,7 +9,8 @@ import { IsLockExist } from "./validators/locksValidators";
 export class RegisterUserDTO {
     @Expose()
     @IsNotEmpty({ message: 'Phone number required' })
-    @IsPhoneNumber()
+    @IsPhoneNumber(undefined, { message: "Invalid phone number format" })
+    @IsPhoneUnique({ message: "Phone number is not unique" })
     phone!: string;
 
     @IsNotEmpty({ message: 'User name required' })
@@ -51,53 +52,51 @@ export class RegisterUserDTO {
 
     @Expose()
     @IsOptional()
-    @IsBoolean()
+    @IsBoolean({message: "Activation flag must be of type boolean"})
     isActive?: boolean;
 }
 
 export class SignInUserDTO {
     @Expose()
     @IsNotEmpty({ message: 'Phone number required' })
-    @IsPhoneNumber()
+    @IsPhoneNumber(undefined, { message: "malformed phone number" })
     phone!: string;
 
     @Expose()
     @IsNotEmpty({ message: 'Password required' })
-    @IsString()
+    @IsString({ message: 'Password must be of string type' })
     pass!: string;
 }
 
 export class UserFindOptionsDTO implements IUserFindOptions {
     @Expose()
     @IsOptional()
-    @IsString()
+    @IsString({ message: 'user name must be of string type' })
     username?: string;
     
     @Expose()
     @IsOptional()
     @IsString({ message: "Phone number should be string" })
-    @IsPhoneNumber(undefined, { message: "Invalid phone number format" })
-    @IsPhoneUnique({ message: "Phone number is not unique" })
     phone?: string;
     
     @Expose()
     @IsOptional()
-    @IsString()
+    @IsRoleValid({message: "invalid role"})
     role?: ERole;
 
     @Expose()
     @IsOptional()
-    @IsString()
+    @IsString({message: "organization Id must be of string type"})
     organizationId?: string;
 
     @Expose()
     @IsOptional()
-    @IsString()
+    @IsString({message: "building Id must be of string type"})
     buildingId?: string;
 
     @Expose()
     @IsOptional()
-    @IsString()
+    @IsString({message: "tenant Id must be of string type"})
     tenantId?: string;
 
     @Expose()
@@ -126,7 +125,7 @@ export class UpdateUserDTO implements Partial<IUser> {
 
     @Expose()
     @IsOptional()
-    @IsBoolean()
+    @IsBoolean({message: "activation flag must be of type Boolean"})
     isActive?: boolean;
 
     @Expose()

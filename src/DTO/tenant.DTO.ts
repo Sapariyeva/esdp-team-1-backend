@@ -1,37 +1,40 @@
 import { Expose } from "class-transformer";
 import { IsArray, IsEmail, IsNotEmpty, IsOptional, IsPhoneNumber, IsString, IsUUID } from "class-validator";
-import { IsBuildingExist, IsLockBelongsToBuilding, IsLockExist, IsOrganizationExist, IsTenantExist, IsTenantNameUnique } from "./customValidators";
+import { IsBuildingExist } from "./validators/buildingsValidators";
+import { IsTenantExist, IsTenantNameUnique } from "./validators/tenantsValidators";
+import { IsLockBelongsToBuilding, IsLockExist } from "./validators/locksValidators";
+import { IsOrganizationExist } from "./validators/organizationsValidators";
+
 
 export class TenantDTO {
   @IsOptional()
   @Expose()
   id!: string;
 
-  //add custom validator for checking if building exists
-  @IsNotEmpty()
-  @IsUUID()
-  @IsBuildingExist()
   @Expose()
+  @IsNotEmpty({ message: 'building Id should be specified' })
+  @IsUUID(undefined, { message: "malformed building Id" })
+  @IsBuildingExist({ message: 'Building with specified Id is not registered' })
   buildingId!: string;
 
   @IsTenantNameUnique({ message: "Tenant with this name already exists in the specified building" })
-  @IsNotEmpty()
-  @IsString()
+  @IsNotEmpty({ message: 'tenants name should be specified' })
+  @IsString({ message: 'tenants name should be of string type' })
   @Expose()
   name!: string;
 
   @IsOptional()
-  @IsString()
+  @IsString(({ message: 'Tenants legal adress should be of string type' }))
   @Expose()
   legalAddress?: string;
 
   @IsOptional()
-  @IsPhoneNumber()
+  @IsPhoneNumber(undefined, {message: "malformed phone number"})
   @Expose()
   phone?: string;
 
   @IsOptional()
-  @IsEmail()
+  @IsEmail(undefined, {message: "malformed email"})
   @Expose()
   email?: string;
 
@@ -53,6 +56,7 @@ export class tenantFindOptionsDTO {
   @IsOptional()
   @IsString({ message: 'building Id should be string' })
   @IsBuildingExist({ message: 'Building with Id provided in search params is not registered' })
+  @IsUUID(undefined, { message: "malformed building Id" })
   buildingId?: string;
 
   @Expose()

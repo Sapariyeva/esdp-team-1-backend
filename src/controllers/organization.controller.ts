@@ -12,6 +12,7 @@ export class OrganizationController {
 
     createOrganizationEntry: RequestHandler = async (req, res, next): Promise<void> => {
         try {
+            req.body.id = undefined
             const newOrganization = plainToInstance(OrganizationDTO, req.body)
             const DTOerr = await validate(newOrganization)
             if (DTOerr.length > 0) throw DTOerr;

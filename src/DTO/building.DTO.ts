@@ -1,27 +1,29 @@
 import { Expose } from "class-transformer";
 import { IsArray, IsNotEmpty, IsOptional, IsString, IsUUID } from "class-validator";
-import { IsBuildingExist, IsBuildingNameUnique, IsOrganizationExist } from "./customValidators";
+import { IsBuildingExist, IsBuildingNameUnique } from "./validators/buildingsValidators";
+import { IsOrganizationExist } from "./validators/organizationsValidators";
+
 
 export class BuildingDTO {
-  @IsOptional()
   @Expose()
+  @IsOptional()
   id!: string;
 
-  @IsNotEmpty()
-  @IsUUID()
   @Expose()
-  //add custom validator for checking if organization exists
+  @IsNotEmpty({message: "organization Id must be specified" })
+  @IsString({message: "organization must have string type id" })
+  @IsUUID(undefined, { message: 'malformed UUID' })
+  @IsOrganizationExist({ message: 'Organization with Id provided is not registered' })
   organizationId!: string;
 
-  @IsNotEmpty()
-  @IsString()
   @Expose()
+  @IsNotEmpty({ message: "Building name must be specified"})
+  @IsString({ message: "Building name must be of string type"})
   @IsBuildingNameUnique({ message: 'Building name must be unique within the organization.' })
-  //add custom validator for checking is name unique for the organization
   name!: string;
 
-  @IsNotEmpty()
-  @IsString()
+  @IsNotEmpty({ message: "Building address must be specified"})
+  @IsString({ message: "Building address must be of string type"})
   @Expose()
   address!: string;
 }

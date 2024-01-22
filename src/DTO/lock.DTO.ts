@@ -2,7 +2,9 @@ import { ILock } from "@/interfaces/Ilock.interface";
 import { EBarrierType } from "@/types/barriers";
 import { Expose } from "class-transformer";
 import { IsArray, IsBoolean, IsOptional, IsString, MaxLength } from "class-validator";
-import { IsBarrierTypeValid, IsBuildingExist, IsLockExist, IsLockNameUnique, IsOrganizationExist } from "./customValidators";
+import { IsBuildingExist } from "./validators/buildingsValidators";
+import { IsBarrierTypeValid, IsLockExist, IsLockNameUnique } from "./validators/locksValidators";
+import { IsOrganizationExist } from "./validators/organizationsValidators";
 
 export class lockDTO implements ILock {
     @IsOptional()
@@ -45,6 +47,6 @@ export class lockFindOptionsDTO {
     @IsOptional()
     @IsString({ each: true, message: "Locks must have string type id" })
     @IsArray({ message: "locks field must contain an array of lock UUIDs" })
-    @IsLockExist({ each: true, message: "Some of the specified locks in search params are not registered" })
+    @IsLockExist({ each: true, message: "Some of the locks specified in search params are not registered" })
     locks?: string[]
 }

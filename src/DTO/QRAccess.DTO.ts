@@ -2,7 +2,9 @@ import { IQrFindOptions } from "@/interfaces/IFindOptions.interface";
 import { IQRAccess, IQRAccessReq } from "@/interfaces/IQRAccess.interface";
 import { Expose } from "class-transformer";
 import { ArrayMinSize, IsArray, IsNotEmpty, IsNumberString, IsOptional, IsPhoneNumber, IsPositive, IsString } from 'class-validator';
-import { IsLockExist, IsUserExist, IsValidFromPasses, IsValidToPasses } from "./customValidators";
+import { IsValidFromPasses, IsValidToPasses } from "./validators/qrValidators";
+import { IsLockExist } from "./validators/locksValidators";
+import { IsUserExist } from "./validators/usersValidators";
 
 export class QRAccessReqDTO implements IQRAccessReq{
     @IsString({ message: "Phone number should be string" })

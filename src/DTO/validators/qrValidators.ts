@@ -1,4 +1,4 @@
-import { MIN_ACCESS_INTERVAL } from "@/constants";
+import { MIN_ACCESS_INTERVAL, QR_ALLOWED_TO_PAST } from "@/constants";
 import { ValidationArguments, ValidationOptions, ValidatorConstraint, ValidatorConstraintInterface, registerDecorator } from "class-validator";
 
 export function IsValidFromPasses(validationOptions?: ValidationOptions) {
@@ -31,7 +31,7 @@ export class IsValidFromPassesConstraint implements ValidatorConstraintInterface
         const datetime = new Date(valid_from);
         if (datetime instanceof Date) {
             const now = new Date().getTime();
-            return valid_from >= now - 60 * 1000 ? true : false;
+            return valid_from >= now - QR_ALLOWED_TO_PAST*60 * 1000 ? true : false;
         } else {
             return false;
         }
@@ -45,7 +45,7 @@ export class IsValidToPassesConstraint implements ValidatorConstraintInterface {
         if (datetime instanceof Date) {
             const [valid_from] = args.constraints;
             const dateFromAsNumber = (args.object as any)[valid_from] as number;
-            return valid_to - dateFromAsNumber > MIN_ACCESS_INTERVAL * 60 * 1000 ? true : false;
+            return valid_to - dateFromAsNumber >= MIN_ACCESS_INTERVAL * 60 * 1000 ? true : false;
         } else {
             return false;
         }

@@ -16,7 +16,8 @@ export class QRController {
 
   createQREntry: RequestHandler = async (
     req: RequestWithUser,
-    res
+    res,
+    next
   ): Promise<void> => {
     try {
       const user = req.user;
@@ -24,31 +25,24 @@ export class QRController {
       const newAccessDTOReq = plainToInstance(QRAccessReqDTO, req.body);
       const DTOErr = await validate(newAccessDTOReq);
       if (DTOErr.length > 0) throw DTOErr;
-      if (newAccessDTOReq.valid_to > newAccessDTOReq.valid_from) {
-        const newAccessDTO = plainToInstance(
-          QRAccessDTO,
-          instanceToPlain(newAccessDTOReq)
-        );
-        newAccessDTO.author = user.id;
-        const result = await this.qrService.createQRAccessEntry(newAccessDTO);
-        if (result) {
-          res.send({
-            success: true,
-            payload: result,
-          });
-        }
-      } else {
-        res.status(400).send({
-          success: false,
-          message:
-            "Access ending time should be larger than access starting time",
+      const newAccessDTO = plainToInstance(
+        QRAccessDTO,
+        instanceToPlain(newAccessDTOReq)
+      );
+      newAccessDTO.author = user.id;
+      const result = await this.qrService.createQRAccessEntry(newAccessDTO);
+      if (result) {
+        res.send({
+          success: true,
+          payload: result,
         });
       }
-    } catch (e) {
-      res.status(500).send({
-        success: false,
-        message: "Internal server error",
-      });
+      else {
+        throw new Error('Failed to create QR access')
+      }
+    }
+    catch (e) {
+      next(e)
     }
   };
 

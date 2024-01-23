@@ -9,6 +9,7 @@ import { QRAccessRepository } from '@/repositories/QRAccess.repository';
 import { EOrganization } from '@/entities/organization.entity';
 import { EBuilding } from '@/entities/building.entity';
 import { ETenant } from '@/entities/tenant.entity';
+import { FIRST_NOTIFICATION_TIME, SECOND_NOTIFICATION_TIME } from '@/constants';
 
 export class MainSeeder implements Seeder {
   public async run(dataSource: DataSource, factoryManager: SeederFactoryManager): Promise<void> {
@@ -33,8 +34,8 @@ export class MainSeeder implements Seeder {
     const notificationRepo: NotificationsRepository = new NotificationsRepository()
     const AccessEntries = await accessRepo.getAllQRAccess()
     for (let e of AccessEntries){
-      await notificationRepo.saveNotification(notificationRepo.makeExpirationNotification(e, 60 * 60 * 1000))
-      await notificationRepo.saveNotification(notificationRepo.makeExpirationNotification(e, 15 * 60 * 1000))
+      await notificationRepo.saveNotification(notificationRepo.makeExpirationNotification(e, FIRST_NOTIFICATION_TIME * 60 * 1000))
+      await notificationRepo.saveNotification(notificationRepo.makeExpirationNotification(e, SECOND_NOTIFICATION_TIME * 60 * 1000))
     }
     return
   }

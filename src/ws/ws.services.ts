@@ -6,6 +6,7 @@ import { NotificationService } from "@/services/notifications.service";
 import { UserService } from "@/services/user.service";
 import * as jwt from "jsonwebtoken";
 import { Socket } from "socket.io";
+import { extractNotificationToSend } from "./wsUtils";
 
 export class WSNotificationsService {
   private userService: UserService;
@@ -54,11 +55,7 @@ export class WSNotificationsService {
           if (scheduledNotifiactionsIds.includes(e.id)) {
             runningApp.notificationsScheduler.cancelJob(e);
           }
-          const respNotification: INotificationToSendWS = {
-            type: e.type,
-            triggeredAt: e.trigger_at,
-            message: e.message,
-          };
+          const respNotification: INotificationToSendWS = extractNotificationToSend(e);
           return respNotification;
         });
         io.emit("notifications", notificationsToSend);

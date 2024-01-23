@@ -11,6 +11,8 @@ export interface INotification {
 }
 
 export interface INotificationToSendWS {
+    id?: string,
+    accessEntry?: string;
     type: ENotificationTypes,
     triggeredAt: number,
     message: string,

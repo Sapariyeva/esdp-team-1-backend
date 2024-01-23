@@ -1,4 +1,4 @@
-import { In, LessThan, MoreThan, Repository } from 'typeorm';
+import { Between, In, MoreThan, Repository } from 'typeorm';
 import { appDataSource } from '@/dbConfig'
 import { ENotification } from '@/entities/Notification.entity';
 import { QRAccessDTO } from '@/DTO/QRAccess.DTO';
@@ -6,6 +6,7 @@ import { INotification } from '@/interfaces/INotification.interface';
 import { ENotificationTypes } from '@/types/notifocations';
 import { plainToInstance } from 'class-transformer';
 import { NotificationDTO } from '@/DTO/notification.DTO';
+import { NOTIFICATIONS_CUTOFF_TIME } from '@/constants';
 
 
 export class NotificationsRepository extends Repository<ENotification> {
@@ -19,16 +20,21 @@ export class NotificationsRepository extends Repository<ENotification> {
         return !!dbAnswer
     }
 
+    async getAllNotifications() {
+        return await this.find();
+    }
+
     async getNewNotifications(user: string, time: number) {
         return await this.find({
             where: {
                 author: user,
                 sent: false,
-                trigger_at: LessThan(time)
+                trigger_at: Between(time - NOTIFICATIONS_CUTOFF_TIME * 1000, time)
             },
             order: {
                 trigger_at: 'ASC'
             }
+
         })
     }
 
@@ -52,7 +58,7 @@ export class NotificationsRepository extends Repository<ENotification> {
             )
             return true
         }
-        catch(e) {
+        catch (e) {
             console.log(e)
             return false
         }

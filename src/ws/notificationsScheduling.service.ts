@@ -3,6 +3,7 @@ import { INotificationToSendWS } from "@/interfaces/INotification.interface";
 import { NotificationService } from "@/services/notifications.service";
 import schedule from 'node-schedule';
 import { ENotification } from "@/entities/Notification.entity";
+import { extractNotificationToSend } from "./wsUtils";
 
 export class WSNotificationsScheduler {
     private notificationService = new NotificationService()
@@ -16,7 +17,7 @@ export class WSNotificationsScheduler {
         })
         notificationsToSchedule.map((n) => {
             if (!scheduledNotifiactionsIds.includes(n.id)) {
-                const date = new Date(n.trigger_at);
+                const date = new Date(parseInt(n.trigger_at.toString()));
                 const j = schedule.scheduleJob(date,
                     () => {
                         this.sendNotification(n)
@@ -35,13 +36,10 @@ export class WSNotificationsScheduler {
             const userSessions = runningApp.sessions.filter((s) => { return s.user === notification.author })
             if (userSessions && userSessions.length > 0) {
                 const session = userSessions[0]
-                const notificationToSend: INotificationToSendWS = {
-                    type: notification.type,
-                    triggeredAt: notification.trigger_at,
-                    message: notification.message
-                }
+                const notificationToSend: INotificationToSendWS = extractNotificationToSend(notification)
                 session.socket.emit('notifications', [notificationToSend])
                 await this.notificationService.setSentStatus([notification.id], true)
+                this.cancelJob(notification)
             }
             else {
                 this.cancelJob(notification)

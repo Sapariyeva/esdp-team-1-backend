@@ -5,6 +5,7 @@ import { IUser } from "@/interfaces/IUser";
 import { QRAccessRepository } from "@/repositories/QRAccess.repository";
 import { LockRepository } from "@/repositories/locks.repository";
 import { TenantRepository } from "@/repositories/tenant.repository";
+import { UserRepository } from "@/repositories/user.repository";
 import { ERole } from "@/types/roles";
 import axios, { AxiosInstance } from "axios";
 
@@ -12,6 +13,7 @@ export class QRAccessService {
   private QRAccessRepo: QRAccessRepository = new QRAccessRepository()
   private lockRepo: LockRepository = new LockRepository()
   private tenantRepo: TenantRepository = new TenantRepository()
+  private userRepo: UserRepository = new UserRepository ()
   private qrAxios: AxiosInstance = axios.create({baseURL: envConfig.qrBaseUrl})
   private postPath = 'generate'
 
@@ -42,14 +44,16 @@ export class QRAccessService {
     }
   }
 
+
   async getQrEntries(user: IUser, findOptions?: IQrFindOptions) {
     if (findOptions && findOptions.locks) {
       if (user.role === ERole.user) {
         findOptions.author = user.id;
       }
-      return await this.QRAccessRepo.getQrEntries(findOptions);
+      return await this.QRAccessRepo.getQrEntries(findOptions, [user.id]);
     } else {
       const options: IQrFindOptions = {};
+      let allowedUsers: IUser[] = []
       switch (user.role) {
         case ERole.umanuAdmin:
           const allLocks = await this.lockRepo.getAllLocks();
@@ -60,23 +64,31 @@ export class QRAccessService {
           const orgLocks = await this.lockRepo.getLocksByOrganization(user.organizationId!);
           const orgLocksIds = orgLocks.map(l => l.id);
           findOptions ? findOptions.locks = orgLocksIds : options.locks = orgLocksIds;
+          allowedUsers = await this.userRepo.getUsersQuery({organizationId: user.organizationId}) 
+          
           break;
         case ERole.buildingAdmin:
           const buildLocks = await this.lockRepo.find({ where: { buildingId: user.buildingId }});
           const buildLocksIds = buildLocks.map(l => l.id);
           findOptions ? findOptions.locks = buildLocksIds : options.locks = buildLocksIds;
+          allowedUsers = await this.userRepo.getUsersQuery({buildingId: user.buildingId}) 
           break;
         case ERole.tenantAdmin:
           const tenant = await this.tenantRepo.findOne({where: { id: user.tenantId }});
           findOptions ? findOptions.locks = tenant?.locks : options.locks = tenant?.locks;
+          allowedUsers = await this.userRepo.getUsersQuery({tenantId: user.tenantId}) 
           break;
         case ERole.user:
           findOptions ? findOptions.author = user.id : options.author = user.id;
+          findOptions ? findOptions.locks = user?.locks : options.locks = user?.locks;
+          allowedUsers = [user]
           break;
       }
+
+      const allowedUsersIds = allowedUsers.map((u) => {return u.id})
       return findOptions
-        ? await this.QRAccessRepo.getQrEntries(findOptions)
-        : await this.QRAccessRepo.getQrEntries(options);
+        ? await this.QRAccessRepo.getQrEntries(findOptions, user.role===ERole.umanuAdmin? undefined :allowedUsersIds)
+        : await this.QRAccessRepo.getQrEntries(options, user.role===ERole.umanuAdmin? undefined :allowedUsersIds);
     }
   }
 }

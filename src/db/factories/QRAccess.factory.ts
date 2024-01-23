@@ -6,6 +6,8 @@ import { LockRepository } from "@/repositories/locks.repository";
 import axios from "axios";
 import { envConfig } from '@/env';
 import { lockFindOptionsDTO } from "@/DTO/lock.DTO";
+import { LockService } from "@/services/locks.service";
+import { IUser } from "@/interfaces/IUser";
 
 const maxLocksConst = 5
 const qrAxios = axios.create({ baseURL: envConfig.qrBaseUrl })
@@ -13,28 +15,26 @@ const qrAxios = axios.create({ baseURL: envConfig.qrBaseUrl })
 export const QRAccessFactory = setSeederFactory(EQRAccess, async (faker: Faker) => {
   const access = new EQRAccess();
   const userRepo = new UserRepository()
-  const availableUserIds = (await userRepo.getAllUsers()).map((e) => { return e.id })
+  const availableUsers = await userRepo.getAllUsers()
+  const user = faker.helpers.arrayElement(availableUsers)
   const now = Date.now()
   const valid_from = (now - 60 * (100 * getRandomInt(5)))
   const valid_to = (valid_from + 3600 * 1000 * (getRandomInt(5) + 5))
   access.valid_from = valid_from
   access.valid_to = valid_to
   access.phone = getPhoneNumber()
-  access.author = faker.helpers.arrayElement(availableUserIds)
-  access.locks = await getLocks()
+  access.author = user.id
+  access.locks = await getLocks(undefined, maxLocksConst, user)
   access.link = await getLink(access)
   return access;
 })
 
-export const getLocks = async (options?: lockFindOptionsDTO, maxLocks=maxLocksConst) => {
+export const getLocks = async (options?: lockFindOptionsDTO, maxLocks=maxLocksConst, user?:IUser) => {
   const locksRepo = new LockRepository()
-  let availableLocks: string[] = []
-  if (!options) {
-    availableLocks = (await locksRepo.getAllLocks()).map((e) => { return e.id })
-  }
-  else{
-    availableLocks = (await locksRepo.getAllLocksQuery(options)).map((e) => { return e.id })
-  }
+  const locksService = new LockService ()
+  let availableLocks = user?
+  (await locksService.getAllLocksQuery(user, options? options : {})).map((e) => { return e.id }):
+  (await locksRepo.getAllLocksQuery(options? options : {})).map((e) => { return e.id })
   const numLocksIncluded = parseInt((Math.random() * maxLocks).toString()) + 1
   const locks: string[] = []
   while ((locks.length < numLocksIncluded) && (availableLocks.length > 0)) {

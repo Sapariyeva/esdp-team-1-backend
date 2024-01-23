@@ -32,17 +32,18 @@ export class QRAccessRepository extends Repository<EQRAccess> {
     return await this.find();
   }
 
-  async getQrEntries(queryOptions: IQrFindOptions): Promise<IQRAccess[]> {
+  async getQrEntries(queryOptions: IQrFindOptions, allowedUsersIds?:string[]): Promise<IQRAccess[]> {
     const findOptions = createQrFindOptions(queryOptions);
-
     const { locks } = queryOptions;
-
-    const unfilteredResult = await this.find(findOptions);
-
+    const unfilteredResult = await this.find({where: findOptions.where});
     if (locks && locks.length > 0) {
-      return await this.filterQueryByLockIds(locks, unfilteredResult);
+      const filteredByLocksResults = await this.filterQueryByLockIds(locks, unfilteredResult);
+      return allowedUsersIds?  filteredByLocksResults.filter((qr) => {return allowedUsersIds.includes(qr.author)})
+      : filteredByLocksResults
+
     } else {
-      return unfilteredResult;
+      return  allowedUsersIds?  unfilteredResult.filter((qr) => {return allowedUsersIds.includes(qr.author)}):
+      unfilteredResult
     }
   }
 

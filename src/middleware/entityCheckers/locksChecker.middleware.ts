@@ -25,7 +25,6 @@ export const checkLockAccess: RequestHandler = async (
     const locks = await locksRepo.find({ where: { id: In(locksIds) } });
     const buildingsIds = locks.map((l) => l.buildingId);
     const buildings = await buildingRepo.find({ where: { id: In(buildingsIds) }});
-
     switch (user.role) {
       case ERole.umanuAdmin:
         return next();
@@ -55,7 +54,7 @@ export const checkLockAccess: RequestHandler = async (
         });
         if (!tenant) throw new Error("Cannot find tenant");
         const tenantCheck = locks.map((l) => tenant.locks.includes(l.id));
-        if (tenantCheck.includes(false)) {
+        if (tenantCheck.some(e => {return !e})) {
           throw new ErrorWithStatus(
             "Locks list include a lock your tenant don't have access to",
             403
@@ -63,7 +62,8 @@ export const checkLockAccess: RequestHandler = async (
         } else return next();
       case ERole.user:
         const userCheck = locks.map((l) => user.locks.includes(l.id));
-        if (userCheck.includes(false) || !user.canCreateQR) {
+        userCheck.includes(false)
+        if (!user.canCreateQR || userCheck.includes(false)) {
           throw new ErrorWithStatus(
             "Locks list include a lock you don't have access to or you cannot create guest QR-access",
             403

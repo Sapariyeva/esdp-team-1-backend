@@ -9,8 +9,6 @@ import {
 import { buildUpdateEntity } from "@/middleware/entityCheckers/updateEntitiesMerger.middleware";
 import { checkUserUpdate } from "@/middleware/entityCheckers/userUpdateChecker.middleware";
 import { checkQuery } from "@/middleware/queryChecker.middleware";
-import { checkRole } from "@/middleware/roleChecker.middleware";
-import { ERole } from "@/types/roles";
 import { Router } from "express";
 
 export class UserRoute {
@@ -27,12 +25,6 @@ export class UserRoute {
     this.router.get(
       "/",
       checkAuth,
-      checkRole([
-        ERole.umanuAdmin,
-        ERole.organizationAdmin,
-        ERole.buildingAdmin,
-        ERole.tenantAdmin,
-      ]),
       checkQuery<IUserFindOptions>("user"),
       checkOrganizationAccess,
       checkBuildingAccess,

@@ -26,6 +26,8 @@ export class UserService {
       case ERole.tenantAdmin:
         queryOptions.tenantId = user.tenantId;
         break;
+      case ERole.user: 
+        return [user]
     }
     return await this.userRepo.getUsersQuery(queryOptions);
   }

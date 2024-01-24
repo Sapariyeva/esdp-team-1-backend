@@ -158,8 +158,12 @@ export const checkAccessToUser: RequestHandler = async (
         } else {
           throw new ErrorWithStatus("Access denied", 403);
         }
-      default:
-        throw new ErrorWithStatus("Access denied", 403);
+        case ERole.user:
+        if (user.id === id) {
+          return next();
+        } else {
+          throw new ErrorWithStatus("Access denied", 403);
+        }
     }
   } catch (err) {
     next(err);

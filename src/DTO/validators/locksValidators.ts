@@ -56,18 +56,15 @@ export class IsLockNameUniqueConstraint implements ValidatorConstraintInterface 
         const buildingId = (args.object as { buildingId: string }).buildingId;
         const id = (args.object as { id: string }).id;
         const lockRepo = new LockRepository()
-        const locksOfBuilding = (await lockRepo.getAllLocks()).filter(l => { return l.buildingId === buildingId })
-        const locksOfBuildingNames = locksOfBuilding.map((l => { return l.name }))
-        const locksOfBuildingIds = locksOfBuilding.map((l => { return l.id }))
-        if (locksOfBuildingNames.includes(name) && locksOfBuildingIds.includes(id)){
+        const locksOfBuilding = (await lockRepo.getAllLocksQuery({buildingId:buildingId}))
+        const locksWithSameName = locksOfBuilding.filter(l => {return l.name === name})
+        if (locksWithSameName.length === 0){
             return true
         }
-        else if (locksOfBuildingNames.includes(name)){
-            return false
+        else if (locksWithSameName.length === 1){
+            return locksWithSameName[0].id === id? true : false
         }
-        else{
-            return true
-        }
+        return false
     }
 }
 

@@ -9,6 +9,7 @@ export interface IQrFindOptions {
   valid_to?: number;
   only_active?: string;
   only_expired?: string;
+  allowedUsers?:string[]
   offset?: number;
 }
 

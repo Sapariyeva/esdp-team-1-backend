@@ -32,18 +32,14 @@ export class QRAccessRepository extends Repository<EQRAccess> {
     return await this.find();
   }
 
-  async getQrEntries(queryOptions: IQrFindOptions, allowedUsersIds?:string[]): Promise<IQRAccess[]> {
+  async getQrEntries(queryOptions: IQrFindOptions): Promise<IQRAccess[]> {
     const findOptions = createQrFindOptions(queryOptions);
     const { locks } = queryOptions;
-    const unfilteredResult = await this.find({where: findOptions.where});
+    const unfilteredResult = await this.find(findOptions);
     if (locks && locks.length > 0) {
-      const filteredByLocksResults = await this.filterQueryByLockIds(locks, unfilteredResult);
-      return allowedUsersIds?  filteredByLocksResults.filter((qr) => {return allowedUsersIds.includes(qr.author)})
-      : filteredByLocksResults
-
+      return await this.filterQueryByLockIds(locks, unfilteredResult);
     } else {
-      return  allowedUsersIds?  unfilteredResult.filter((qr) => {return allowedUsersIds.includes(qr.author)}):
-      unfilteredResult
+      return unfilteredResult
     }
   }
 
@@ -65,7 +61,11 @@ export class QRAccessRepository extends Repository<EQRAccess> {
   }
 
   async delQRAccessById(id: string): Promise<Boolean> {
-    const existingAccess = await this.findOne({ where: { id } });
+    const existingAccess = await this.findOne({
+      where: { id }, order: {
+        valid_to: "ASC"
+      }
+    });
 
     if (!existingAccess) {
       return false;
@@ -81,7 +81,7 @@ export class QRAccessRepository extends Repository<EQRAccess> {
     const filteredResult = await this.createQueryBuilder("eqr_access")
       .where(
         'EXISTS(SELECT 1 FROM unnest("eqr_access"."locks") AS lock WHERE lock IN (:...lockIds))',
-        { lockIds: locks }
+        { lockIds: locks },
       )
       .getMany();
     const finalResults = rawResult.filter((result) =>

@@ -4,6 +4,7 @@ import { checkAuth } from "@/middleware/auth.middleware";
 import { checkLockAccess } from "@/middleware/entityCheckers/locksChecker.middleware";
 import { checkQuery } from "@/middleware/queryChecker.middleware";
 import { IQrFindOptions } from "@/interfaces/IFindOptions.interface";
+import { checkSecretKey, createSecretKey } from '@/middleware/validateSecretKey';
 
 export class QRRoute {
   public path = "/qr";
@@ -16,6 +17,9 @@ export class QRRoute {
   }
 
   private init() {
+    this.router.use(createSecretKey);
+    this.router.use(checkSecretKey);
+
     this.router.post(
       "/",
       checkAuth,

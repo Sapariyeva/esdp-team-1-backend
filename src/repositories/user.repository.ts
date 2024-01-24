@@ -50,7 +50,7 @@ export class UserRepository extends Repository<Euser> {
       return;
     }
     const extractedUser = await this.findOne({
-      where: { id },
+      where: { id }, relations: { organization: true, building: true, tenant: true }
     });
     if (extractedUser) {
       return this.removeUserPassword(extractedUser);

@@ -5,7 +5,7 @@ import { FindManyOptions } from "typeorm";
 export const createUserFindOptions = (query: IUserFindOptions): FindManyOptions<Euser> => {
   const findOptions: FindManyOptions<Euser> = {
     order: { username: "ASC" },
-    take: 30
+    take: 100
   };
 
   const {

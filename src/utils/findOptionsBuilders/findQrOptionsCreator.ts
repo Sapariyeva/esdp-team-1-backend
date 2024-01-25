@@ -5,7 +5,7 @@ import { Between, FindManyOptions, In, LessThanOrEqual, MoreThanOrEqual } from "
 export const createQrFindOptions = (query: IQrFindOptions): FindManyOptions<EQRAccess> => {
   const findOptions: FindManyOptions<EQRAccess> = {
     order: { valid_to: "DESC" },
-    take: 30,
+    take: 100,
   };
 
   const {

@@ -1,10 +1,7 @@
 import { WeeklyScheduleDTO } from "@/DTO/schedule.DTO";
 import { appDataSource } from "@/dbConfig";
 import { EweeklySchedule } from "@/entities/schedule.entity";
-// import { IQrFindOptions } from "@/interfaces/IFindOptions.interface";
-// import { createQrFindOptions } from "@/utils/findOptionsBuilders/findQrOptionsCreator";
 import { Repository } from "typeorm";
-// import { NotificationsRepository } from "./notifications.repository";
 import { ErrorWithStatus } from "@/interfaces/customErrors";
 
 export class WeeklyScheduleRepository extends Repository<EweeklySchedule> {

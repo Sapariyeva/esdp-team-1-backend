@@ -89,15 +89,3 @@ export const UserFactory = setSeederFactory(Euser, async (faker: Faker) => {
   return user;
 })
 
-
-
-// export const fakeIsLoggedIn = () => {
-//   const isLogged = (Math.random() > 0.5)
-//   if (isLogged) {
-//     return nanoid(10)
-//   }
-//   else {
-//     return
-//   }
-// }
-

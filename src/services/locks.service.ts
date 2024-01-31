@@ -28,7 +28,7 @@ export class LockService {
 }
 
   getAllLocksQuery = async (user: IUser, options: lockFindOptionsDTO) => {
-    if ((user.role === ERole.user)) {  // Not a bulletproof chceck, but fine for now
+    if ((user.role === ERole.user)) { 
       if (!options.locks) {
         user.locks ?  options.locks = user.locks : options.locks = []
       }

@@ -2,7 +2,6 @@ import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from 't
 import { Euser } from "./user.entity";
 import { INotification } from "@/interfaces/INotification.interface";
 import { ENotificationTypes } from '@/types/notifocations';
-// import { EQRAccess } from './QRAccess.entity';
 
 @Entity()
 export class ENotification implements INotification {
@@ -34,4 +33,6 @@ export class ENotification implements INotification {
     // @ManyToOne(() => EQRAccess, {onDelete: 'CASCADE'})
     // @JoinColumn({ name: 'accessEntry' })
     // QRAccessEntry!: EQRAccess;
+    // This relation requires that we make separate notifications for weeklyAccesses and sipmple guest accesses
+    // wil be improved after separation of notifiaction entities 
 }

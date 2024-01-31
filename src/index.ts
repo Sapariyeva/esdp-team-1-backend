@@ -8,6 +8,8 @@ import { OrganizationRoute } from './routes/organization.route';
 import { BuildingRoute } from './routes/building.route';
 import { TenantRoute } from './routes/tenant.route';
 import { UserRoute } from './routes/user.route';
+import { WeeklyScheduleRoute } from './routes/schedule.route';
+import { WeeklyQRRoute } from './routes/weeklyQR.route';
 
 
 export const app = new App({
@@ -20,7 +22,9 @@ export const app = new App({
     new OrganizationRoute(),
     new BuildingRoute(),
     new TenantRoute(),
-    new UserRoute()
+    new UserRoute(),
+    new WeeklyScheduleRoute(),
+    new WeeklyQRRoute()
   ]
 });
 

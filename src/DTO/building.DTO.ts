@@ -1,10 +1,12 @@
 import { Expose } from "class-transformer";
-import { IsArray, IsNotEmpty, IsOptional, IsString, IsUUID } from "class-validator";
+import { IsArray, IsBoolean, IsNotEmpty, IsOptional, IsString, IsUUID } from "class-validator";
 import { IsBuildingExist, IsBuildingNameUnique } from "./validators/buildingsValidators";
 import { IsOrganizationExist } from "./validators/organizationsValidators";
+import { IsNotChangable } from "./validators/generalValidators";
+import { IBuilding } from "@/interfaces/IBuilding.interface";
 
 
-export class BuildingDTO {
+export class BuildingDTO implements IBuilding{
   @Expose()
   @IsOptional()
   id!: string;
@@ -14,6 +16,7 @@ export class BuildingDTO {
   @IsString({message: "organization must have string type id" })
   @IsUUID(undefined, { message: 'malformed UUID' })
   @IsOrganizationExist({ message: 'Organization with Id provided is not registered' })
+  @IsNotChangable('buildingDTO', { message: 'Organization Id can not be changed' })
   organizationId!: string;
 
   @Expose()
@@ -26,6 +29,10 @@ export class BuildingDTO {
   @IsString({ message: "Building address must be of string type"})
   @Expose()
   address!: string;
+
+  @IsBoolean({ message: 'Activation status should be boolean' })
+  @IsOptional()
+  isActive!: boolean;
 }
 
 export class buildingFindOptionsDTO {
@@ -41,3 +48,4 @@ export class buildingFindOptionsDTO {
   @IsBuildingExist({ each: true, message: "Some of the specified buildings in search params are not registered" })
   buildings?: string[]
 }
+

@@ -5,6 +5,7 @@ import { IsArray, IsBoolean, IsOptional, IsString, MaxLength } from "class-valid
 import { IsBuildingExist } from "./validators/buildingsValidators";
 import { IsBarrierTypeValid, IsLockExist, IsLockNameUnique } from "./validators/locksValidators";
 import { IsOrganizationExist } from "./validators/organizationsValidators";
+import { IsNotChangable } from "./validators/generalValidators";
 
 export class lockDTO implements ILock {
     @IsOptional()
@@ -14,6 +15,7 @@ export class lockDTO implements ILock {
     @Expose()
     @IsString({ message: 'building Id should be string' })
     @IsBuildingExist({ message: 'Building with provided Id is not registered' })
+    @IsNotChangable('lockDTO', { message: 'Building Id can not be changed' })
     buildingId!: string;
 
     @Expose()

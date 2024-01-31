@@ -3,7 +3,7 @@ import { Euser } from './entities/user.entity';
 import { SeederOptions } from 'typeorm-extension';
 import { parse as pathParse } from 'path';
 import { envConfig } from './env';
-import { EQRAccess } from './entities/QRAccess.entity';
+import { EQRAccess, EweeklyQRAccess } from './entities/QRAccess.entity';
 import { MainSeeder } from './db/seeds/main.seeder';
 import { UserFactory } from './db/factories/user.factory';
 import { LocksFactory } from './db/factories/locks.factory';
@@ -16,13 +16,14 @@ import { ETenant } from './entities/tenant.entity';
 import { TenantsFactory } from './db/factories/Tenants.factory';
 import { BuildingsFactory } from './db/factories/Buildings.factory';
 import { OrganizationsFactory } from './db/factories/organizations.factory';
+import { EweeklySchedule } from './entities/schedule.entity';
 
 const dataSourceConfig: DataSourceOptions = {
   type: 'postgres',
   url: envConfig.dbUri,
   synchronize: true,
   logging: false,
-  entities: [Euser, EQRAccess, ELock, ENotification, EOrganization, EBuilding, ETenant],
+  entities: [Euser, EQRAccess, EweeklyQRAccess, ELock, ENotification, EOrganization, EBuilding, ETenant, EweeklySchedule],
 }
 
 const mockDataSourceConfig: DataSourceOptions & SeederOptions = {
@@ -30,7 +31,7 @@ const mockDataSourceConfig: DataSourceOptions & SeederOptions = {
   url: envConfig.dbUri,
   synchronize: true,
   logging: false,
-  entities: [Euser, EQRAccess, ELock, ENotification, EOrganization, EBuilding, ETenant],
+  entities: [Euser, EQRAccess, EweeklyQRAccess, ELock, ENotification, EOrganization, EBuilding, ETenant, EweeklySchedule],
   seeds: [MainSeeder],
   factories: [OrganizationsFactory, BuildingsFactory, TenantsFactory, UserFactory, LocksFactory, QRAccessFactory]
 }

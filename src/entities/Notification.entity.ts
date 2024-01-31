@@ -2,7 +2,7 @@ import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from 't
 import { Euser } from "./user.entity";
 import { INotification } from "@/interfaces/INotification.interface";
 import { ENotificationTypes } from '@/types/notifocations';
-import { EQRAccess } from './QRAccess.entity';
+// import { EQRAccess } from './QRAccess.entity';
 
 @Entity()
 export class ENotification implements INotification {
@@ -31,7 +31,7 @@ export class ENotification implements INotification {
     @JoinColumn({ name: 'author' })
     user!: Euser;
 
-    @ManyToOne(() => EQRAccess, {onDelete: 'CASCADE'})
-    @JoinColumn({ name: 'accessEntry' })
-    QRAccessEntry!: EQRAccess;
+    // @ManyToOne(() => EQRAccess, {onDelete: 'CASCADE'})
+    // @JoinColumn({ name: 'accessEntry' })
+    // QRAccessEntry!: EQRAccess;
 }

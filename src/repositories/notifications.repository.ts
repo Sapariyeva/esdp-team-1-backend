@@ -1,7 +1,7 @@
 import { Between, In, MoreThan, Repository } from 'typeorm';
 import { appDataSource } from '@/dbConfig'
 import { ENotification } from '@/entities/Notification.entity';
-import { QRAccessDTO } from '@/DTO/QRAccess.DTO';
+import { QRAccessDTO, weeklyQRAccessDTO } from '@/DTO/QRAccess.DTO';
 import { INotification } from '@/interfaces/INotification.interface';
 import { ENotificationTypes } from '@/types/notifocations';
 import { plainToInstance } from 'class-transformer';
@@ -65,13 +65,16 @@ export class NotificationsRepository extends Repository<ENotification> {
 
     }
 
-    makeExpirationNotification = (access: QRAccessDTO, triggerBeforeExpiration: number) => {
+    makeExpirationNotification = (access: QRAccessDTO | weeklyQRAccessDTO, triggerBeforeExpiration: number) => {
         const newNotification: INotification = {
             author: access.author,
             accessEntry: access.id,
             trigger_at: access.valid_to - triggerBeforeExpiration,
             sent: false,
-            message: `Access UUID ${access.id} for guest with phone number ${access.phone} ` +
+            message: (access instanceof weeklyQRAccessDTO) ?
+                `Permanent access UUID ${access.id} for guest with phone number ${access.phone} ` +
+                `expires in ${Math.floor(triggerBeforeExpiration / 1000 / 60)} minutes` :
+                `Access UUID ${access.id} for guest with phone number ${access.phone} ` +
                 `expires in ${Math.floor(triggerBeforeExpiration / 1000 / 60)} minutes`,
             type: ENotificationTypes.expiring
         }

@@ -1,10 +1,11 @@
 import { IQrFindOptions } from "@/interfaces/IFindOptions.interface";
-import { IQRAccess, IQRAccessReq } from "@/interfaces/IQRAccess.interface";
+import { IQRAccess, IQRAccessReq, IWeeklyQRAccess, IWeeklyQRAccessReq } from "@/interfaces/IQRAccess.interface";
 import { Expose } from "class-transformer";
 import { ArrayMinSize, IsArray, IsNotEmpty, IsNumberString, IsOptional, IsPhoneNumber, IsPositive, IsString } from 'class-validator';
 import { IsValidFromPasses, IsValidToPasses } from "./validators/qrValidators";
 import { IsLockExist } from "./validators/locksValidators";
 import { IsUserExist } from "./validators/usersValidators";
+import { IsWeeklyScheduleExist } from "./validators/scheduleValidators";
 
 export class QRAccessReqDTO implements IQRAccessReq{
     @IsString({ message: "Phone number should be string" })
@@ -45,6 +46,20 @@ export class QRAccessDTO extends QRAccessReqDTO implements IQRAccess{
     @Expose()
     link?: string;
 }
+
+export class weeklyQRAccessReqDTO extends QRAccessReqDTO implements IWeeklyQRAccessReq {
+    @IsWeeklyScheduleExist({message: "Specified schedule is not registered!"})
+    @Expose()
+    scheduleId!: string; 
+}
+
+export class weeklyQRAccessDTO extends QRAccessDTO implements IWeeklyQRAccess {
+    @IsWeeklyScheduleExist({message: "Specified schedule is not registered!"})
+    @Expose()
+    scheduleId!: string; 
+}
+
+
 
 export class QrFindOptionsDTO implements IQrFindOptions {
     @Expose()

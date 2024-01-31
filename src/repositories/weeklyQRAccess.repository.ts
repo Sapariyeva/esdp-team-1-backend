@@ -1,25 +1,25 @@
-import { QRAccessDTO } from "@/DTO/QRAccess.DTO";
+import { weeklyQRAccessDTO } from "@/DTO/QRAccess.DTO";
 import { FIRST_NOTIFICATION_TIME, SECOND_NOTIFICATION_TIME } from "@/constants";
 import { appDataSource } from "@/dbConfig";
-import { EQRAccess } from "@/entities/QRAccess.entity";
+import { EweeklyQRAccess } from "@/entities/QRAccess.entity";
 import { IQrFindOptions } from "@/interfaces/IFindOptions.interface";
 import { createQrFindOptions } from "@/utils/findOptionsBuilders/findQrOptionsCreator";
 import { Repository } from "typeorm";
 import { NotificationsRepository } from "./notifications.repository";
 import { ErrorWithStatus } from "@/interfaces/customErrors";
 
-export class QRAccessRepository extends Repository<EQRAccess> {
+export class WeeklyQRAccessRepository extends Repository<EweeklyQRAccess> {
   notificationRepo: NotificationsRepository = new NotificationsRepository();
   constructor() {
-    super(EQRAccess, appDataSource.createEntityManager());
+    super(EweeklyQRAccess, appDataSource.createEntityManager());
   }
 
-  async saveQRAccess(access: QRAccessDTO): Promise<EQRAccess> {
+  async saveQRAccess(access: weeklyQRAccessDTO): Promise<EweeklyQRAccess> {
     const newRecord = this.create(access);
     return await this.save(newRecord);
   }
 
-  async getQRAccessById(id: string): Promise<QRAccessDTO | undefined> {
+  async getQRAccessById(id: string): Promise<EweeklyQRAccess | undefined> {
     const extractedAccess = await this.findOne({ where: { id } });
     if (extractedAccess) {
       return extractedAccess;
@@ -32,7 +32,7 @@ export class QRAccessRepository extends Repository<EQRAccess> {
     return await this.find();
   }
 
-  async getQrEntries(queryOptions: IQrFindOptions): Promise<EQRAccess[]> {
+  async getQrEntries(queryOptions: IQrFindOptions): Promise<EweeklyQRAccess[]> {
     const findOptions = createQrFindOptions(queryOptions);
     const { locks } = queryOptions;
     const unfilteredResult = await this.find(findOptions);
@@ -43,18 +43,18 @@ export class QRAccessRepository extends Repository<EQRAccess> {
     }
   }
 
-  async updateQRAccess(id: string, access: QRAccessDTO) {
+  async updateQRAccess(id: string, access: weeklyQRAccessDTO) {
     try {
       await this.update(id, access);
       const updateAccess = { ...access, id };
       await this.notificationRepo.saveNotification(
-        await this.notificationRepo.makeExpirationNotification(
+        this.notificationRepo.makeExpirationNotification(
           updateAccess,
           FIRST_NOTIFICATION_TIME * 60 * 1000
         )
       );
       await this.notificationRepo.saveNotification(
-        await this.notificationRepo.makeExpirationNotification(
+        this.notificationRepo.makeExpirationNotification(
           updateAccess,
           SECOND_NOTIFICATION_TIME * 60 * 1000
         )
@@ -62,10 +62,10 @@ export class QRAccessRepository extends Repository<EQRAccess> {
       return updateAccess
     }
     catch (e) {
+      console.log(e)
       throw new ErrorWithStatus('Error while generating notifications', 500)
 
     }
-
   }
 
   async delQRAccessById(id: string): Promise<Boolean> {
@@ -83,8 +83,8 @@ export class QRAccessRepository extends Repository<EQRAccess> {
 
   async filterQueryByLockIds(
     locks: string[],
-    rawResult: EQRAccess[]
-  ): Promise<EQRAccess[]> {
+    rawResult: EweeklyQRAccess[]
+  ): Promise<EweeklyQRAccess[]> {
     const filteredResult = await this.createQueryBuilder("eqr_access")
       .where(
         'EXISTS(SELECT 1 FROM unnest("eqr_access"."locks") AS lock WHERE lock IN (:...lockIds))',

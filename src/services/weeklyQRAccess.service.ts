@@ -1,30 +1,40 @@
-import { QRAccessDTO } from "@/DTO/QRAccess.DTO";
+import { weeklyQRAccessDTO } from "@/DTO/QRAccess.DTO";
 import { envConfig } from "@/env";
 import { IQrFindOptions } from "@/interfaces/IFindOptions.interface";
 import { IUser } from "@/interfaces/IUser";
 import { ErrorWithStatus } from "@/interfaces/customErrors";
-import { QRAccessRepository } from "@/repositories/QRAccess.repository";
 import { LockRepository } from "@/repositories/locks.repository";
 import { TenantRepository } from "@/repositories/tenant.repository";
 import { UserRepository } from "@/repositories/user.repository";
+import { WeeklyQRAccessRepository } from "@/repositories/weeklyQRAccess.repository";
 import { ERole } from "@/types/roles";
 import axios, { AxiosInstance } from "axios";
 
-export class QRAccessService {
-  private QRAccessRepo: QRAccessRepository = new QRAccessRepository()
+export class WeeklyQRAccessService {
+  private QRAccessRepo: WeeklyQRAccessRepository = new WeeklyQRAccessRepository()
   private lockRepo: LockRepository = new LockRepository()
   private tenantRepo: TenantRepository = new TenantRepository()
   private userRepo: UserRepository = new UserRepository()
   private qrAxios: AxiosInstance = axios.create({ baseURL: envConfig.qrBaseUrl })
-  private postPath = 'generate'
+  private postPath = 'generateWeekly'
 
   constructor() {
   }
 
-  async createQRAccessEntry(access: QRAccessDTO) {
+  async createQRAccessEntry(access: weeklyQRAccessDTO) {
     const newAccess = await this.QRAccessRepo.saveQRAccess(access);
+    const newAccessWithSchedule = await this.QRAccessRepo.findOne({
+      where: {
+        id: newAccess.id
+      },
+      relations: ['schedule']
+    })
+    if (newAccessWithSchedule) {
+      newAccessWithSchedule.valid_from = Number(newAccessWithSchedule.valid_from)
+      newAccessWithSchedule.valid_to = Number(newAccessWithSchedule.valid_to)
+    }
     try {
-      const response = await this.qrAxios.post(this.postPath, newAccess);
+      const response = await this.qrAxios.post(this.postPath, newAccessWithSchedule);
       if (!response.data.success) {
         await this.QRAccessRepo.delQRAccessById(newAccess.id);
         throw new ErrorWithStatus(response.data.message, response.status)
@@ -34,15 +44,14 @@ export class QRAccessService {
         return await this.QRAccessRepo.updateQRAccess(newAccess.id, access);
       } else {
         await this.QRAccessRepo.delQRAccessById(newAccess.id);
-        throw new ErrorWithStatus('QR service failed to provide link', 500)
+        throw new ErrorWithStatus('QR service failed to provide link for weekly QR', 500)
       }
     } catch (error) {
       console.error('Error creating QR:', error);
       await this.QRAccessRepo.delQRAccessById(newAccess.id);
-      throw new Error('Failed to create QR. Error during QR service request.');
+      throw new Error('Failed to create weekly QR. Error during QR service request.');
     }
   }
-
 
   async getQrEntries(user: IUser, findOptions?: IQrFindOptions) {
     if (findOptions && findOptions.locks) {

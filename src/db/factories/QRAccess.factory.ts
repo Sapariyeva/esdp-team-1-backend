@@ -8,6 +8,7 @@ import { envConfig } from '@/env';
 import { lockFindOptionsDTO } from "@/DTO/lock.DTO";
 import { LockService } from "@/services/locks.service";
 import { IUser } from "@/interfaces/IUser";
+import { QRAccessRepository } from "@/repositories/QRAccess.repository";
 
 const maxLocksConst = 5
 const qrAxios = axios.create({ baseURL: envConfig.qrBaseUrl })
@@ -15,6 +16,7 @@ const qrAxios = axios.create({ baseURL: envConfig.qrBaseUrl })
 export const QRAccessFactory = setSeederFactory(EQRAccess, async (faker: Faker) => {
   const access = new EQRAccess();
   const userRepo = new UserRepository()
+  const QRAccessRepo = new QRAccessRepository ()
   const availableUsers = await userRepo.getAllUsers()
   const user = faker.helpers.arrayElement(availableUsers)
   const now = Date.now()
@@ -25,8 +27,11 @@ export const QRAccessFactory = setSeederFactory(EQRAccess, async (faker: Faker) 
   access.phone = getPhoneNumber()
   access.author = user.id
   access.locks = await getLocks(undefined, maxLocksConst, user)
-  access.link = await getLink(access)
-  return access;
+  const newAccess = await QRAccessRepo.saveQRAccess(access)
+  const link = await getLink(newAccess)
+  newAccess.link = await link
+  await QRAccessRepo.update(newAccess.id, newAccess)
+  return newAccess;
 })
 
 export const getLocks = async (options?: lockFindOptionsDTO, maxLocks=maxLocksConst, user?:IUser) => {
@@ -61,7 +66,8 @@ export const getPhoneNumber = () => {
 
 const getLink = async (access: EQRAccess) => {
   const response = await qrAxios.post('generate', {
-    id: access.author,
+    id: access.id,
+    author: access.author,
     phone: access.phone,
     locks: access.locks,
     valid_from: access.valid_from,

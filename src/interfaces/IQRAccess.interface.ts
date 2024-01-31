@@ -11,3 +11,13 @@ export interface IQRAccess extends IQRAccessReq{
     author: string;
     link?: string
 }
+
+
+export interface IWeeklyQRAccessReq extends IQRAccessReq{
+    scheduleId: string
+}
+
+export interface IWeeklyQRAccess extends IQRAccess, IWeeklyQRAccessReq {
+}
+
+
